@@ -131,9 +131,9 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center">
-      {icon && <div className="mb-4 text-4xl opacity-50">{icon}</div>}
-      <h3 className="text-lg font-semibold text-foreground mb-1">{title}</h3>
-      {description && <p className="text-sm text-muted-foreground mb-4">{description}</p>}
+      {icon && <div className="mb-4 text-2xl opacity-30">{icon}</div>}
+      <h3 className="text-sm font-mono lowercase text-muted-foreground mb-1">{title}</h3>
+      {description && <p className="text-xs font-mono lowercase text-muted-foreground/70 mb-4">{description}</p>}
       {action && <div>{action}</div>}
     </div>
   );

@@ -88,8 +88,8 @@ export function AccountBalancesCard({ userId }: AccountBalancesCardProps) {
             );
           })
         ) : (
-          <div className="flex h-24 items-center justify-center text-sm text-muted-foreground">
-            No accounts found
+          <div className="flex h-24 items-center justify-center">
+            <div className="font-mono text-xs text-muted-foreground">no accounts found</div>
           </div>
         )}
       </VStack>

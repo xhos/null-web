@@ -151,8 +151,8 @@ export function CategorySpendingDonut({ data, onCategoryClick }: CategorySpendin
 
   if (donutData.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-muted-foreground">
-        No spending data for this period
+      <div className="flex items-center justify-center h-64">
+        <div className="font-mono text-xs text-muted-foreground">no spending data for this period</div>
       </div>
     );
   }

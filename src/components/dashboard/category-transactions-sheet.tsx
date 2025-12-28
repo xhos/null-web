@@ -106,8 +106,8 @@ export function CategoryTransactionsSheet({
           )}
 
           {!loading && transactions.length === 0 && (
-            <div className="text-center text-muted-foreground py-8">
-              No transactions found
+            <div className="flex items-center justify-center py-8">
+              <div className="font-mono text-xs text-muted-foreground">no transactions found</div>
             </div>
           )}
 

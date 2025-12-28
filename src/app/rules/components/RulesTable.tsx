@@ -130,13 +130,14 @@ export function RulesTable({
 
       {rules.length === 0 ? (
         <VStack spacing="md" align="center" justify="center" className="border border-border rounded-lg p-8">
-          <Target className="h-12 w-12 text-muted-foreground" />
-          <Muted size="sm">No rules yet</Muted>
-          <Caption>Create your first rule to automatically categorize transactions</Caption>
+          <Target className="text-2xl opacity-30 text-muted-foreground" />
+          <p className="font-mono text-sm text-muted-foreground">no rules yet</p>
+          <p className="font-mono text-xs text-muted-foreground/70">create your first rule to automatically categorize transactions</p>
         </VStack>
       ) : filteredRules.length === 0 ? (
         <VStack spacing="sm" align="center" justify="center" className="border border-border rounded-lg p-8">
-          <Muted size="sm">No rules found matching &quot;{searchValue}&quot;</Muted>
+          <Target className="text-2xl opacity-30 text-muted-foreground" />
+          <p className="font-mono text-sm text-muted-foreground">no rules found matching &quot;{searchValue}&quot;</p>
         </VStack>
       ) : (
         <div className="tui-border rounded-lg overflow-hidden">

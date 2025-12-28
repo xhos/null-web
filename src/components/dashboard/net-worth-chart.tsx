@@ -136,9 +136,11 @@ export function NetWorthChart({ userId }: NetWorthChartProps) {
 
   if (error || !data || data.dataPoints.length === 0) {
     return (
-      <Card padding="md" title="net worth over time" description="No data available">
-        <div className="flex h-[300px] items-center justify-center text-muted-foreground">
-          {error ? "Failed to load net worth data" : "No net worth history found"}
+      <Card padding="md" title="net worth over time">
+        <div className="flex h-[300px] items-center justify-center">
+          <div className="font-mono text-xs text-muted-foreground">
+            {error ? "failed to load net worth data" : "no net worth history found"}
+          </div>
         </div>
       </Card>
     );

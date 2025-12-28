@@ -46,8 +46,8 @@ export function RecentTransactionsCard({ userId }: RecentTransactionsCardProps) 
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
       ) : !data?.transactions.length ? (
-        <div className="text-center py-8">
-          <Muted>no transactions yet</Muted>
+        <div className="flex items-center justify-center py-8">
+          <div className="font-mono text-xs text-muted-foreground">no transactions yet</div>
         </div>
       ) : (
         <div className="relative flex-1 overflow-hidden">

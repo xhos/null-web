@@ -141,8 +141,8 @@ export function DataTable<TData extends CategoryRow, TValue>({ columns, data, on
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                <TableCell colSpan={columns.length} className="h-24 text-center text-sm font-mono text-muted-foreground">
+                  no results
                 </TableCell>
               </TableRow>
             )}

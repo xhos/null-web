@@ -66,10 +66,10 @@ export default function AccountGrid({
 
   if (accounts.length === 0) {
     return (
-      <VStack spacing="xs" align="center" className="py-12">
-        <Muted size="sm">No accounts found</Muted>
-        <Muted size="xs">Accounts matching your filter criteria will appear here</Muted>
-      </VStack>
+      <div className="flex flex-col items-center justify-center py-12 text-center">
+        <h3 className="text-sm font-mono lowercase text-muted-foreground mb-1">no accounts found</h3>
+        <p className="text-xs font-mono lowercase text-muted-foreground/70">accounts matching your filter criteria will appear here</p>
+      </div>
     );
   }
 

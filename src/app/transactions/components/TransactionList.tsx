@@ -168,11 +168,11 @@ export function TransactionList({ accountId, onSelectionChange, onEditTransactio
     if (groupedTransactions.length === 0) {
       return (
         <EmptyState
-          title="No transactions yet"
+          title="no transactions yet"
           description={
             accountId
-              ? "No transactions found for this account"
-              : "Connect your accounts to start tracking transactions"
+              ? "no transactions found for this account"
+              : "connect your accounts to start tracking transactions"
           }
         />
       );

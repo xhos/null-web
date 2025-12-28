@@ -74,14 +74,13 @@ export function CategoryBreakdownCard({ userId }: CategoryBreakdownCardProps) {
       {loading && <Skeleton className="h-[280px]" />}
       {error && (
         <VStack spacing="sm" align="center" justify="center" className="h-64">
-          <Text weight="semibold" color="destructive">Failed to load data</Text>
-          <Muted size="sm">{error.message}</Muted>
+          <div className="font-mono text-xs text-muted-foreground">failed to load data</div>
         </VStack>
       )}
       {!loading && !error && data && (
         <VStack spacing="md" align="center">
           <VStack spacing="xs" align="center">
-            <Muted size="xs">Total Spending</Muted>
+            <Muted size="xs">total spending</Muted>
             <Text weight="semibold" size="lg">
               ${formatAmount(data.totals?.currentPeriodTotal).toFixed(2)}
             </Text>
