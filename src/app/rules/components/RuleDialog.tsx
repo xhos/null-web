@@ -296,21 +296,21 @@ export function RuleDialog({
               {step > 1 && (
                 <Button variant="outline" onClick={() => setStep(step - 1)} disabled={isLoading}>
                   <ArrowLeft className="h-4 w-4 mr-1" />
-                  Back
+                  back
                 </Button>
               )}
               <HStack spacing="sm" justify="end" className={step === 1 ? "ml-auto" : ""}>
                 <Button variant="outline" onClick={onClose} disabled={isLoading}>
-                  Cancel
+                  cancel
                 </Button>
                 {step < 4 ? (
                   <Button onClick={() => setStep(step + 1)} disabled={isLoading || !canProceed}>
-                    Next
+                    next
                     <ArrowRight className="h-4 w-4 ml-1" />
                   </Button>
                 ) : (
                   <Button onClick={handleSubmit} disabled={isLoading || !canSubmit}>
-                    {isLoading ? "Saving..." : submitText}
+                    {isLoading ? "saving..." : submitText}
                   </Button>
                 )}
               </HStack>

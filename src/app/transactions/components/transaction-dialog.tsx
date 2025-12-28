@@ -34,8 +34,8 @@ interface TransactionDialogProps {
 }
 
 const directionOptions = [
-  { value: TransactionDirection.DIRECTION_OUTGOING, label: "Expense" },
-  { value: TransactionDirection.DIRECTION_INCOMING, label: "Income" },
+  { value: TransactionDirection.DIRECTION_OUTGOING, label: "expense" },
+  { value: TransactionDirection.DIRECTION_INCOMING, label: "income" },
 ];
 
 const currencyOptions = [
@@ -163,7 +163,7 @@ export function TransactionDialog({
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-2 gap-4">
-              <FormField label="Account" required>
+              <FormField label="account" required>
                 <Select
                   value={formData.accountId}
                   onChange={(e) => setFormData((prev) => ({ ...prev, accountId: e.target.value }))}
@@ -179,7 +179,7 @@ export function TransactionDialog({
                 </Select>
               </FormField>
 
-              <FormField label="Type" required>
+              <FormField label="type" required>
                 <Select
                   value={formData.direction}
                   onChange={(e) =>
@@ -201,7 +201,7 @@ export function TransactionDialog({
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <FormField label="Amount" required>
+              <FormField label="amount" required>
                 <Input
                   type="number"
                   step="0.01"
@@ -214,7 +214,7 @@ export function TransactionDialog({
                 />
               </FormField>
 
-              <FormField label="Currency">
+              <FormField label="currency">
                 <Select
                   value={formData.currency}
                   onChange={(e) => setFormData((prev) => ({ ...prev, currency: e.target.value }))}
@@ -230,7 +230,7 @@ export function TransactionDialog({
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <FormField label="Date" required>
+              <FormField label="date" required>
                 <Input
                   type="date"
                   value={formData.date}
@@ -240,7 +240,7 @@ export function TransactionDialog({
                 />
               </FormField>
 
-              <FormField label="Time">
+              <FormField label="time">
                 <Input
                   type="time"
                   value={formData.time}
@@ -250,7 +250,7 @@ export function TransactionDialog({
               </FormField>
             </div>
 
-            <FormField label="Description">
+            <FormField label="description">
               <Input
                 value={formData.description}
                 onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
@@ -260,7 +260,7 @@ export function TransactionDialog({
             </FormField>
 
             <div className="grid grid-cols-2 gap-4">
-              <FormField label="Merchant">
+              <FormField label="merchant">
                 <Input
                   value={formData.merchant}
                   onChange={(e) => setFormData((prev) => ({ ...prev, merchant: e.target.value }))}
@@ -269,7 +269,7 @@ export function TransactionDialog({
                 />
               </FormField>
 
-              <FormField label="Category">
+              <FormField label="category">
                 <Select
                   value={formData.categoryId}
                   onChange={(e) => setFormData((prev) => ({ ...prev, categoryId: e.target.value }))}
@@ -285,7 +285,7 @@ export function TransactionDialog({
               </FormField>
             </div>
 
-            <FormField label="Notes">
+            <FormField label="notes">
               <Input
                 value={formData.userNotes}
                 onChange={(e) => setFormData((prev) => ({ ...prev, userNotes: e.target.value }))}
@@ -307,10 +307,10 @@ export function TransactionDialog({
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
             >
-              Cancel
+              cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save"}
+              {isLoading ? "saving..." : "save"}
             </Button>
           </DialogFooter>
         </form>

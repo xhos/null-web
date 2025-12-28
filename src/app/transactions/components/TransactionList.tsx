@@ -157,7 +157,7 @@ export function TransactionList({ accountId, onSelectionChange, onEditTransactio
 
   if (error) {
     return (
-      <div className="rounded-md border border-destructive/50 bg-destructive/5 p-4">
+      <div className="rounded-sm border border-destructive/50 bg-destructive/5 p-4">
         <p className="text-sm text-destructive">{String(error)}</p>
       </div>
     );

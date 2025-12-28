@@ -120,7 +120,7 @@ export default function TransactionsPage() {
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
-                    placeholder="Search"
+                    placeholder="search"
                     className="pl-9 border border-border rounded-sm"
                   />
                 </div>
@@ -157,19 +157,19 @@ export default function TransactionsPage() {
                 </Button>
                 <Button onClick={() => setIsDialogOpen(true)} size="default" disabled={isCreating || isUpdating}>
                   <Plus className="h-4 w-4" />
-                  New
+                  new
                 </Button>
               </HStack>
 
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Search"
+                  placeholder="search"
                   className="pl-9 border border-border rounded-sm"
                 />
               </div>
               <Button variant="outline" size="sm" className="w-full rounded-sm">
-                Filters
+                filters
               </Button>
 
               {selectedTransactions.length > 0 && (
@@ -189,13 +189,13 @@ export default function TransactionsPage() {
           onOpenChange={handleDialogOpenChange}
           transaction={editingTransaction}
           onSave={handleSaveTransaction}
-          title={editingTransaction ? "Edit Transaction" : "Create Transaction"}
+          title={editingTransaction ? "edit transaction" : "create transaction"}
         />
 
         <Dialog open={isDetailsDialogOpen} onOpenChange={setIsDetailsDialogOpen}>
           <DialogContent className="max-w-lg">
             <DialogHeader>
-              <DialogTitle>Transaction Details</DialogTitle>
+              <DialogTitle>transaction details</DialogTitle>
             </DialogHeader>
             {detailsTransaction && <TransactionDetailsDialog transaction={detailsTransaction} />}
           </DialogContent>

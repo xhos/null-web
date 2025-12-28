@@ -15,8 +15,7 @@ import { CategoryDialog } from "./category-dialog";
 import { DeleteDialog } from "./delete-dialog";
 import { toast } from "sonner";
 import { PageContainer, PageContent, PageHeaderWithTitle } from "@/components/ui/layout";
-import { ErrorMessage } from "@/components/lib";
-import { LoadingCard } from "@/components/data-display";
+import { ErrorMessage, Card, LoadingSkeleton } from "@/components/lib";
 import { getCategoryDisplayName, getParentSlug, getCategoryLevel } from "@/lib/utils/category";
 
 function countChildren(categorySlug: string, categories: Category[]): number {
@@ -118,7 +117,9 @@ export default function CategoriesPage() {
       <PageContainer>
         <PageContent>
           <PageHeaderWithTitle title="categories" />
-          <LoadingCard message="Loading categories..." />
+          <Card title="categories" padding="md">
+            <LoadingSkeleton lines={5} />
+          </Card>
         </PageContent>
       </PageContainer>
     );
@@ -156,7 +157,7 @@ export default function CategoriesPage() {
           open={isCreateDialogOpen}
           onOpenChange={setIsCreateDialogOpen}
           onSave={handleCreateCategory}
-          title="Create Category"
+          title="create category"
         />
 
         <CategoryDialog
@@ -164,7 +165,7 @@ export default function CategoriesPage() {
           onOpenChange={(open) => !open && setEditingCategory(null)}
           category={editingCategory}
           onSave={handleUpdateCategory}
-          title="Edit Category"
+          title="edit category"
         />
 
         <DeleteDialog

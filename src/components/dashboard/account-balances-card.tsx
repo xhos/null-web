@@ -15,17 +15,17 @@ interface AccountBalancesCardProps {
 const getAccountTypeLabel = (type: AccountType): string => {
   switch (type) {
     case AccountType.ACCOUNT_CHEQUING:
-      return "Checking";
+      return "checking";
     case AccountType.ACCOUNT_SAVINGS:
-      return "Savings";
+      return "savings";
     case AccountType.ACCOUNT_CREDIT_CARD:
-      return "Credit Card";
+      return "credit card";
     case AccountType.ACCOUNT_INVESTMENT:
-      return "Investment";
+      return "investment";
     case AccountType.ACCOUNT_OTHER:
-      return "Other";
+      return "other";
     default:
-      return "Unknown";
+      return "unknown";
   }
 };
 

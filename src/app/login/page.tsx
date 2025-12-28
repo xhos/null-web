@@ -80,7 +80,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <header className="mb-6">
           <h1 className="text-lg mb-2">arian // authentication</h1>
-          <p className="text-sm tui-muted">
+          <p className="text-sm text-muted-foreground">
             {mode === "login"
               ? "login to access your financial data"
               : "create an account to start tracking"}
@@ -150,7 +150,7 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        {error && <div className="mt-4 p-3 text-sm font-mono text-destructive tui-border">{error}</div>}
+        {error && <div className="mt-4 p-3 text-sm font-mono text-destructive border border-destructive/30 rounded-sm">{error}</div>}
       </div>
     </div>
   );

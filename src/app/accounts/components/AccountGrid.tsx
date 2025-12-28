@@ -31,7 +31,7 @@ export default function AccountGrid({
 }: AccountGridProps) {
   const groupedAccounts = useMemo(() => {
     if (!selectedFilter) {
-      return { "All Accounts": accounts };
+      return { "all accounts": accounts };
     }
 
     const grouped: GroupedAccounts = {};
@@ -44,7 +44,7 @@ export default function AccountGrid({
       } else if (selectedFilter === "bank") {
         groupKey = account.bank;
       } else {
-        groupKey = "All Accounts";
+        groupKey = "all accounts";
       }
 
       if (!grouped[groupKey]) {
@@ -78,9 +78,9 @@ export default function AccountGrid({
       {Object.entries(groupedAccounts).map(([groupName, groupAccounts]) => (
         <VStack key={groupName} spacing="md">
           {selectedFilter && (
-            <Muted size="sm" className="uppercase text-xs border-b border-border pb-2">
+            <span className="font-mono text-xs text-muted-foreground lowercase border-b border-border pb-2 block">
               {groupName}
-            </Muted>
+            </span>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

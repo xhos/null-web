@@ -87,7 +87,7 @@ export function DataTable<TData extends CategoryRow, TValue>({ columns, data, on
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search"
+            placeholder="search"
             value={searchValue}
             onChange={(e) => slugColumn?.setFilterValue(e.target.value)}
             className="pl-9"
@@ -96,12 +96,12 @@ export function DataTable<TData extends CategoryRow, TValue>({ columns, data, on
         {onCreateNew && (
           <Button onClick={onCreateNew}>
             <Plus className="h-4 w-4" />
-            New
+            new
           </Button>
         )}
       </HStack>
 
-      <div className="rounded-md border">
+      <div className="rounded-sm border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

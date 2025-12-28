@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Card } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -11,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { X } from "lucide-react";
+import { Card, VStack, HStack } from "@/components/lib";
 import { ChipList } from "./ChipList";
 import {
   FIELD_OPTIONS,
@@ -103,10 +103,9 @@ export function ConditionBuilder({
   };
 
   return (
-    <Card className="p-4">
-      <div className="space-y-4">
-        {/* Natural language connector */}
-        <div className="flex items-center justify-between">
+    <Card padding="md">
+      <VStack spacing="md">
+        <HStack justify="between" align="center">
           <span className="bg-primary/10 text-primary px-2 py-1 rounded text-xs font-medium">
             {index === 0 ? "IF" : logic}
           </span>
@@ -121,10 +120,9 @@ export function ConditionBuilder({
               <X className="h-4 w-4" />
             </Button>
           )}
-        </div>
+        </HStack>
 
-        {/* Condition builder controls */}
-        <div className="flex items-center gap-2 flex-wrap">
+        <HStack spacing="sm" className="flex-wrap">
           <Select value={condition.field} onValueChange={handleFieldChange}>
             <SelectTrigger className="w-32">
               <SelectValue />
@@ -151,7 +149,6 @@ export function ConditionBuilder({
             </SelectContent>
           </Select>
 
-          {/* Value inputs */}
           {condition.operator === "between" ? (
             <>
               <Input
@@ -215,20 +212,18 @@ export function ConditionBuilder({
                 disabled={!condition.currentInput?.trim()}
                 onClick={handleAddChip}
               >
-                Add
+                add
               </Button>
             </>
           )}
-        </div>
+        </HStack>
 
-        {/* Chips display */}
         {condition.chips && condition.chips.length > 0 && (
           <ChipList chips={condition.chips} onRemoveChip={handleRemoveChip} />
         )}
 
-        {/* Case sensitivity option */}
         {isStringField(condition.field) && condition.operator !== "regex" && (
-          <div className="flex items-center gap-2">
+          <HStack spacing="sm" align="center">
             <Switch
               id={`case-sensitive-${index}`}
               checked={condition.case_sensitive || false}
@@ -237,9 +232,9 @@ export function ConditionBuilder({
             <Label htmlFor={`case-sensitive-${index}`} className="text-sm text-muted-foreground">
               Case sensitive
             </Label>
-          </div>
+          </HStack>
         )}
-      </div>
+      </VStack>
     </Card>
   );
 }

@@ -20,7 +20,7 @@ const periods = [
   { label: "3m", value: PeriodType.PERIOD_TYPE_3_MONTHS },
   { label: "6m", value: PeriodType.PERIOD_TYPE_6_MONTHS },
   { label: "1y", value: PeriodType.PERIOD_TYPE_1_YEAR },
-  { label: "All", value: PeriodType.PERIOD_TYPE_ALL_TIME },
+  { label: "all", value: PeriodType.PERIOD_TYPE_ALL_TIME },
 ] as const;
 
 export function PeriodSelector({ value, onChange }: PeriodSelectorProps) {
@@ -42,10 +42,6 @@ export function PeriodSelector({ value, onChange }: PeriodSelectorProps) {
   };
 
   const isCustom = value === PeriodType.PERIOD_TYPE_CUSTOM;
-  const customLabel =
-    dateRange.start && dateRange.end
-      ? `${format(dateRange.start, "MMM d")} - ${format(dateRange.end, "MMM d")}`
-      : "Custom";
 
   return (
     <div className="inline-flex items-center gap-1.5">

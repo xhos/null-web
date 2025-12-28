@@ -26,11 +26,11 @@ import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 
 const navigationItems = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard },
-  { title: "Transactions", url: "/transactions", icon: Home },
-  { title: "Accounts", url: "/accounts", icon: Wallet },
-  { title: "Categories", url: "/categories", icon: Tag },
-  { title: "Rules", url: "/rules", icon: FileText },
+  { title: "dashboard", url: "/", icon: LayoutDashboard },
+  { title: "transactions", url: "/transactions", icon: Home },
+  { title: "accounts", url: "/accounts", icon: Wallet },
+  { title: "categories", url: "/categories", icon: Tag },
+  { title: "rules", url: "/rules", icon: FileText },
 ];
 
 export default function AppSidebar() {
@@ -116,7 +116,7 @@ export default function AppSidebar() {
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => router.push("/settings")}>
                   <Settings />
-                  <span>Settings</span>
+                  <span>settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} variant="destructive">

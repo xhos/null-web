@@ -184,7 +184,7 @@ export default function AccountsPage() {
               disabled={isOperationLoading}
             >
               <Plus className="h-4 w-4" />
-              New
+              new
             </Button>
           </HStack>
         )}
@@ -195,7 +195,7 @@ export default function AccountsPage() {
             action={
               <Button onClick={() => setIsCreateDialogOpen(true)} disabled={isOperationLoading}>
                 <Plus className="h-4 w-4" />
-                Create Your First Account
+                create your first account
               </Button>
             }
           />
@@ -214,7 +214,7 @@ export default function AccountsPage() {
         <AccountDialog
           open={isCreateDialogOpen}
           onOpenChange={setIsCreateDialogOpen}
-          title="Create Account"
+          title="create account"
           onSave={handleCreateAccount}
         />
 
@@ -222,7 +222,7 @@ export default function AccountsPage() {
           open={!!editingAccount}
           onOpenChange={(open) => !open && setEditingAccount(null)}
           account={editingAccount}
-          title="Edit Account"
+          title="edit account"
           onSave={handleUpdateAccount}
         />
 

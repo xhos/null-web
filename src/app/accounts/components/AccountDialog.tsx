@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { HexColorPicker } from "react-colorful";
-import { VStack, HStack, ErrorMessage, Muted } from "@/components/lib";
+import { VStack, HStack, ErrorMessage, Muted, Caption } from "@/components/lib";
 import type { Account } from "@/gen/arian/v1/account_pb";
 import { AccountType } from "@/gen/arian/v1/enums_pb";
 
@@ -131,14 +131,14 @@ export function AccountDialog({
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="My Checking Account"
+                placeholder="my checking account"
                 disabled={isLoading}
                 required
               />
             </VStack>
 
             <VStack spacing="xs">
-              <Label htmlFor="alias">Alias</Label>
+              <Label htmlFor="alias">alias</Label>
               <Input
                 id="alias"
                 value={alias}
@@ -154,14 +154,14 @@ export function AccountDialog({
                 id="bank"
                 value={bank}
                 onChange={(e) => setBank(e.target.value)}
-                placeholder="Chase"
+                placeholder="chase"
                 disabled={isLoading}
                 required
               />
             </VStack>
 
             <VStack spacing="xs">
-              <Label htmlFor="type">Type</Label>
+              <Label htmlFor="type">type</Label>
               <Select
                 value={type.toString()}
                 onValueChange={(value) => setType(parseInt(value) as AccountType)}
@@ -171,17 +171,17 @@ export function AccountDialog({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={AccountType.ACCOUNT_CHEQUING.toString()}>Chequing</SelectItem>
-                  <SelectItem value={AccountType.ACCOUNT_SAVINGS.toString()}>Savings</SelectItem>
-                  <SelectItem value={AccountType.ACCOUNT_CREDIT_CARD.toString()}>Credit Card</SelectItem>
-                  <SelectItem value={AccountType.ACCOUNT_INVESTMENT.toString()}>Investment</SelectItem>
-                  <SelectItem value={AccountType.ACCOUNT_OTHER.toString()}>Other</SelectItem>
+                  <SelectItem value={AccountType.ACCOUNT_CHEQUING.toString()}>chequing</SelectItem>
+                  <SelectItem value={AccountType.ACCOUNT_SAVINGS.toString()}>savings</SelectItem>
+                  <SelectItem value={AccountType.ACCOUNT_CREDIT_CARD.toString()}>credit card</SelectItem>
+                  <SelectItem value={AccountType.ACCOUNT_INVESTMENT.toString()}>investment</SelectItem>
+                  <SelectItem value={AccountType.ACCOUNT_OTHER.toString()}>other</SelectItem>
                 </SelectContent>
               </Select>
             </VStack>
 
             <VStack spacing="xs">
-              <Label htmlFor="currency">Currency</Label>
+              <Label htmlFor="currency">currency</Label>
               <Select
                 value={mainCurrency}
                 onValueChange={setMainCurrency}
@@ -201,10 +201,10 @@ export function AccountDialog({
             </VStack>
 
             <VStack spacing="xs">
-              <Label>Colors</Label>
+              <Label>colors</Label>
               <HStack spacing="sm">
                 {colors.map((color, index) => (
-                  <div key={index} className="flex flex-col items-center gap-1">
+                  <VStack key={index} spacing="xs" align="center">
                     <Popover>
                       <PopoverTrigger asChild>
                         <button
@@ -225,17 +225,17 @@ export function AccountDialog({
                         />
                       </PopoverContent>
                     </Popover>
-                    <Muted size="xs">
-                      {index === 0 ? "Primary" : index === 1 ? "Secondary" : "Tertiary"}
-                    </Muted>
-                  </div>
+                    <Caption size="xs">
+                      {index === 0 ? "primary" : index === 1 ? "secondary" : "tertiary"}
+                    </Caption>
+                  </VStack>
                 ))}
               </HStack>
             </VStack>
 
             {!account && (
               <VStack spacing="xs">
-                <Label htmlFor="initialBalance">Initial Balance *</Label>
+                <Label htmlFor="initialBalance">initial balance *</Label>
                 <Input
                   id="initialBalance"
                   type="number"
@@ -258,10 +258,10 @@ export function AccountDialog({
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
             >
-              Cancel
+              cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save"}
+              {isLoading ? "saving..." : "save"}
             </Button>
           </DialogFooter>
         </form>

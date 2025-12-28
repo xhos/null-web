@@ -75,13 +75,13 @@ export function DeleteRuleDialog({ rule, onClose, onConfirm, isLoading }: Delete
     <AlertDialog open={!!rule} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Rule</AlertDialogTitle>
+          <AlertDialogTitle>delete rule</AlertDialogTitle>
           <AlertDialogDescription asChild>
             <VStack spacing="sm">
               <p>Are you sure you want to delete this rule? This action cannot be undone.</p>
               <VStack spacing="xs" className="p-3 tui-border rounded-lg">
                 <HStack spacing="sm" justify="between">
-                  <Text size="sm" weight="medium">Rule Name:</Text>
+                  <Text size="sm" weight="medium">rule name:</Text>
                   <Text size="sm" className="font-mono">{rule.ruleName}</Text>
                 </HStack>
                 <HStack spacing="sm" justify="between">
@@ -91,7 +91,7 @@ export function DeleteRuleDialog({ rule, onClose, onConfirm, isLoading }: Delete
                 <HStack spacing="sm" justify="between">
                   <Text size="sm" weight="medium">Status:</Text>
                   <Badge variant={rule.isActive ? "default" : "secondary"}>
-                    {rule.isActive ? "Active" : "Inactive"}
+                    {rule.isActive ? "active" : "inactive"}
                   </Badge>
                 </HStack>
                 <VStack spacing="xs">
@@ -105,13 +105,13 @@ export function DeleteRuleDialog({ rule, onClose, onConfirm, isLoading }: Delete
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isLoading}>cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
             disabled={isLoading}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {isLoading ? "Deleting..." : "Delete Rule"}
+            {isLoading ? "deleting..." : "delete rule"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -21,7 +21,7 @@ export const createColumns = (
 ): ColumnDef<CategoryRow>[] => [
   {
     accessorKey: "displayName",
-    header: "Name",
+    header: "name",
     cell: ({ row }) => {
       const indentationPixels = isFiltered ? 0 : row.original.level * 20;
       return (
@@ -34,12 +34,12 @@ export const createColumns = (
   {
     accessorKey: "category.slug",
     id: "slug",
-    header: "Slug",
+    header: "slug",
     cell: ({ row }) => <span className="font-mono text-sm">{row.original.category.slug}</span>,
   },
   {
     accessorKey: "color",
-    header: "Color",
+    header: "color",
     cell: ({ row }) => {
       const categoryColor = row.original.category.color;
 

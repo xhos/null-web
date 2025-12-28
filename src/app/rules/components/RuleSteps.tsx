@@ -41,7 +41,7 @@ export function Step1({ ruleName, onRuleNameChange, onNext }: Step1Props) {
     <StepLayout>
       <VStack spacing="sm" align="start">
         <Label htmlFor="ruleName" className="text-base font-medium">
-          Name
+          name
         </Label>
         <Input
           id="ruleName"
@@ -137,7 +137,7 @@ export function Step2({
 
       <Button type="button" variant="outline" onClick={onAddCondition} className="w-full">
         <Plus className="h-4 w-4 mr-2" />
-        Add Another Condition
+        add another condition
       </Button>
     </VStack>
   );
@@ -233,12 +233,12 @@ export function Step4({
       <Card padding="md">
         <VStack spacing="md" align="start">
           <VStack spacing="xs" align="start">
-            <Label className="text-xs text-muted-foreground">Name</Label>
+            <Label className="text-xs text-muted-foreground">name</Label>
             <Text size="sm" weight="medium">{ruleName}</Text>
           </VStack>
 
           <VStack spacing="xs" align="start">
-            <Label className="text-xs text-muted-foreground">When</Label>
+            <Label className="text-xs text-muted-foreground">when</Label>
             <VStack spacing="sm" align="start">
               {validConditions.map((condition, index) => (
                 <Text key={index} size="sm">
@@ -262,7 +262,7 @@ export function Step4({
           </VStack>
 
           <VStack spacing="xs" align="start">
-            <Label className="text-xs text-muted-foreground">Apply</Label>
+            <Label className="text-xs text-muted-foreground">apply</Label>
             <HStack spacing="sm" className="flex-wrap">
               {selectedCategory && (
                 <HStack spacing="xs" align="center">

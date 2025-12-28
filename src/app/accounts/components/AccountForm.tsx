@@ -76,9 +76,9 @@ export default function AccountForm({ account, onSubmit, onCancel, isLoading }: 
     <Card padding="md">
       <form onSubmit={handleSubmit}>
         <VStack spacing="lg">
-          <Muted size="xs" weight="medium" className="uppercase tracking-wider">
+          <span className="font-mono text-xs text-muted-foreground">
             {isEditing ? "edit account" : "add new account"}
-          </Muted>
+          </span>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <VStack spacing="xs">
               <Caption>account name</Caption>

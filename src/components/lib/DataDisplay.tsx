@@ -64,7 +64,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium',
+        'inline-flex items-center rounded-sm px-2 py-1 text-xs font-medium',
         statusStyles[status],
         className
       )}
@@ -106,7 +106,7 @@ export function InfoGrid({ items, columns = 2 }: InfoGridProps) {
     <div className={cn('grid gap-4', columnClasses[columns])}>
       {items.map((item, idx) => (
         <div key={idx} className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          <span className="font-mono text-xs text-muted-foreground lowercase">
             {item.label}
           </span>
           <span className="text-base font-semibold text-foreground">{item.value}</span>

@@ -5,6 +5,7 @@ import { useUserId } from "@/hooks/useSession";
 import { useRules, useCreateRule, useUpdateRule, useDeleteRule } from "@/hooks/useRules";
 import { useCategories } from "@/hooks/useCategories";
 import { PageContainer, PageContent, PageHeaderWithTitle } from "@/components/ui/layout";
+import { Muted, ErrorMessage } from "@/components/lib";
 import type { Rule } from "@/gen/arian/v1/rule_pb";
 import type { Category } from "@/gen/arian/v1/category_pb";
 import type { TransactionRule } from "@/lib/rules";
@@ -116,7 +117,7 @@ export default function RulesPage() {
     return (
       <PageContainer>
         <PageContent>
-          <div className="text-sm text-muted-foreground">loading session...</div>
+          <Muted size="sm">loading session...</Muted>
         </PageContent>
       </PageContainer>
     );
@@ -127,7 +128,7 @@ export default function RulesPage() {
       <PageContainer>
         <PageContent>
           <PageHeaderWithTitle title="rules" />
-          <div className="text-sm text-muted-foreground">Loading rules...</div>
+          <Muted size="sm">Loading rules...</Muted>
         </PageContent>
       </PageContainer>
     );
@@ -138,7 +139,7 @@ export default function RulesPage() {
       <PageContainer>
         <PageContent>
           <PageHeaderWithTitle title="rules" />
-          <div className="text-sm text-destructive">Error loading rules: {rulesError.message}</div>
+          <ErrorMessage>Error loading rules: {rulesError.message}</ErrorMessage>
         </PageContent>
       </PageContainer>
     );
@@ -183,8 +184,8 @@ export default function RulesPage() {
           onSubmit={handleUpdateRule}
           categories={categories}
           rule={selectedRule}
-          title="Edit Rule"
-          submitText="Update Rule"
+          title="edit rule"
+          submitText="update rule"
           isLoading={isUpdating}
           error={updateError?.message}
         />

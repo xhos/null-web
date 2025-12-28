@@ -50,7 +50,7 @@ export function DeleteDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <AlertCircle className="h-5 w-5 text-destructive" />
-            Delete Category
+            delete category
           </DialogTitle>
         </DialogHeader>
         <VStack spacing="sm" className="py-4">
@@ -73,7 +73,7 @@ export function DeleteDialog({
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
             >
-              Cancel
+              cancel
             </Button>
             <Button
               type="button"
@@ -81,7 +81,7 @@ export function DeleteDialog({
               onClick={handleConfirm}
               disabled={isLoading}
             >
-              {isLoading ? "Deleting..." : "Delete Category"}
+              {isLoading ? "deleting..." : "delete category"}
             </Button>
           </HStack>
         </DialogFooter>

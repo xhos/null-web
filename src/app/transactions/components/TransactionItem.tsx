@@ -73,7 +73,7 @@ export function TransactionItem({
       <ContextMenu>
         <ContextMenuTrigger asChild>
           <Card
-            variant={isSelected ? "elevated" : "default"}
+            variant="default"
             padding="sm"
             interactive
             onClick={handleClick}

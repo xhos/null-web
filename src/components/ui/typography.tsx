@@ -48,8 +48,7 @@ export const NumericText = ({ children, className, ...props }: React.HTMLAttribu
 
 export const SectionHeader = ({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn("font-semibold text-muted-foreground uppercase tracking-wider", className)}
-    style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.8px' }}
+    className={cn("font-mono text-xs text-muted-foreground lowercase", className)}
     {...props}
   >
     {children}

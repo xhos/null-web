@@ -215,11 +215,11 @@ export default function EditAccountSidebar({
                 }
                 className="rounded-sm border border-border bg-background text-sm h-8 px-3"
               >
-                <option value={AccountType.ACCOUNT_CHEQUING}>Chequing</option>
-                <option value={AccountType.ACCOUNT_SAVINGS}>Savings</option>
-                <option value={AccountType.ACCOUNT_CREDIT_CARD}>Credit Card</option>
-                <option value={AccountType.ACCOUNT_INVESTMENT}>Investment</option>
-                <option value={AccountType.ACCOUNT_OTHER}>Other</option>
+                <option value={AccountType.ACCOUNT_CHEQUING}>chequing</option>
+                <option value={AccountType.ACCOUNT_SAVINGS}>savings</option>
+                <option value={AccountType.ACCOUNT_CREDIT_CARD}>credit card</option>
+                <option value={AccountType.ACCOUNT_INVESTMENT}>investment</option>
+                <option value={AccountType.ACCOUNT_OTHER}>other</option>
               </select>
             </VStack>
 
@@ -254,7 +254,7 @@ export default function EditAccountSidebar({
                       className="w-8 h-8 rounded border cursor-pointer"
                     />
                     <Caption>
-                      {index === 0 ? "Primary" : index === 1 ? "Secondary" : "Tertiary"}
+                      {index === 0 ? "primary" : index === 1 ? "secondary" : "tertiary"}
                     </Caption>
                   </div>
                 ))}

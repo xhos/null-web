@@ -67,9 +67,9 @@ export default function AnchorBalanceForm({
     <Card padding="md">
       <form onSubmit={handleSubmit}>
         <VStack spacing="lg">
-          <Muted size="xs" weight="medium" className="uppercase tracking-wider">
+          <span className="font-mono text-xs text-muted-foreground">
             set anchor balance for {accountName}
-          </Muted>
+          </span>
 
           {error && <ErrorMessage>{error}</ErrorMessage>}
 

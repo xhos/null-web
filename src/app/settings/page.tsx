@@ -2,10 +2,9 @@
 
 import { useState, useCallback } from "react";
 import { PageContainer, PageContent, PageHeaderWithTitle } from "@/components/ui/layout";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, Upload, FileJson, AlertCircle, CheckCircle2 } from "lucide-react";
-import { VStack, HStack, Muted } from "@/components/lib";
+import { VStack, HStack, Muted, Card } from "@/components/lib";
 import { cn } from "@/lib/utils";
 import { backupApi } from "@/lib/api/backup";
 
@@ -109,34 +108,27 @@ export default function SettingsPage() {
         />
 
         <VStack spacing="lg" className="max-w-3xl mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle>Export Data</CardTitle>
-              <CardDescription>
-                Download all your data as a JSON file. This includes transactions, accounts, categories, and rules.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button
-                onClick={handleExport}
-                disabled={isExporting}
-                className="w-full sm:w-auto"
-              >
-                <Download className="h-4 w-4" />
-                {isExporting ? "Exporting..." : "Export Data"}
-              </Button>
-            </CardContent>
+          <Card
+            title="export data"
+            description="Download all your data as a JSON file. This includes transactions, accounts, categories, and rules."
+            padding="lg"
+          >
+            <Button
+              onClick={handleExport}
+              disabled={isExporting}
+              className="w-full sm:w-auto"
+            >
+              <Download className="h-4 w-4" />
+              {isExporting ? "exporting..." : "export data"}
+            </Button>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Import Data</CardTitle>
-              <CardDescription>
-                Import your data from a JSON file. This will merge with your existing data.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <VStack spacing="md">
+          <Card
+            title="import data"
+            description="Import your data from a JSON file. This will merge with your existing data."
+            padding="lg"
+          >
+            <VStack spacing="md">
                 <div
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
@@ -183,7 +175,7 @@ export default function SettingsPage() {
                         onClick={() => document.getElementById("file-upload")?.click()}
                       >
                         <Upload className="h-4 w-4" />
-                        {isImporting ? "Importing..." : "Select File"}
+                        {isImporting ? "importing..." : "select file"}
                       </Button>
                     </label>
                   </VStack>
@@ -206,7 +198,7 @@ export default function SettingsPage() {
                         importStatus === "success" && "text-green-900 dark:text-green-100",
                         importStatus === "error" && "text-red-900 dark:text-red-100"
                       )}>
-                        {importStatus === "success" ? "Success" : "Error"}
+                        {importStatus === "success" ? "success" : "error"}
                       </p>
                       <p className={cn(
                         "text-sm",
@@ -219,7 +211,6 @@ export default function SettingsPage() {
                   </HStack>
                 )}
               </VStack>
-            </CardContent>
           </Card>
         </VStack>
       </PageContent>

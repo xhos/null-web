@@ -63,7 +63,7 @@ export function Input({ error, className, ...props }: InputProps) {
   return (
     <input
       className={cn(
-        'flex h-9 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
+        'flex h-9 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
         error && 'border-destructive focus-visible:ring-destructive',
         className
       )}
@@ -80,7 +80,7 @@ export function TextArea({ error, className, ...props }: TextAreaProps) {
   return (
     <textarea
       className={cn(
-        'flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-vertical',
+        'flex min-h-20 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-vertical',
         error && 'border-destructive focus-visible:ring-destructive',
         className
       )}
@@ -98,7 +98,7 @@ export function Select({ error, options, className, ...props }: SelectProps) {
   return (
     <select
       className={cn(
-        'flex h-9 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
+        'flex h-9 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm text-foreground transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
         error && 'border-destructive focus-visible:ring-destructive',
         className
       )}
@@ -121,7 +121,7 @@ export function Checkbox({ className, ...props }: CheckboxProps) {
     <input
       type="checkbox"
       className={cn(
-        'h-4 w-4 rounded border border-input bg-background text-accent transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
+        'h-4 w-4 rounded-sm border border-input bg-background text-accent transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
         className
       )}
       {...props}

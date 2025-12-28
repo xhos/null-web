@@ -107,7 +107,7 @@ export function CategoryDialog({
           </DialogHeader>
           <VStack spacing="md" className="py-4">
             <VStack spacing="xs">
-              <Caption>Slug</Caption>
+              <Caption>slug</Caption>
               <Input
                 id="slug"
                 value={slug}
@@ -121,7 +121,7 @@ export function CategoryDialog({
               </Text>
             </VStack>
             <VStack spacing="xs">
-              <Caption>Color</Caption>
+              <Caption>color</Caption>
               <HStack spacing="sm">
                 <Popover>
                   <PopoverTrigger asChild>
@@ -159,7 +159,7 @@ export function CategoryDialog({
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save"}
+              {isLoading ? "saving..." : "save"}
             </Button>
           </DialogFooter>
         </form>

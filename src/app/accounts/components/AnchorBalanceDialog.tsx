@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { VStack, Card, Muted, Mono, ErrorMessage } from "@/components/lib";
 import type { Account } from "@/gen/arian/v1/account_pb";
 import { format } from "date-fns";
 
@@ -94,20 +95,22 @@ export function AnchorBalanceDialog({
       <DialogContent className="sm:max-w-[500px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Set Anchor Balance</DialogTitle>
+            <DialogTitle>set anchor balance</DialogTitle>
             <DialogDescription>
-              Set the reference balance for <span className="font-mono font-medium">{account.name}</span> at a specific point in time. This is used to calculate running balances for transactions.
+              Set the reference balance for <Mono className="font-medium">{account.name}</Mono> at a specific point in time. This is used to calculate running balances for transactions.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
+          <VStack spacing="md" className="py-4">
             {anchorDate && (
-              <div className="tui-border rounded-lg p-3 bg-muted/30">
-                <div className="text-xs text-muted-foreground mb-1">Last anchor set</div>
-                <div className="text-sm font-medium">{anchorDate}</div>
-              </div>
+              <Card variant="subtle" padding="sm">
+                <VStack spacing="xs">
+                  <Muted size="xs">Last anchor set</Muted>
+                  <Mono size="sm">{anchorDate}</Mono>
+                </VStack>
+              </Card>
             )}
 
-            <div className="grid gap-2">
+            <VStack spacing="xs">
               <Label htmlFor="amount">Amount *</Label>
               <Input
                 id="amount"
@@ -120,24 +123,20 @@ export function AnchorBalanceDialog({
                 required
                 min={undefined}
               />
-            </div>
+            </VStack>
 
-            <div className="grid gap-2">
+            <VStack spacing="xs">
               <Label>Currency</Label>
-              <div className="flex h-9 w-full items-center rounded-md border border-input bg-muted px-3 py-2 text-sm">
+              <div className="flex h-9 w-full items-center rounded-sm border border-input bg-muted px-3 py-2 text-sm">
                 {account.mainCurrency || "USD"}
               </div>
-              <p className="text-xs text-muted-foreground">
+              <Muted size="xs">
                 Currency is locked to the account&apos;s main currency
-              </p>
-            </div>
+              </Muted>
+            </VStack>
 
-            {error && (
-              <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded p-2">
-                {error}
-              </p>
-            )}
-          </div>
+            {error && <ErrorMessage>{error}</ErrorMessage>}
+          </VStack>
           <DialogFooter>
             <Button
               type="button"
@@ -145,10 +144,10 @@ export function AnchorBalanceDialog({
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
             >
-              Cancel
+              cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Setting..." : "Set Anchor Balance"}
+              {isLoading ? "Setting..." : "set anchor balance"}
             </Button>
           </DialogFooter>
         </form>

@@ -116,7 +116,7 @@ export function RulesTable({
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search"
+            placeholder="search"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             className="pl-9"
@@ -124,7 +124,7 @@ export function RulesTable({
         </div>
         <Button onClick={onCreateNew} disabled={isLoading}>
           <Plus className="h-4 w-4" />
-          New
+          new
         </Button>
       </HStack>
 
@@ -143,11 +143,11 @@ export function RulesTable({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Conditions</TableHead>
-                <TableHead>Priority</TableHead>
-                <TableHead>Active</TableHead>
+                <TableHead>name</TableHead>
+                <TableHead>category</TableHead>
+                <TableHead>conditions</TableHead>
+                <TableHead>priority</TableHead>
+                <TableHead>active</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>

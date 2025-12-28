@@ -94,7 +94,7 @@ export default function CreateAccountSidebar({
         <VStack spacing="md" className="p-6">
           {/* Header */}
           <HStack spacing="md" justify="between" align="center" className="w-full">
-            <Text size="lg" weight="semibold">Add Account</Text>
+            <Text size="lg" weight="semibold">add account</Text>
             <Button
               variant="ghost"
               size="sm"
@@ -107,7 +107,7 @@ export default function CreateAccountSidebar({
           {/* Form */}
           <VStack spacing="sm">
             <VStack spacing="xs">
-              <Caption>Name</Caption>
+              <Caption>name</Caption>
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -117,7 +117,7 @@ export default function CreateAccountSidebar({
             </VStack>
 
             <VStack spacing="xs">
-              <Caption>Alias</Caption>
+              <Caption>alias</Caption>
               <Input
                 value={formData.alias}
                 onChange={(e) => setFormData({ ...formData, alias: e.target.value })}
@@ -127,7 +127,7 @@ export default function CreateAccountSidebar({
             </VStack>
 
             <VStack spacing="xs">
-              <Caption>Bank</Caption>
+              <Caption>bank</Caption>
               <Input
                 value={formData.bank}
                 onChange={(e) => setFormData({ ...formData, bank: e.target.value })}
@@ -137,7 +137,7 @@ export default function CreateAccountSidebar({
             </VStack>
 
             <VStack spacing="xs">
-              <Caption>Type</Caption>
+              <Caption>type</Caption>
               <select
                 value={formData.type.toString()}
                 onChange={(e) =>
@@ -145,16 +145,16 @@ export default function CreateAccountSidebar({
                 }
                 className="text-sm h-8 rounded-sm border border-border bg-background"
               >
-                <option value={AccountType.ACCOUNT_CHEQUING}>Chequing</option>
-                <option value={AccountType.ACCOUNT_SAVINGS}>Savings</option>
-                <option value={AccountType.ACCOUNT_CREDIT_CARD}>Credit Card</option>
-                <option value={AccountType.ACCOUNT_INVESTMENT}>Investment</option>
-                <option value={AccountType.ACCOUNT_OTHER}>Other</option>
+                <option value={AccountType.ACCOUNT_CHEQUING}>chequing</option>
+                <option value={AccountType.ACCOUNT_SAVINGS}>savings</option>
+                <option value={AccountType.ACCOUNT_CREDIT_CARD}>credit card</option>
+                <option value={AccountType.ACCOUNT_INVESTMENT}>investment</option>
+                <option value={AccountType.ACCOUNT_OTHER}>other</option>
               </select>
             </VStack>
 
             <VStack spacing="xs">
-              <Caption>Currency</Caption>
+              <Caption>currency</Caption>
               <select
                 value={formData.mainCurrency}
                 onChange={(e) => setFormData({ ...formData, mainCurrency: e.target.value })}
@@ -169,7 +169,7 @@ export default function CreateAccountSidebar({
             </VStack>
 
             <VStack spacing="xs">
-              <Caption>Colors</Caption>
+              <Caption>colors</Caption>
               <VStack spacing="xs">
                 {formData.colors.map((color, index) => (
                   <div key={index} className="flex items-center gap-2">
@@ -184,7 +184,7 @@ export default function CreateAccountSidebar({
                       className="w-8 h-8 rounded border cursor-pointer"
                     />
                     <Muted size="xs">
-                      {index === 0 ? "Primary" : index === 1 ? "Secondary" : "Tertiary"}
+                      {index === 0 ? "primary" : index === 1 ? "secondary" : "tertiary"}
                     </Muted>
                   </div>
                 ))}
@@ -192,7 +192,7 @@ export default function CreateAccountSidebar({
             </VStack>
 
             <VStack spacing="xs">
-              <Caption>Initial Balance</Caption>
+              <Caption>initial balance</Caption>
               <Input
                 type="number"
                 step="0.01"
@@ -210,7 +210,7 @@ export default function CreateAccountSidebar({
               disabled={isLoading || !isValid}
               className="w-full"
             >
-              Create
+              create
             </Button>
           </VStack>
         </VStack>

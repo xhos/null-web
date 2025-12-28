@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { Transaction } from "@/gen/arian/v1/transaction_pb";
 import { Button } from "@/components/ui/button";
-import { Amount, Text, VStack, HStack, Caption } from "@/components/lib";
+import { Amount, Text, VStack, HStack, Caption, Card, Divider } from "@/components/lib";
 import { formatCurrency } from "@/lib/utils/transaction";
 import { Stat } from "@/components/ui/layout";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
@@ -16,39 +16,25 @@ interface TransactionSidebarProps {
   onBulkModify: () => void;
 }
 
-const Panel = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
-  <div className={`hidden xl:block border rounded-lg bg-card ${className}`}>
-    {children}
-  </div>
-);
-
-const PanelSection = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
-  <div className={`p-4 ${className}`}>
-    {children}
-  </div>
-);
-
-const PanelDivider = () => <div className="border-t" />;
-
 function SelectionGuide() {
   return (
-    <Panel>
-      <PanelSection className="space-y-4">
+    <Card title="selection guide" padding="md" className="hidden xl:block">
+      <VStack spacing="md">
         <VStack spacing="sm">
           <VStack spacing="xs">
-            <Text size="sm" weight="medium">Individual Selection</Text>
+            <Text size="sm" weight="medium">individual selection</Text>
             <Text size="sm" color="muted" className="flex items-center gap-1.5">
               <KbdGroup><Kbd>Ctrl</Kbd></KbdGroup> + click transaction
             </Text>
           </VStack>
           <VStack spacing="xs">
-            <Text size="sm" weight="medium">Range Selection</Text>
+            <Text size="sm" weight="medium">range selection</Text>
             <Text size="sm" color="muted" className="flex items-center gap-1.5">
               <KbdGroup><Kbd>Shift</Kbd></KbdGroup> + click transaction
             </Text>
           </VStack>
           <VStack spacing="xs">
-            <Text size="sm" weight="medium">Select Entire Day</Text>
+            <Text size="sm" weight="medium">select entire day</Text>
             <VStack spacing="xs">
               <Text size="sm" color="muted" className="flex items-center gap-1.5">
                 <KbdGroup><Kbd>Ctrl</Kbd></KbdGroup> + click day header
@@ -59,12 +45,12 @@ function SelectionGuide() {
             </VStack>
           </VStack>
         </VStack>
-        <PanelDivider />
+        <Divider />
         <Text size="sm" color="muted" className="block">
           Selected transactions will show analysis here including income, expenses, and net totals.
         </Text>
-      </PanelSection>
-    </Panel>
+      </VStack>
+    </Card>
   );
 }
 
@@ -97,38 +83,39 @@ function TransactionAnalytics({
   };
 
   return (
-    <Panel>
-      <PanelSection className="border-b">
-        <HStack spacing="md" justify="between" align="center" className="mb-2">
-          <Text size="sm" weight="semibold">Selection Analysis</Text>
-          <button
-            onClick={onClose}
-            className="text-muted-foreground hover:text-foreground transition-colors"
-          >
-            ✕
-          </button>
-        </HStack>
-        <Text size="sm" color="muted">
-          {analytics.transactionCount} transaction{analytics.transactionCount !== 1 ? "s" : ""} selected
-        </Text>
-      </PanelSection>
+    <Card title="selection analysis" padding="md" className="hidden xl:block">
+      <VStack spacing="md">
+        <VStack spacing="xs">
+          <HStack spacing="md" justify="between" align="center">
+            <Text size="sm" color="muted">
+              {analytics.transactionCount} transaction{analytics.transactionCount !== 1 ? "s" : ""} selected
+            </Text>
+            <button
+              onClick={onClose}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              ✕
+            </button>
+          </HStack>
+        </VStack>
 
-      <PanelSection className="space-y-5">
+        <Divider />
+
         <VStack spacing="sm">
           <Stat
-            label="Income"
+            label="income"
             value={<Amount variant="positive" value={analytics.totalIncome} className="text-sm" />}
           />
           <Stat
-            label="Expenses"
+            label="expenses"
             value={<Amount variant="negative" value={analytics.totalExpenses} className="text-sm" />}
           />
         </VStack>
 
-        <PanelDivider />
+        <Divider />
 
         <Stat
-          label="Net Amount"
+          label="net amount"
           value={
             <Amount
               variant={analytics.netAmount >= 0 ? "positive" : "negative"}
@@ -138,10 +125,10 @@ function TransactionAnalytics({
           }
         />
 
-        <PanelDivider />
+        <Divider />
 
         <VStack spacing="sm">
-          <Caption>Summary</Caption>
+          <Caption>summary</Caption>
           <VStack spacing="xs">
             <Stat
               label="Average per transaction"
@@ -174,13 +161,13 @@ function TransactionAnalytics({
           </VStack>
         </VStack>
 
-        <PanelDivider />
+        <Divider />
 
         <VStack spacing="sm">
-          <Caption>Actions</Caption>
+          <Caption>actions</Caption>
           <VStack spacing="xs">
             <Button onClick={onBulkModify} className="w-full" size="sm">
-              Bulk Modify
+              bulk modify
             </Button>
             <Button
               onClick={handleDeleteClick}
@@ -193,12 +180,12 @@ function TransactionAnalytics({
                 ? "Deleting..."
                 : confirmDelete
                   ? `Confirm delete ${transactions.length}?`
-                  : "Delete Selected"}
+                  : "delete selected"}
             </Button>
           </VStack>
         </VStack>
-      </PanelSection>
-    </Panel>
+      </VStack>
+    </Card>
   );
 }
 

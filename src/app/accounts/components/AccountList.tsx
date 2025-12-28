@@ -127,12 +127,12 @@ export default function AccountList({
                         className="text-sm"
                       />
                       <Input defaultValue={account.bank} placeholder="Bank" className="text-sm" />
-                      <select defaultValue={account.type.toString()} className="rounded-md border border-input bg-transparent px-3 py-2 text-sm">
-                        <option value={AccountType.ACCOUNT_CHEQUING}>Chequing</option>
-                        <option value={AccountType.ACCOUNT_SAVINGS}>Savings</option>
-                        <option value={AccountType.ACCOUNT_CREDIT_CARD}>Credit Card</option>
-                        <option value={AccountType.ACCOUNT_INVESTMENT}>Investment</option>
-                        <option value={AccountType.ACCOUNT_OTHER}>Other</option>
+                      <select defaultValue={account.type.toString()} className="rounded-sm border border-input bg-transparent px-3 py-2 text-sm">
+                        <option value={AccountType.ACCOUNT_CHEQUING}>chequing</option>
+                        <option value={AccountType.ACCOUNT_SAVINGS}>savings</option>
+                        <option value={AccountType.ACCOUNT_CREDIT_CARD}>credit card</option>
+                        <option value={AccountType.ACCOUNT_INVESTMENT}>investment</option>
+                        <option value={AccountType.ACCOUNT_OTHER}>other</option>
                       </select>
                     </HStack>
                   </VStack>
@@ -174,7 +174,7 @@ export default function AccountList({
                         />
                         <select
                           defaultValue={account.anchorBalance.currencyCode || "USD"}
-                          className="h-7 text-sm rounded-md border border-input bg-transparent px-2"
+                          className="h-7 text-sm rounded-sm border border-input bg-transparent px-2"
                         >
                           <option value="USD">USD</option>
                           <option value="CAD">CAD</option>
