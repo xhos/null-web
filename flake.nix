@@ -44,7 +44,15 @@
             '')
 
             (writeShellScriptBin "auth-schema-gen" ''
-              bunx @better-auth/cli@latest --output src/db/schema.ts
+              # Ensure the auth database exists
+              docker exec -it arian-postgres \
+                psql -U arian -d postgres \
+                -c "SELECT 1 FROM pg_database WHERE datname = 'auth'" | grep -q 1 || \
+              docker exec -it arian-postgres \
+                psql -U arian -d postgres \
+                -c "CREATE DATABASE auth OWNER arian;"
+
+              bunx @better-auth/cli@latest generate --output src/db/schema.ts
               bunx drizzle-kit push --force --config drizzle.config.ts
             '')
 
