@@ -21,6 +21,10 @@ export interface ListTransactionsInput {
   includeUncategorized?: boolean;
   uncategorized?: boolean;
   direction?: TransactionDirection;
+  merchantQuery?: string;
+  descriptionQuery?: string;
+  amountMin?: number;
+  amountMax?: number;
 }
 
 export interface CreateTransactionInput {
@@ -68,6 +72,10 @@ export const transactionsApi = {
       categories: data.categories,
       uncategorized: data.uncategorized,
       direction: data.direction,
+      merchantQuery: data.merchantQuery,
+      descriptionQuery: data.descriptionQuery,
+      amountMin: data.amountMin !== undefined ? { units: BigInt(Math.floor(data.amountMin)), nanos: Math.floor((data.amountMin % 1) * 1e9) } : undefined,
+      amountMax: data.amountMax !== undefined ? { units: BigInt(Math.floor(data.amountMax)), nanos: Math.floor((data.amountMax % 1) * 1e9) } : undefined,
     });
     const response = await transactionClient.listTransactions(request);
     return {

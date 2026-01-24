@@ -4,22 +4,27 @@ import type { Transaction } from "@/gen/arian/v1/transaction_pb";
 import type { Cursor } from "@/gen/arian/v1/common_pb";
 import { useMemo } from "react";
 import { useUserId } from "./useSession";
+import type { TransactionFilters } from "@/app/transactions/components/TransactionFiltersDialog";
 
 interface UseTransactionsQueryOptions {
   accountId?: bigint;
   enabled?: boolean;
+  searchQuery?: string;
+  filters?: TransactionFilters;
 }
 
 export function useTransactionsQuery({
   accountId,
   enabled = true,
+  searchQuery,
+  filters,
 }: UseTransactionsQueryOptions = {}) {
   const queryClient = useQueryClient();
   const userId = useUserId();
 
   // Infinite query for transactions with pagination
   const transactionsQuery = useInfiniteQuery({
-    queryKey: ["transactions", accountId?.toString()],
+    queryKey: ["transactions", accountId?.toString(), searchQuery, filters],
     queryFn: async ({ pageParam }) => {
       if (!userId) throw new Error("User not authenticated");
       return transactionsApi.list({
@@ -27,6 +32,13 @@ export function useTransactionsQuery({
         limit: 50,
         accountId,
         cursor: pageParam,
+        descriptionQuery: searchQuery,
+        startDate: filters?.startDate,
+        endDate: filters?.endDate,
+        direction: filters?.direction,
+        categories: filters?.categories,
+        amountMin: filters?.amountMin,
+        amountMax: filters?.amountMax,
       });
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor || undefined,

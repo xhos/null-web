@@ -55,3 +55,17 @@ export function useUser() {
   const userId = useUserId();
   return { user: userId ? { id: userId } : null };
 }
+
+export function useReceipt(receiptId: bigint | null) {
+  const userId = useUserId();
+
+  return useQuery({
+    queryKey: ["receipt", userId, receiptId?.toString()],
+    queryFn: async () => {
+      if (!userId || !receiptId) throw new Error("Missing userId or receiptId");
+      return receiptsApi.get(userId, receiptId);
+    },
+    enabled: !!userId && !!receiptId,
+    staleTime: 60 * 1000,
+  });
+}

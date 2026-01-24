@@ -10,9 +10,12 @@ import { TransactionItem } from "./TransactionItem";
 import { groupTransactionsByDay, formatCurrency } from "@/lib/utils/transaction";
 import { VStack, Amount, EmptyState, LoadingSkeleton, Muted } from "@/components/lib";
 import { DayHeader } from "./TransactionCard";
+import type { TransactionFilters } from "./TransactionFiltersDialog";
 
 interface TransactionListProps {
   accountId?: bigint;
+  searchQuery?: string;
+  filters?: TransactionFilters;
   onSelectionChange?: (selectedTransactions: Transaction[]) => void;
   onEditTransaction?: (transaction: Transaction) => void;
   onDeleteTransaction?: (transaction: Transaction) => void;
@@ -30,7 +33,7 @@ function throttle(func: (...args: unknown[]) => void, limit: number) {
   };
 }
 
-export function TransactionList({ accountId, onSelectionChange, onEditTransaction, onDeleteTransaction, onViewDetails }: TransactionListProps) {
+export function TransactionList({ accountId, searchQuery, filters, onSelectionChange, onEditTransaction, onDeleteTransaction, onViewDetails }: TransactionListProps) {
   const {
     transactions,
     isLoading,
@@ -38,7 +41,7 @@ export function TransactionList({ accountId, onSelectionChange, onEditTransactio
     error,
     hasMore,
     loadMore,
-  } = useTransactionsQuery({ accountId });
+  } = useTransactionsQuery({ accountId, searchQuery, filters });
 
   const { getAccountDisplayName } = useAccounts();
   const { categoryMap } = useCategories();

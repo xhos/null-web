@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import type { Transaction } from "@/gen/arian/v1/transaction_pb";
 import { TransactionDirection } from "@/gen/arian/v1/enums_pb";
 import { TransactionList } from "./components/TransactionList";
@@ -17,8 +17,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Search, RefreshCw, Plus } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useTransactionsQuery } from "@/hooks/useTransactionsQuery";
 import { TransactionDetailsDialog } from "./components/TransactionDetailsDialog";
+import { TransactionFiltersPanel, type TransactionFilters } from "./components/TransactionFiltersPanel";
 
 export default function TransactionsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -26,7 +28,21 @@ export default function TransactionsPage() {
   const [selectedTransactions, setSelectedTransactions] = useState<Transaction[]>([]);
   const [detailsTransaction, setDetailsTransaction] = useState<Transaction | null>(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [filters, setFilters] = useState<TransactionFilters>({});
 
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchInput);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  // Use hook for mutations only (TransactionList handles its own query with search)
   const {
     deleteTransactions,
     createTransaction,
@@ -101,6 +117,15 @@ export default function TransactionsPage() {
     setIsDetailsDialogOpen(true);
   };
 
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (filters.startDate || filters.endDate) count++;
+    if (filters.amountMin !== undefined || filters.amountMax !== undefined) count++;
+    if (filters.direction !== undefined) count++;
+    if (filters.categories && filters.categories.length > 0) count++;
+    return count;
+  }, [filters]);
+
   return (
     <PageContainer>
       <PageContent>
@@ -122,6 +147,8 @@ export default function TransactionsPage() {
                   <Input
                     placeholder="search"
                     className="pl-9 border border-border rounded-sm"
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
                   />
                 </div>
                 <HStack spacing="xs">
@@ -133,14 +160,31 @@ export default function TransactionsPage() {
                   </Button>
                 </HStack>
               </HStack>
-              <Button variant="outline" size="sm" className="w-full rounded-sm">
-                Filters
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full rounded-sm relative"
+                onClick={() => setIsFiltersOpen(!isFiltersOpen)}
+              >
+                filters
+                {activeFilterCount > 0 && (
+                  <Badge variant="default" className="ml-2 h-5 min-w-5 px-1.5 text-[10px]">
+                    {activeFilterCount}
+                  </Badge>
+                )}
               </Button>
             </VStack>
+            <TransactionFiltersPanel
+              filters={filters}
+              onFiltersChange={setFilters}
+              isOpen={isFiltersOpen}
+            />
           </div>
 
           <div className="flex-1 min-w-0 xl:order-2">
             <TransactionList
+              searchQuery={debouncedSearchQuery}
+              filters={filters}
               onSelectionChange={handleSelectionChange}
               onEditTransaction={handleEditTransaction}
               onDeleteTransaction={handleDeleteTransaction}
@@ -166,11 +210,29 @@ export default function TransactionsPage() {
                 <Input
                   placeholder="search"
                   className="pl-9 border border-border rounded-sm"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
                 />
               </div>
-              <Button variant="outline" size="sm" className="w-full rounded-sm">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full rounded-sm relative"
+                onClick={() => setIsFiltersOpen(!isFiltersOpen)}
+              >
                 filters
+                {activeFilterCount > 0 && (
+                  <Badge variant="default" className="ml-2 h-5 min-w-5 px-1.5 text-[10px]">
+                    {activeFilterCount}
+                  </Badge>
+                )}
               </Button>
+
+              <TransactionFiltersPanel
+                filters={filters}
+                onFiltersChange={setFilters}
+                isOpen={isFiltersOpen}
+              />
 
               {selectedTransactions.length > 0 && (
                 <TransactionSidebar
