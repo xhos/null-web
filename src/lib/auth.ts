@@ -1,15 +1,14 @@
 import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { db } from "@/db";
 import { jwt } from "better-auth/plugins";
-import * as schema from "@/db/schema";
+import { Pool } from "pg";
 import { v4 as uuidv4 } from "uuid";
 
+export const authPool = new Pool({
+  connectionString: process.env.AUTH_DATABASE_URL!,
+});
+
 export const auth = betterAuth({
-  database: drizzleAdapter(db, {
-    provider: "pg",
-    schema: schema,
-  }),
+  database: authPool,
   trustedOrigins: ["http://localhost:3001", "http://localhost:5001"],
   session: {
     cookieCache: {

@@ -40,34 +40,7 @@
             '')
 
             (writeShellScriptBin "run" ''
-              bun run dev -p 5001
-            '')
-
-            (writeShellScriptBin "auth-schema-gen" ''
-              # Ensure the auth database exists
-              docker exec -it arian-postgres \
-                psql -U arian -d postgres \
-                -c "SELECT 1 FROM pg_database WHERE datname = 'auth'" | grep -q 1 || \
-              docker exec -it arian-postgres \
-                psql -U arian -d postgres \
-                -c "CREATE DATABASE auth OWNER arian;"
-
-              bunx @better-auth/cli@latest generate --output src/db/schema.ts
-              bunx drizzle-kit push --force --config drizzle.config.ts
-            '')
-
-            (writeShellScriptBin "recreate-auth-db" ''
-              docker exec -it arian-postgres \
-                psql -U arian -d postgres \
-                -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'auth' AND pid <> pg_backend_pid();"
-
-              docker exec -it arian-postgres \
-                psql -U arian -d postgres \
-                -c "DROP DATABASE IF EXISTS auth;"
-
-              docker exec -it arian-postgres \
-                psql -U arian -d postgres \
-                -c "CREATE DATABASE auth OWNER arian;"
+              bun run dev
             '')
           ];
 

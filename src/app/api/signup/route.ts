@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { db } from "@/db";
-import { user as userTable } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { auth, authPool } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     if (!backendResponse.ok) {
       try {
-        await db.delete(userTable).where(eq(userTable.id, user.id));
+        await authPool.query('DELETE FROM "user" WHERE id = $1', [user.id]);
       } catch (rollbackError) {
         console.error("Rollback failed:", rollbackError);
       }
