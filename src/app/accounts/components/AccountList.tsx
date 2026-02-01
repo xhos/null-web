@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { VStack, HStack, Text, Muted, Card } from "@/components/lib";
-import type { Account } from "@/gen/arian/v1/account_pb";
-import { AccountType } from "@/gen/arian/v1/enums_pb";
+import type { Account } from "@/gen/null/v1/account_pb";
+import { AccountType } from "@/gen/null/v1/enums_pb";
 
 interface AccountListProps {
   accounts: Account[];
@@ -43,7 +43,7 @@ export default function AccountList({
       const newBalances = new Map();
       for (const account of accounts) {
         try {
-          const response = await fetch("/api/arian.v1.AccountService/GetAccountBalance", {
+          const response = await fetch("/api/null.v1.AccountService/GetAccountBalance", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id: parseInt(account.id.toString()) }),

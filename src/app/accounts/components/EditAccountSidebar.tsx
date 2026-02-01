@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { VStack, Caption, Muted, Text, HStack } from "@/components/lib";
 
-import type { Account } from "@/gen/arian/v1/account_pb";
-import { AccountType } from "@/gen/arian/v1/enums_pb";
+import type { Account } from "@/gen/null/v1/account_pb";
+import { AccountType } from "@/gen/null/v1/enums_pb";
 
 interface EditAccountSidebarProps {
   account: Account | null;

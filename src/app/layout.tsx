@@ -19,7 +19,7 @@ const lora = Lora({
 });
 
 export const metadata: Metadata = {
-  title: "arian // financial tracker",
+  title: "null // financial tracker",
   description: "minimal financial transaction tracking",
 };
 

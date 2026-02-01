@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { receiptsApi, type ListReceiptsInput } from "@/lib/api/receipts";
 import { useUserId } from "./useSession";
-import { ReceiptStatus } from "@/gen/arian/v1/receipt_pb";
+import { ReceiptStatus } from "@/gen/null/v1/receipt_pb";
 
 interface UseReceiptsOptions {
   enabled?: boolean;

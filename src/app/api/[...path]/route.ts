@@ -80,12 +80,12 @@ async function handler(request: NextRequest, { params }: { params: Promise<{ pat
     // build target URL
     const pathArray = await params;
     const path = pathArray.path.join("/");
-    const targetUrl = `${process.env.ARIAND_URL}/${path}`;
+    const targetUrl = `${process.env.NULL_CORE_URL}/${path}`;
 
     // handle request body
     const body = ["GET", "HEAD"].includes(request.method) ? undefined : await request.text();
 
-    // forward request to ariand
+    // forward request to null-core backend
     const response = await fetch(targetUrl, {
       method: request.method,
       headers: {

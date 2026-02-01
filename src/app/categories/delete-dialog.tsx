@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { AlertCircle } from "lucide-react";
 import { VStack, HStack, Text } from "@/components/lib";
-import type { Category } from "@/gen/arian/v1/category_pb";
+import type { Category } from "@/gen/null/v1/category_pb";
 
 interface DeleteDialogProps {
   open: boolean;

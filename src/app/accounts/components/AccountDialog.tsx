@@ -21,8 +21,8 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { HexColorPicker } from "react-colorful";
 import { VStack, HStack, ErrorMessage, Muted, Caption } from "@/components/lib";
-import type { Account } from "@/gen/arian/v1/account_pb";
-import { AccountType } from "@/gen/arian/v1/enums_pb";
+import type { Account } from "@/gen/null/v1/account_pb";
+import { AccountType } from "@/gen/null/v1/enums_pb";
 
 interface AccountDialogProps {
   open: boolean;

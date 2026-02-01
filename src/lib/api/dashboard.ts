@@ -9,8 +9,8 @@ import {
   type GetFinancialSummaryResponse,
   GetDashboardSummaryRequestSchema,
   type GetDashboardSummaryResponse,
-} from "@/gen/arian/v1/dashboard_services_pb";
-import { PeriodType, Granularity } from "@/gen/arian/v1/enums_pb";
+} from "@/gen/null/v1/dashboard_services_pb";
+import { PeriodType, Granularity } from "@/gen/null/v1/enums_pb";
 import type { Date as ProtoDate } from "@/gen/google/type/date_pb";
 
 export interface CategorySpendingComparisonParams {

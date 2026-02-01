@@ -8,7 +8,7 @@ import {
   useUpdateCategoryColor,
   useDeleteCategory,
 } from "@/hooks/useCategories";
-import type { Category } from "@/gen/arian/v1/category_pb";
+import type { Category } from "@/gen/null/v1/category_pb";
 import { DataTable } from "./data-table";
 import { createColumns, type CategoryRow } from "./columns";
 import { CategoryDialog } from "./category-dialog";

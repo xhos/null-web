@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Pie, PieChart, Cell, Sector } from "recharts";
-import type { GetCategorySpendingComparisonResponse } from "@/gen/arian/v1/dashboard_services_pb";
+import type { GetCategorySpendingComparisonResponse } from "@/gen/null/v1/dashboard_services_pb";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import type { ChartConfig } from "@/components/ui/chart";
 import { formatAmount } from "@/lib/utils/transaction";

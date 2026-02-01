@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import type { Account } from "@/gen/arian/v1/account_pb";
-import { AccountType } from "@/gen/arian/v1/enums_pb";
+import type { Account } from "@/gen/null/v1/account_pb";
+import { AccountType } from "@/gen/null/v1/enums_pb";
 import { VStack, Muted } from "@/components/lib";
 import AccountCard from "./AccountCard";
 

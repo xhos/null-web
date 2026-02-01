@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { VStack, Card, Muted, Mono, ErrorMessage } from "@/components/lib";
-import type { Account } from "@/gen/arian/v1/account_pb";
+import type { Account } from "@/gen/null/v1/account_pb";
 import { format } from "date-fns";
 
 interface AnchorBalanceDialogProps {

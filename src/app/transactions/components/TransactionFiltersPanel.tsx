@@ -1,6 +1,6 @@
 "use client";
 
-import { TransactionDirection } from "@/gen/arian/v1/enums_pb";
+import { TransactionDirection } from "@/gen/null/v1/enums_pb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

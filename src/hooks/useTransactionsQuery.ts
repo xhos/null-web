@@ -1,7 +1,7 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { transactionsApi, type CreateTransactionInput, type UpdateTransactionInput } from "@/lib/api/transactions";
-import type { Transaction } from "@/gen/arian/v1/transaction_pb";
-import type { Cursor } from "@/gen/arian/v1/common_pb";
+import type { Transaction } from "@/gen/null/v1/transaction_pb";
+import type { Cursor } from "@/gen/null/v1/common_pb";
 import { useMemo } from "react";
 import { useUserId } from "./useSession";
 import type { TransactionFilters } from "@/app/transactions/components/TransactionFiltersDialog";

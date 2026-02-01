@@ -9,7 +9,7 @@ import { Card } from "@/components/lib";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { dashboardApi } from "@/lib/api/dashboard";
-import { Granularity, PeriodType } from "@/gen/arian/v1/enums_pb";
+import { Granularity, PeriodType } from "@/gen/null/v1/enums_pb";
 import { DateSchema } from "@/gen/google/type/date_pb";
 import { formatAmount } from "@/lib/utils/transaction";
 import { PeriodSelector } from "./period-selector";

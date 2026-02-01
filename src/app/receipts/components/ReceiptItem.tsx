@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import type { Receipt } from "@/gen/arian/v1/receipt_pb";
-import { ReceiptStatus } from "@/gen/arian/v1/receipt_pb";
+import type { Receipt } from "@/gen/null/v1/receipt_pb";
+import { ReceiptStatus } from "@/gen/null/v1/receipt_pb";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

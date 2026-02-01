@@ -5,8 +5,8 @@ import { accountsApi } from "@/lib/api/accounts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, VStack, HStack, Caption } from "@/components/lib";
 import { formatAmount } from "@/lib/utils/transaction";
-import { AccountType } from "@/gen/arian/v1/enums_pb";
-import type { Account } from "@/gen/arian/v1/account_pb";
+import { AccountType } from "@/gen/null/v1/enums_pb";
+import type { Account } from "@/gen/null/v1/account_pb";
 
 interface AccountBalancesCardProps {
   userId: string;

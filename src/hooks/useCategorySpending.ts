@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { create } from "@bufbuild/protobuf";
 import { dashboardApi } from "@/lib/api/dashboard";
-import { PeriodType } from "@/gen/arian/v1/enums_pb";
-import type { GetCategorySpendingComparisonResponse } from "@/gen/arian/v1/dashboard_services_pb";
+import { PeriodType } from "@/gen/null/v1/enums_pb";
+import type { GetCategorySpendingComparisonResponse } from "@/gen/null/v1/dashboard_services_pb";
 import type { Date as ProtoDate } from "@/gen/google/type/date_pb";
 import { DateSchema } from "@/gen/google/type/date_pb";
 

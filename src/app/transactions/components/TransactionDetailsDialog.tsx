@@ -1,4 +1,4 @@
-import type { Transaction } from "@/gen/arian/v1/transaction_pb";
+import type { Transaction } from "@/gen/null/v1/transaction_pb";
 import { formatAmount, formatCurrency, formatTime } from "@/lib/utils/transaction";
 import { VStack, HStack, Muted, Caption } from "@/components/lib";
 import { Badge } from "@/components/ui/badge";

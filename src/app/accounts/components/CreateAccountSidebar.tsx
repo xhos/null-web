@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { VStack, Caption, Muted, Text, HStack } from "@/components/lib";
-import { AccountType } from "@/gen/arian/v1/enums_pb";
+import { AccountType } from "@/gen/null/v1/enums_pb";
 
 interface CreateAccountSidebarProps {
   isOpen: boolean;

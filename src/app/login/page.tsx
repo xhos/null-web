@@ -79,7 +79,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <header className="mb-6">
-          <h1 className="text-lg mb-2">arian // authentication</h1>
+          <h1 className="text-lg mb-2">null // authentication</h1>
           <p className="text-sm text-muted-foreground">
             {mode === "login"
               ? "login to access your financial data"

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { VStack, HStack, Muted, Text } from "@/components/lib";
-import type { Rule } from "@/gen/arian/v1/rule_pb";
+import type { Rule } from "@/gen/null/v1/rule_pb";
 import type { TransactionRule } from "@/lib/rules";
 
 interface DeleteRuleDialogProps {

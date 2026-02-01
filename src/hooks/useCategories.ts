@@ -7,7 +7,7 @@ import {
   type UpdateCategoryColorInput,
 } from "@/lib/api/categories";
 import { useUserId } from "./useSession";
-import type { Category } from "@/gen/arian/v1/category_pb";
+import type { Category } from "@/gen/null/v1/category_pb";
 
 export function useCategories() {
   const userId = useUserId();

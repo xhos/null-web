@@ -1,7 +1,7 @@
 "use client";
 
-import type { Account } from "@/gen/arian/v1/account_pb";
-import { AccountType } from "@/gen/arian/v1/enums_pb";
+import type { Account } from "@/gen/null/v1/account_pb";
+import { AccountType } from "@/gen/null/v1/enums_pb";
 import { Card, VStack, HStack, Muted, Caption, Text } from "@/components/lib";
 import {
   ContextMenu,

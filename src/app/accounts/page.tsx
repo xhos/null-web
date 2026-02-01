@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PageContainer, PageContent, PageHeaderWithTitle } from "@/components/ui/layout";
 import { HStack, ErrorMessage, EmptyState } from "@/components/lib";
-import type { Account } from "@/gen/arian/v1/account_pb";
-import { AccountType } from "@/gen/arian/v1/enums_pb";
+import type { Account } from "@/gen/null/v1/account_pb";
+import { AccountType } from "@/gen/null/v1/enums_pb";
 import {
   useAccounts,
   useCreateAccount,

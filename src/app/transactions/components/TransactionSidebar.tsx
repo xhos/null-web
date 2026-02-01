@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Transaction } from "@/gen/arian/v1/transaction_pb";
+import type { Transaction } from "@/gen/null/v1/transaction_pb";
 import { Button } from "@/components/ui/button";
 import { Amount, Text, VStack, HStack, Caption, Card, Divider } from "@/components/lib";
 import { formatCurrency } from "@/lib/utils/transaction";

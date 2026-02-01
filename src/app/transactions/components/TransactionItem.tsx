@@ -1,6 +1,6 @@
 "use client";
 
-import type { Transaction } from "@/gen/arian/v1/transaction_pb";
+import type { Transaction } from "@/gen/null/v1/transaction_pb";
 import { Badge } from "@/components/ui/badge";
 import {
   formatAmount,

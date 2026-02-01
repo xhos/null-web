@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import type { Transaction } from "@/gen/arian/v1/transaction_pb";
-import { TransactionDirection } from "@/gen/arian/v1/enums_pb";
+import type { Transaction } from "@/gen/null/v1/transaction_pb";
+import { TransactionDirection } from "@/gen/null/v1/enums_pb";
 import { formatAmount } from "@/lib/utils/transaction";
 
 export function useTransactionAnalytics(transactions: Transaction[]) {

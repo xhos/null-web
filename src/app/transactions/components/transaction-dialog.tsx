@@ -11,10 +11,10 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { FormField, Select } from "@/components/ui/forms";
-import { TransactionDirection } from "@/gen/arian/v1/enums_pb";
+import { TransactionDirection } from "@/gen/null/v1/enums_pb";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useCategories } from "@/hooks/useCategories";
-import type { Transaction } from "@/gen/arian/v1/transaction_pb";
+import type { Transaction } from "@/gen/null/v1/transaction_pb";
 
 interface TransactionDialogProps {
   open: boolean;

@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { AlertCircle } from "lucide-react";
 import { VStack, HStack, Text, Muted, Card, Mono } from "@/components/lib";
-import type { Account } from "@/gen/arian/v1/account_pb";
-import { AccountType } from "@/gen/arian/v1/enums_pb";
+import type { Account } from "@/gen/null/v1/account_pb";
+import { AccountType } from "@/gen/null/v1/enums_pb";
 
 interface DeleteAccountDialogProps {
   open: boolean;

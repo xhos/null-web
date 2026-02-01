@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PeriodType } from "@/gen/arian/v1/enums_pb";
+import { PeriodType } from "@/gen/null/v1/enums_pb";
 import { useCategorySpending } from "@/hooks/useCategorySpending";
 import { CategorySpendingDonut } from "./category-spending-donut";
 import { PeriodSelector } from "./period-selector";

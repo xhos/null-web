@@ -3,8 +3,8 @@ import { backupClient } from "@/lib/grpc-client";
 import {
   ExportBackupRequestSchema,
   ImportBackupRequestSchema,
-} from "@/gen/arian/v1/backup_services_pb";
-import { BackupSchema } from "@/gen/arian/v1/backup_pb";
+} from "@/gen/null/v1/backup_services_pb";
+import { BackupSchema } from "@/gen/null/v1/backup_pb";
 
 export const backupApi = {
   async exportData() {

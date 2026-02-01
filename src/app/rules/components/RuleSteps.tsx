@@ -10,7 +10,7 @@ import { Plus, HelpCircle } from "lucide-react";
 import { VStack, HStack, Text, Muted, Card } from "@/components/lib";
 import { ConditionBuilder, type UICondition } from "./ConditionBuilder";
 import { FIELD_OPTIONS, TX_DIRECTION_OPTIONS } from "./rule-dialog-constants";
-import type { Category } from "@/gen/arian/v1/category_pb";
+import type { Category } from "@/gen/null/v1/category_pb";
 
 function StepLayout({ children }: { children: React.ReactNode }) {
   return <div>{children}</div>;

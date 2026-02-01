@@ -1,7 +1,7 @@
 "use client";
 
-import type { Receipt } from "@/gen/arian/v1/receipt_pb";
-import { ReceiptStatus } from "@/gen/arian/v1/receipt_pb";
+import type { Receipt } from "@/gen/null/v1/receipt_pb";
+import { ReceiptStatus } from "@/gen/null/v1/receipt_pb";
 import {
   Dialog,
   DialogContent,

@@ -5,9 +5,9 @@ import {
   CreateTransactionRequestSchema,
   UpdateTransactionRequestSchema,
   DeleteTransactionRequestSchema,
-} from "@/gen/arian/v1/transaction_services_pb";
-import type { Cursor } from "@/gen/arian/v1/common_pb";
-import { TransactionDirection } from "@/gen/arian/v1/enums_pb";
+} from "@/gen/null/v1/transaction_services_pb";
+import type { Cursor } from "@/gen/null/v1/common_pb";
+import { TransactionDirection } from "@/gen/null/v1/enums_pb";
 
 export interface ListTransactionsInput {
   userId: string;

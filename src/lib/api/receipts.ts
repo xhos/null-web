@@ -5,8 +5,8 @@ import {
   UploadReceiptRequestSchema,
   GetReceiptRequestSchema,
   DeleteReceiptRequestSchema,
-} from "@/gen/arian/v1/receipt_services_pb";
-import type { ReceiptStatus } from "@/gen/arian/v1/receipt_pb";
+} from "@/gen/null/v1/receipt_services_pb";
+import type { ReceiptStatus } from "@/gen/null/v1/receipt_pb";
 
 export interface ListReceiptsInput {
   userId: string;

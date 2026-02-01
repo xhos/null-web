@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Card } from "@/components/lib";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PeriodType } from "@/gen/arian/v1/enums_pb";
+import { PeriodType } from "@/gen/null/v1/enums_pb";
 import { useCategorySpending } from "@/hooks/useCategorySpending";
 import { CategorySpendingChart } from "./category-spending-chart";
 import { PeriodSelector } from "./period-selector";

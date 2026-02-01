@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useCallback, useEffect, useMemo } from "react";
-import type { Transaction } from "@/gen/arian/v1/transaction_pb";
-import { TransactionDirection } from "@/gen/arian/v1/enums_pb";
+import type { Transaction } from "@/gen/null/v1/transaction_pb";
+import { TransactionDirection } from "@/gen/null/v1/enums_pb";
 import { TransactionList } from "./components/TransactionList";
 import { TransactionSidebar } from "./components/TransactionSidebar";
 import { TransactionDialog } from "./components/transaction-dialog";

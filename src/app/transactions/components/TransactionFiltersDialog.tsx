@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { TransactionDirection } from "@/gen/arian/v1/enums_pb";
+import { TransactionDirection } from "@/gen/null/v1/enums_pb";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

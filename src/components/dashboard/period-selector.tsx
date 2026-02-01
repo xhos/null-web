@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
-import { PeriodType } from "@/gen/arian/v1/enums_pb";
+import { PeriodType } from "@/gen/null/v1/enums_pb";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";

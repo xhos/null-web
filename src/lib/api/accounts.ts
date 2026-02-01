@@ -5,8 +5,8 @@ import {
   CreateAccountRequestSchema,
   UpdateAccountRequestSchema,
   DeleteAccountRequestSchema,
-} from "@/gen/arian/v1/account_services_pb";
-import { AccountType } from "@/gen/arian/v1/enums_pb";
+} from "@/gen/null/v1/account_services_pb";
+import { AccountType } from "@/gen/null/v1/enums_pb";
 
 export interface CreateAccountInput {
   userId: string;

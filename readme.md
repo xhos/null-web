@@ -1,16 +1,11 @@
-# arian-web
+# null-web
 
-arian-web is a modern web dashboard for the Arian financial transaction management ecosystem built with Next.js 15 and React 19.
+null-web is a modern web dashboard for the null financial transaction management ecosystem built with Next.js 15 and React 19.
 
 ## 🌱 ecosystem
 
-```definition
-arian (n.) /ˈarjan/ [Welsh] Silver; money; wealth.
-```
-
-- [ariand](https://github.com/xhos/ariand) - main backend service
-- [arian-web](https://github.com/xhos/arian-web) - frontend web application
-- [arian-mobile](https://github.com/xhos/arian-mobile) - mobile appplication
-- [arian-protos](https://github.com/xhos/arian-protos) - shared protobuf definitions
-- [arian-receipts](https://github.com/xhos/arian-receipts) - receipt parsing microservice
-- [arian-email-parser](https://github.com/xhos/arian-email-parser) - email parsing service
+- [null-core](https://github.com/xhos/null-core) - main backend service
+- [null-web](https://github.com/xhos/null-web) - frontend web application
+- [null-mobile](https://github.com/xhos/null-mobile) - mobile application
+- [null-protos](https://github.com/xhos/null-protos) - shared protobuf definitions
+- [null-email-parser](https://github.com/xhos/null-email-parser) - email parsing service

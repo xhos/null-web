@@ -5,7 +5,7 @@ import {
   CreateCategoryRequestSchema,
   UpdateCategoryRequestSchema,
   DeleteCategoryRequestSchema,
-} from "@/gen/arian/v1/category_services_pb";
+} from "@/gen/null/v1/category_services_pb";
 
 export interface CreateCategoryInput {
   slug: string;

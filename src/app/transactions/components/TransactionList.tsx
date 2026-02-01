@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useCallback, useMemo } from "react";
-import type { Transaction } from "@/gen/arian/v1/transaction_pb";
+import type { Transaction } from "@/gen/null/v1/transaction_pb";
 import { useTransactionsQuery } from "@/hooks/useTransactionsQuery";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useMultiSelect } from "@/hooks/useMultiSelect";

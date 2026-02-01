@@ -12,9 +12,9 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { VStack, HStack, Muted } from "@/components/lib";
 import { transactionsApi, type ListTransactionsInput } from "@/lib/api/transactions";
-import type { Transaction } from "@/gen/arian/v1/transaction_pb";
+import type { Transaction } from "@/gen/null/v1/transaction_pb";
 import { formatAmount } from "@/lib/utils/transaction";
-import { TransactionDirection } from "@/gen/arian/v1/enums_pb";
+import { TransactionDirection } from "@/gen/null/v1/enums_pb";
 
 interface CategoryTransactionsSheetProps {
   open: boolean;

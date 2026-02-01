@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { VStack, HStack, Caption, Card, Muted } from "@/components/lib";
-import { AccountType } from "@/gen/arian/v1/enums_pb";
-import type { Account } from "@/gen/arian/v1/account_pb";
+import { AccountType } from "@/gen/null/v1/enums_pb";
+import type { Account } from "@/gen/null/v1/account_pb";
 
 interface AccountFormProps {
   account?: Account | null;

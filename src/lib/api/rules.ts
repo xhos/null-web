@@ -5,7 +5,7 @@ import {
   CreateRuleRequestSchema,
   UpdateRuleRequestSchema,
   DeleteRuleRequestSchema,
-} from "@/gen/arian/v1/rule_services_pb";
+} from "@/gen/null/v1/rule_services_pb";
 import type { TransactionRule } from "@/lib/rules";
 
 export interface CreateRuleInput {

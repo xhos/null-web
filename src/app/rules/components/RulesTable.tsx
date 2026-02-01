@@ -21,8 +21,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, Edit, Trash2, Target, Search, Plus } from "lucide-react";
 import { VStack, HStack, Muted, Caption } from "@/components/lib";
-import type { Rule } from "@/gen/arian/v1/rule_pb";
-import type { Category } from "@/gen/arian/v1/category_pb";
+import type { Rule } from "@/gen/null/v1/rule_pb";
+import type { Category } from "@/gen/null/v1/category_pb";
 import type { TransactionRule } from "@/lib/rules";
 
 interface RulesTableProps {
