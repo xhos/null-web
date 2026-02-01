@@ -42,6 +42,13 @@
             (writeShellScriptBin "run" ''
               bun run dev
             '')
+
+            (writeShellScriptBin "bump-protos" ''
+              git submodule update --remote proto
+              git add proto
+              git commit -m "chore: bump protos"
+              git push
+            '')
           ];
 
           shellHook = self.checks.${system}.pre-commit.shellHook;
