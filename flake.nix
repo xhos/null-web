@@ -44,9 +44,11 @@
             '')
 
             (writeShellScriptBin "bump-protos" ''
-              git submodule update --remote proto
+              git -C proto fetch origin
+              git -C proto checkout main
+              git -C proto pull --ff-only
               git add proto
-              git commit -m "chore: bump protos"
+              git commit -m "chore: bump proto files"
               git push
             '')
           ];
