@@ -2,7 +2,18 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Home, Wallet, Tag, FileText, LogOut, Settings, Moon, Sun, ChevronUp, Receipt } from "lucide-react";
+import {
+  ArrowLeftRight,
+  Receipt,
+  Landmark,
+  Tag,
+  Zap,
+  LogOut,
+  Settings,
+  Moon,
+  Sun,
+  ChevronsUpDown,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -28,11 +39,11 @@ import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 
 const navigationItems = [
-  { title: "transactions", url: "/transactions", icon: Home },
+  { title: "transactions", url: "/transactions", icon: ArrowLeftRight },
   { title: "receipts", url: "/receipts", icon: Receipt },
-  { title: "accounts", url: "/accounts", icon: Wallet },
+  { title: "accounts", url: "/accounts", icon: Landmark },
   { title: "categories", url: "/categories", icon: Tag },
-  { title: "rules", url: "/rules", icon: FileText },
+  { title: "rules", url: "/rules", icon: Zap },
 ];
 
 export default function AppSidebar() {
@@ -67,11 +78,15 @@ export default function AppSidebar() {
 
   const displayName = user?.name || user?.email?.split("@")[0] || "User";
   const userInitial = user?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U";
+  const isCollapsed = state === "collapsed";
 
   return (
     <Sidebar collapsible="icon" className="z-50">
-      <SidebarHeader className="px-2 pt-2 pb-2">
-        <Link href="/" className="flex h-6 items-center pl-1 group/logo transition-transform duration-300 ease-out origin-left hover:scale-105">
+      <SidebarHeader className="px-2 pt-3 pb-2">
+        <Link
+          href="/"
+          className="group/logo flex h-6 items-center pl-1 origin-left transition-transform duration-300 ease-out hover:scale-105"
+        >
           <div className="relative h-5 w-[23px] overflow-hidden transition-[width] duration-200 ease-linear group-data-[state=expanded]:w-[50px]">
             <svg
               viewBox="0 0 46.075348 18.370054"
@@ -87,7 +102,7 @@ export default function AppSidebar() {
             </svg>
             <svg
               viewBox="0 0 46.075348 18.370054"
-              className="absolute inset-0 h-5 w-auto shrink-0 text-sidebar-accent transition-[clip-path] duration-300 ease-out [clip-path:inset(100%_0_0_0)] group-hover/logo:[clip-path:inset(0_0_0_0)]"
+              className="absolute inset-0 h-5 w-auto shrink-0 text-accent transition-[clip-path] duration-300 ease-out [clip-path:inset(100%_0_0_0)] group-hover/logo:[clip-path:inset(0_0_0_0)]"
               fill="currentColor"
             >
               <g transform="translate(-32.954276,94.256831)">
@@ -100,6 +115,7 @@ export default function AppSidebar() {
           </div>
         </Link>
       </SidebarHeader>
+
       <SidebarContent>
         <SidebarGroup className="pt-0">
           <SidebarGroupContent>
@@ -112,13 +128,12 @@ export default function AppSidebar() {
                     <SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>
                       <Link
                         href={item.url}
+                        className="font-mono text-xs"
                         onClick={(e) => {
-                          if (isActive) {
-                            e.preventDefault();
-                          }
+                          if (isActive) e.preventDefault();
                         }}
                       >
-                        <Icon />
+                        <Icon className="!size-3.5" />
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
@@ -129,31 +144,57 @@ export default function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton size="lg" tooltip={displayName} className="group-data-[collapsible=icon]:justify-center">
-                  <div data-slot="avatar">{userInitial}</div>
-                  <div data-slot="user-info" className="group-data-[collapsible=icon]:hidden">
-                    <span>{displayName}</span>
+                <SidebarMenuButton
+                  size="lg"
+                  tooltip={displayName}
+                  className="group-data-[collapsible=icon]:justify-center"
+                >
+                  <div className="flex size-6 shrink-0 items-center justify-center rounded-sm border border-sidebar-border bg-sidebar font-mono text-[10px] text-sidebar-foreground">
+                    {userInitial}
                   </div>
-                  <ChevronUp className="group-data-[collapsible=icon]:hidden" />
+                  {!isCollapsed && (
+                    <div className="flex flex-1 items-center justify-between overflow-hidden">
+                      <div className="truncate font-mono text-xs">{displayName}</div>
+                      <ChevronsUpDown className="!size-3 shrink-0 text-muted-foreground" />
+                    </div>
+                  )}
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
-              <DropdownMenuContent side="top" align="start">
-                <DropdownMenuItem onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-                  {theme === "dark" ? <Sun /> : <Moon />}
+              <DropdownMenuContent side="top" align="start" className="w-48">
+                <div className="px-2 py-1.5">
+                  <div className="font-mono text-xs font-medium">{displayName}</div>
+                  {user?.email && (
+                    <div className="font-mono text-[10px] text-muted-foreground">{user.email}</div>
+                  )}
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  className="font-mono text-xs"
+                >
+                  {theme === "dark" ? <Sun className="!size-3.5" /> : <Moon className="!size-3.5" />}
                   <span>{theme === "dark" ? "light mode" : "dark mode"}</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/settings")}>
-                  <Settings />
+                <DropdownMenuItem
+                  onClick={() => router.push("/settings")}
+                  className="font-mono text-xs"
+                >
+                  <Settings className="!size-3.5" />
                   <span>settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} variant="destructive">
-                  <LogOut />
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  variant="destructive"
+                  className="font-mono text-xs"
+                >
+                  <LogOut className="!size-3.5" />
                   <span>sign out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
