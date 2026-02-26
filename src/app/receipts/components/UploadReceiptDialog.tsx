@@ -28,46 +28,36 @@ export function UploadReceiptDialog({
 }: UploadReceiptDialogProps) {
   const { user } = useUser();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
+  const validateAndSetFile = (file: File) => {
     const validTypes = ["image/jpeg", "image/png", "image/webp", "image/heic"];
     if (!validTypes.includes(file.type)) {
-      setError("Invalid file type. Please upload JPEG, PNG, WebP, or HEIC images.");
+      setError("invalid file type. please upload JPEG, PNG, WebP, or HEIC images.");
       return;
     }
 
-    const maxSize = 20 * 1024 * 1024; // 20MB
-    if (file.size > maxSize) {
-      setError("File too large. Maximum size is 20MB.");
+    const maxSizeBytes = 20 * 1024 * 1024;
+    if (file.size > maxSizeBytes) {
+      setError("file too large. maximum size is 20MB.");
       return;
     }
 
     setError(null);
     setSelectedFile(file);
+  };
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) validateAndSetFile(file);
   };
 
   const handleDrop = (event: React.DragEvent) => {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
-    if (file) {
-      const fakeEvent = {
-        target: { files: [file] },
-      } as unknown as React.ChangeEvent<HTMLInputElement>;
-      handleFileSelect(fakeEvent);
-    }
+    if (file) validateAndSetFile(file);
   };
 
   const handleDragOver = (event: React.DragEvent) => {
@@ -76,11 +66,8 @@ export function UploadReceiptDialog({
 
   const clearFile = () => {
     setSelectedFile(null);
-    setPreview(null);
     setError(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleUpload = async () => {
@@ -91,26 +78,22 @@ export function UploadReceiptDialog({
 
     try {
       const arrayBuffer = await selectedFile.arrayBuffer();
-      const imageData = new Uint8Array(arrayBuffer);
-
       await receiptsApi.upload({
         userId: user.id,
-        imageData,
+        imageData: new Uint8Array(arrayBuffer),
         contentType: selectedFile.type,
       });
 
-      toast.success("Receipt uploaded successfully", {
-        description: "Processing receipt... This may take a few moments.",
+      toast.success("receipt uploaded", {
+        description: "processing may take a few moments.",
       });
 
       clearFile();
       onUploadComplete();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to upload receipt";
+      const errorMessage = err instanceof Error ? err.message : "failed to upload receipt";
       setError(errorMessage);
-      toast.error("Upload failed", {
-        description: errorMessage,
-      });
+      toast.error("upload failed", { description: errorMessage });
     } finally {
       setIsUploading(false);
     }
@@ -136,14 +119,14 @@ export function UploadReceiptDialog({
               onDrop={handleDrop}
               onDragOver={handleDragOver}
               onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors"
+              className="border-2 border-dashed border-border rounded-sm p-8 text-center cursor-pointer hover:border-primary transition-colors duration-150"
             >
-              <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground mb-2">
+              <Upload className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground mb-1">
                 drag and drop or click to select
               </p>
               <p className="text-xs text-muted-foreground">
-                JPEG, PNG, WebP, HEIC (max 20MB)
+                JPEG, PNG, WebP, HEIC · max 20MB
               </p>
               <input
                 ref={fileInputRef}
@@ -154,37 +137,26 @@ export function UploadReceiptDialog({
               />
             </div>
           ) : (
-            <div className="relative border border-border rounded-lg overflow-hidden">
-              {preview && (
-                <img
-                  src={preview}
-                  alt="Receipt preview"
-                  className="w-full h-64 object-contain bg-muted"
-                />
-              )}
+            <div className="border border-border rounded-sm p-3 flex items-center gap-3">
+              <FileImage className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+              <span className="text-sm flex-1 truncate">{selectedFile.name}</span>
+              <span className="text-xs text-muted-foreground flex-shrink-0">
+                {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+              </span>
               <Button
                 size="icon"
                 variant="ghost"
-                className="absolute top-2 right-2"
+                className="h-6 w-6 flex-shrink-0"
                 onClick={clearFile}
                 disabled={isUploading}
               >
-                <X className="h-4 w-4" />
+                <X className="h-3.5 w-3.5" />
               </Button>
-              <div className="p-3 bg-muted/50 border-t border-border">
-                <div className="flex items-center gap-2">
-                  <FileImage className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm truncate">{selectedFile.name}</span>
-                  <span className="text-xs text-muted-foreground ml-auto">
-                    {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                  </span>
-                </div>
-              </div>
             </div>
           )}
 
           {error && (
-            <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
+            <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-sm">
               {error}
             </div>
           )}
@@ -194,10 +166,7 @@ export function UploadReceiptDialog({
           <Button variant="outline" onClick={handleClose} disabled={isUploading}>
             cancel
           </Button>
-          <Button
-            onClick={handleUpload}
-            disabled={!selectedFile || isUploading}
-          >
+          <Button onClick={handleUpload} disabled={!selectedFile || isUploading}>
             {isUploading ? "uploading..." : "upload"}
           </Button>
         </DialogFooter>
