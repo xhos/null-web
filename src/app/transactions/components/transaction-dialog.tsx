@@ -128,6 +128,11 @@ export function TransactionDialog({
       return;
     }
 
+    if (!formData.description.trim()) {
+      setError("Please enter a description");
+      return;
+    }
+
     setIsLoading(true);
     try {
       const dateTime = new Date(`${formData.date}T${formData.time}`);
@@ -148,7 +153,8 @@ export function TransactionDialog({
       });
       onOpenChange(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save transaction");
+      const message = err instanceof Error ? err.message : undefined;
+      setError(message || "failed to save transaction");
     } finally {
       setIsLoading(false);
     }
@@ -250,7 +256,7 @@ export function TransactionDialog({
               </FormField>
             </div>
 
-            <FormField label="description">
+            <FormField label="description" required>
               <Input
                 value={formData.description}
                 onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
@@ -294,7 +300,7 @@ export function TransactionDialog({
               />
             </FormField>
 
-            {error && (
+            {error !== null && (
               <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded p-2">
                 {error}
               </p>

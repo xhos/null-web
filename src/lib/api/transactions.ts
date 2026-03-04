@@ -111,6 +111,7 @@ export const transactionsApi = {
     const request = create(UpdateTransactionRequestSchema, {
       userId: data.userId,
       id: data.id,
+      updateMask: { paths: ["account_id", "tx_date", "tx_amount", "direction", "description", "merchant", "user_notes", "category_id"] },
       accountId: data.accountId,
       txDate: data.txDate ? { seconds: BigInt(Math.floor(data.txDate.getTime() / 1000)) } : undefined,
       txAmount: data.txAmount ? {

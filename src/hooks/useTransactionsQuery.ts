@@ -63,43 +63,29 @@ export function useTransactionsQuery({
       return transactionsApi.bulkDelete(userId, transactionIds);
     },
     onMutate: async (transactionIds) => {
-      // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ["transactions", accountId?.toString()] });
+      await queryClient.cancelQueries({ queryKey: ["transactions"] });
 
-      // Snapshot the previous value
-      const previousData = queryClient.getQueryData(["transactions", accountId?.toString()]);
+      const idsToDelete = new Set(transactionIds.map((id) => id.toString()));
 
-      // Optimistically update the cache for infinite query
-      queryClient.setQueryData(
-        ["transactions", accountId?.toString()],
-        (old: { pages?: Array<{ transactions: Transaction[] }> }) => {
+      queryClient.setQueriesData(
+        { queryKey: ["transactions"] },
+        (old: { pages?: Array<{ transactions: Transaction[] }> } | undefined) => {
           if (!old?.pages) return old;
-
-          const idsToDelete = new Set(transactionIds.map((id) => id.toString()));
-
           return {
             ...old,
-            pages: old.pages.map((page: { transactions: Transaction[] }) => ({
+            pages: old.pages.map((page) => ({
               ...page,
-              transactions: page.transactions.filter(
-                (t: Transaction) => !idsToDelete.has(t.id.toString())
-              ),
+              transactions: page.transactions.filter((t) => !idsToDelete.has(t.id.toString())),
             })),
           };
         }
       );
-
-      // Return context with snapshot
-      return { previousData };
     },
-    onError: (err, transactionIds, context) => {
-      // Rollback on error
-      if (context?.previousData) {
-        queryClient.setQueryData(["transactions", accountId?.toString()], context.previousData);
-      }
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
     onSuccess: () => {
-      // Invalidate related queries to ensure consistency
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
       queryClient.invalidateQueries({ queryKey: ["transaction-summary"] });
     },
