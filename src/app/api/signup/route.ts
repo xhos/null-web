@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth, authPool } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,48 +18,6 @@ export async function POST(request: NextRequest) {
     }
 
     const user = signUpResponse.user;
-
-    // since the user doesn't have a session yet, we use server-to-server auth
-    // TODO: this is a bit of an anti-pattern
-    let backendResponse;
-    try {
-      backendResponse = await fetch(
-        `${process.env.NULL_CORE_URL}/null.v1.UserService/CreateUser`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Internal-Key": process.env.API_KEY!,
-          },
-          body: JSON.stringify({
-            id: user.id,
-            email: user.email,
-            display_name: displayName,
-          }),
-        }
-      );
-    } catch (fetchError) {
-      console.error("Backend fetch failed:", fetchError);
-      try {
-        await authPool.query('DELETE FROM "user" WHERE id = $1', [user.id]);
-      } catch (rollbackError) {
-        console.error("Rollback failed:", rollbackError);
-      }
-      return NextResponse.json({ error: "Account creation failed" }, { status: 500 });
-    }
-
-    if (!backendResponse.ok) {
-      try {
-        await authPool.query('DELETE FROM "user" WHERE id = $1', [user.id]);
-      } catch (rollbackError) {
-        console.error("Rollback failed:", rollbackError);
-      }
-
-      const errorText = await backendResponse.text();
-      console.error("Backend user creation failed:", errorText);
-
-      return NextResponse.json({ error: "Account creation failed" }, { status: 500 });
-    }
 
     const sessionResponse = await auth.api.signInEmail({
       body: { email, password },
