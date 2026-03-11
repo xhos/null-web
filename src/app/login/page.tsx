@@ -75,7 +75,8 @@ export default function LoginPage() {
         } else {
           setIsLoggedIn(false);
         }
-      } catch {
+      } catch (err) {
+        console.error("[login] getSession error:", err);
         setIsLoggedIn(false);
       }
     };
@@ -89,16 +90,12 @@ export default function LoginPage() {
 
     try {
       if (mode === "register") {
-        const response = await fetch("/api/signup", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password, displayName: name }),
-        });
-        if (!response.ok) throw new Error((await response.json()).error || "Registration failed");
+        const signUpResult = await authClient.signUp.email({ email, password, name });
+        if (signUpResult.error) throw new Error(signUpResult.error.message || "Registration failed");
       }
 
       const result = await authClient.signIn.email({ email, password });
-      if (result.error) throw new Error("Invalid email or password");
+      if (result.error) throw new Error(result.error.message || "Invalid email or password");
 
       router.push("/");
     } catch (err) {

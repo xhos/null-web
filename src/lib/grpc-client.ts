@@ -8,9 +8,13 @@ import { BackupService } from "@/gen/null/v1/backup_services_pb";
 import { DashboardService } from "@/gen/null/v1/dashboard_services_pb";
 import { ReceiptService } from "@/gen/null/v1/receipt_services_pb";
 
+const gatewayUrl = process.env.NEXT_PUBLIC_GATEWAY_URL || "http://localhost:55550";
+
 const transport = createConnectTransport({
-  baseUrl: "/api",
+  baseUrl: `${gatewayUrl}/api`,
   useBinaryFormat: false,
+  fetch: (input, init) =>
+    fetch(input, { ...init, credentials: "include" }),
   interceptors: [],
 });
 

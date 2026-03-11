@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const publicRoutes = ["/login", "/api/auth", "/api/signup"];
+const publicRoutes = ["/login"];
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
@@ -10,7 +10,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const sessionToken = request.cookies.get("better-auth.session_token");
+  const sessionToken =
+    request.cookies.get("better-auth.session_token") ||
+    request.cookies.get("__Secure-better-auth.session_token");
 
   if (!sessionToken) {
     return NextResponse.redirect(new URL("/login", request.url));

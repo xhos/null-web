@@ -1,20 +1,32 @@
-import { redirect } from "next/navigation";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useSession, useUserId } from "@/hooks/useSession";
 import { NetWorthChart } from "@/components/dashboard/net-worth-chart";
 import { DashboardStats } from "@/components/dashboard/dashboard-stats";
 import { AccountBalancesCard } from "@/components/dashboard/account-balances-card";
 import { CategoryBreakdownCard } from "@/components/dashboard/category-breakdown-card";
 import { RecentTransactionsCard } from "@/components/dashboard/recent-transactions-card";
 
-export default async function HomePage() {
-  const session = await auth.api.getSession({ headers: await headers() });
+export default function HomePage() {
+  const router = useRouter();
+  const { data: session, isLoading } = useSession();
+  const userId = useUserId();
 
-  if (!session?.user) {
-    redirect("/sign-in");
+  useEffect(() => {
+    if (!isLoading && !session?.data?.user) {
+      router.push("/login");
+    }
+  }, [isLoading, session, router]);
+
+  if (isLoading || !userId) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="font-mono text-sm text-muted-foreground">loading...</div>
+      </div>
+    );
   }
-
-  const userId = session.user.id;
 
   return (
     <div className="w-full p-4 lg:p-6">
