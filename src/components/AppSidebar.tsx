@@ -83,9 +83,10 @@ export default function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="z-50">
       <SidebarHeader className="px-2 pt-3 pb-2">
+        <div className="flex items-end justify-between pl-1">
         <Link
           href="/"
-          className="group/logo flex h-6 items-center pl-1 origin-left transition-transform duration-300 ease-out hover:scale-105"
+          className="group/logo flex items-end origin-left transition-transform duration-300 ease-out hover:scale-105"
         >
           <div className="relative h-5 w-[23px] overflow-hidden transition-[width] duration-200 ease-linear group-data-[state=expanded]:w-[50px]">
             <svg
@@ -114,6 +115,10 @@ export default function AppSidebar() {
             </svg>
           </div>
         </Link>
+        {!isCollapsed && (
+          <span className="font-mono text-[10px] leading-none text-muted-foreground/50">v0.1.0</span>
+        )}
+        </div>
       </SidebarHeader>
 
       <SidebarContent>
