@@ -13,7 +13,7 @@ interface CreateAccountSidebarProps {
     name: string;
     bank: string;
     type: AccountType;
-    alias?: string;
+    friendlyName?: string;
     anchorBalance: { currencyCode: string; units: string; nanos: number };
     mainCurrency?: string;
     colors?: string[];
@@ -31,7 +31,7 @@ export default function CreateAccountSidebar({
     name: "",
     bank: "",
     type: AccountType.ACCOUNT_CHEQUING,
-    alias: "",
+    friendlyName: "",
     initialBalance: "0",
     mainCurrency: "USD",
     colors: ["#1f2937", "#3b82f6", "#10b981"],
@@ -42,7 +42,7 @@ export default function CreateAccountSidebar({
       name: formData.name,
       bank: formData.bank,
       type: formData.type,
-      alias: formData.alias || undefined,
+      friendlyName: formData.friendlyName || undefined,
       anchorBalance: {
         currencyCode: formData.mainCurrency,
         units: parseFloat(formData.initialBalance || "0").toString(),
@@ -59,7 +59,7 @@ export default function CreateAccountSidebar({
       name: "",
       bank: "",
       type: AccountType.ACCOUNT_CHEQUING,
-      alias: "",
+      friendlyName: "",
       initialBalance: "0",
       mainCurrency: "USD",
       colors: ["#1f2937", "#3b82f6", "#10b981"],
@@ -72,7 +72,7 @@ export default function CreateAccountSidebar({
       name: "",
       bank: "",
       type: AccountType.ACCOUNT_CHEQUING,
-      alias: "",
+      friendlyName: "",
       initialBalance: "0",
       mainCurrency: "USD",
       colors: ["#1f2937", "#3b82f6", "#10b981"],
@@ -117,10 +117,10 @@ export default function CreateAccountSidebar({
             </VStack>
 
             <VStack spacing="xs">
-              <Caption>alias</Caption>
+              <Caption>friendly name</Caption>
               <Input
-                value={formData.alias}
-                onChange={(e) => setFormData({ ...formData, alias: e.target.value })}
+                value={formData.friendlyName}
+                onChange={(e) => setFormData({ ...formData, friendlyName: e.target.value })}
                 placeholder="Display name (optional)"
                 className="text-sm h-8"
               />

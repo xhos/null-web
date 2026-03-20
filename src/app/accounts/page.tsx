@@ -90,7 +90,7 @@ export default function AccountsPage() {
     name: string;
     bank: string;
     type: AccountType;
-    alias?: string;
+    friendlyName?: string;
     anchorBalance?: { currencyCode: string; units: string; nanos: number };
     mainCurrency?: string;
     colors?: string[];
@@ -113,7 +113,7 @@ export default function AccountsPage() {
     name: string;
     bank: string;
     type: AccountType;
-    alias?: string;
+    friendlyName?: string;
     mainCurrency?: string;
     colors?: string[];
   }) => {
@@ -124,7 +124,7 @@ export default function AccountsPage() {
         name: data.name,
         bank: data.bank,
         accountType: data.type,
-        alias: data.alias,
+        friendlyName: data.friendlyName,
         mainCurrency: data.mainCurrency,
         colors: data.colors,
       });

@@ -23,11 +23,11 @@ export function useAccounts() {
   });
 
   const accountsMap = useMemo(() => {
-    const map = new Map<string, { name: string; alias?: string }>();
+    const map = new Map<string, { name: string; friendlyName?: string }>();
     accounts.forEach((account) => {
       map.set(account.id.toString(), {
         name: account.name,
-        alias: account.alias,
+        friendlyName: account.friendlyName,
       });
     });
     return map;
@@ -37,7 +37,7 @@ export function useAccounts() {
     (accountId: bigint, fallbackName?: string) => {
       const accountInfo = accountsMap.get(accountId.toString());
       if (accountInfo) {
-        return accountInfo.alias || accountInfo.name;
+        return accountInfo.friendlyName || accountInfo.name;
       }
       return fallbackName || `Account #${accountId}`;
     },
@@ -50,7 +50,7 @@ export function useAccounts() {
       if (accountInfo) {
         const parts = [];
         if (accountInfo.name) parts.push(accountInfo.name);
-        if (accountInfo.alias) parts.push(`(${accountInfo.alias})`);
+        if (accountInfo.friendlyName) parts.push(`(${accountInfo.friendlyName})`);
         return parts.join(" ") || `Account #${accountId}`;
       }
       return fallbackName || `Account #${accountId}`;
@@ -138,6 +138,70 @@ export function useDeleteAccount() {
     isPending: mutation.isPending,
     error: mutation.error,
   };
+}
+
+export function useAddAccountAlias() {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: ({ accountId, alias }: { accountId: bigint; alias: string }) =>
+      accountsApi.addAlias(accountId, alias),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    },
+  });
+
+  return {
+    addAlias: mutation.mutate,
+    addAliasAsync: mutation.mutateAsync,
+    isPending: mutation.isPending,
+    error: mutation.error,
+  };
+}
+
+export function useRemoveAccountAlias() {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: ({ accountId, alias }: { accountId: bigint; alias: string }) =>
+      accountsApi.removeAlias(accountId, alias),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    },
+  });
+
+  return {
+    removeAlias: mutation.mutate,
+    removeAliasAsync: mutation.mutateAsync,
+    isPending: mutation.isPending,
+    error: mutation.error,
+  };
+}
+
+export function useSetAccountAliases() {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: ({ accountId, aliases }: { accountId: bigint; aliases: string[] }) =>
+      accountsApi.setAliases(accountId, aliases),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    },
+  });
+
+  return {
+    setAliases: mutation.mutate,
+    setAliasesAsync: mutation.mutateAsync,
+    isPending: mutation.isPending,
+    error: mutation.error,
+  };
+}
+
+export function useFindAccountByAlias() {
+  return useCallback(
+    (alias: string) => accountsApi.findByAlias(alias),
+    []
+  );
 }
 
 export function useSetAnchorBalance() {

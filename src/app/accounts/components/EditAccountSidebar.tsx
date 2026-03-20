@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { VStack, Caption, Muted, Text, HStack } from "@/components/lib";
 
 import type { Account } from "@/gen/null/v1/account_pb";
 import { AccountType } from "@/gen/null/v1/enums_pb";
+import { useAddAccountAlias, useRemoveAccountAlias } from "@/hooks/useAccounts";
 
 interface EditAccountSidebarProps {
   account: Account | null;
@@ -17,7 +19,7 @@ interface EditAccountSidebarProps {
       name: string;
       bank: string;
       type: AccountType;
-      alias?: string;
+      friendlyName?: string;
       mainCurrency?: string;
       colors?: string[];
     }
@@ -40,11 +42,16 @@ export default function EditAccountSidebar({
   isLoading,
 }: EditAccountSidebarProps) {
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
+  const [aliases, setAliases] = useState<string[]>([]);
+  const [newAlias, setNewAlias] = useState("");
+  const { addAliasAsync } = useAddAccountAlias();
+  const { removeAliasAsync } = useRemoveAccountAlias();
+
   const [editForm, setEditForm] = useState({
     name: "",
     bank: "",
     type: AccountType.ACCOUNT_UNSPECIFIED,
-    alias: "",
+    friendlyName: "",
     mainCurrency: "",
     anchorBalance: "",
     colors: ["#1f2937", "#3b82f6", "#10b981"],
@@ -57,7 +64,7 @@ export default function EditAccountSidebar({
       name: account.name,
       bank: account.bank,
       type: account.type,
-      alias: account.alias || "",
+      friendlyName: account.friendlyName || "",
       mainCurrency: account.mainCurrency || "USD",
       anchorBalance: account.anchorBalance
         ? (
@@ -67,6 +74,8 @@ export default function EditAccountSidebar({
         : "",
       colors: account.colors.length === 3 ? account.colors : ["#1f2937", "#3b82f6", "#10b981"],
     });
+    setAliases(account.aliases);
+    setNewAlias("");
 
     // Reset delete confirmation when account changes
     setDeleteConfirmation(false);
@@ -78,6 +87,20 @@ export default function EditAccountSidebar({
       setDeleteConfirmation(false);
     }
   }, [account]);
+
+  const handleAddAlias = async () => {
+    if (!account || !newAlias.trim()) return;
+    if (aliases.includes(newAlias.trim())) return;
+    await addAliasAsync({ accountId: account.id, alias: newAlias.trim() });
+    setAliases((prev) => [...prev, newAlias.trim()]);
+    setNewAlias("");
+  };
+
+  const handleRemoveAlias = async (alias: string) => {
+    if (!account) return;
+    await removeAliasAsync({ accountId: account.id, alias });
+    setAliases((prev) => prev.filter((a) => a !== alias));
+  };
 
   const handleDeleteClick = () => {
     if (!account) return;
@@ -98,7 +121,7 @@ export default function EditAccountSidebar({
       name: editForm.name,
       bank: editForm.bank,
       type: editForm.type,
-      alias: editForm.alias,
+      friendlyName: editForm.friendlyName,
       mainCurrency: editForm.mainCurrency,
       colors: editForm.colors,
     };
@@ -133,7 +156,7 @@ export default function EditAccountSidebar({
       name: account.name,
       bank: account.bank,
       type: account.type,
-      alias: account.alias || "",
+      friendlyName: account.friendlyName || "",
       mainCurrency: account.mainCurrency || "USD",
       anchorBalance: account.anchorBalance
         ? (
@@ -187,13 +210,54 @@ export default function EditAccountSidebar({
             </VStack>
 
             <VStack spacing="xs">
-              <Caption>alias</Caption>
+              <Caption>friendly name</Caption>
               <Input
-                value={editForm.alias}
-                onChange={(e) => setEditForm({ ...editForm, alias: e.target.value })}
+                value={editForm.friendlyName}
+                onChange={(e) => setEditForm({ ...editForm, friendlyName: e.target.value })}
                 placeholder="Display name (optional)"
                 className="text-sm h-8"
               />
+            </VStack>
+
+            <VStack spacing="xs">
+              <Caption>aliases</Caption>
+              <VStack spacing="xs">
+                {aliases.length > 0 && (
+                  <div className="max-h-36 overflow-y-auto space-y-1">
+                    {aliases.map((alias) => (
+                      <HStack key={alias} spacing="sm" justify="between" align="center" className="rounded border px-3 py-1.5">
+                        <Muted size="sm" className="font-mono truncate">{alias}</Muted>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveAlias(alias)}
+                          className="flex-shrink-0 text-muted-foreground hover:text-destructive transition-colors duration-150"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </HStack>
+                    ))}
+                  </div>
+                )}
+                <HStack spacing="sm">
+                  <Input
+                    value={newAlias}
+                    onChange={(e) => setNewAlias(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleAddAlias()}
+                    placeholder="add alias"
+                    className="text-sm h-8 font-mono"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAddAlias}
+                    disabled={!newAlias.trim()}
+                    className="h-8"
+                  >
+                    add
+                  </Button>
+                </HStack>
+              </VStack>
             </VStack>
 
             <VStack spacing="xs">

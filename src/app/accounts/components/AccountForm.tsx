@@ -13,7 +13,7 @@ interface AccountFormProps {
     name: string;
     bank: string;
     type: AccountType;
-    alias?: string;
+    friendlyName?: string;
     anchorBalance?: { currencyCode: string; units: string; nanos: number };
   }) => Promise<void>;
   onCancel: () => void;
@@ -33,7 +33,7 @@ export default function AccountForm({ account, onSubmit, onCancel, isLoading }: 
     name: "",
     bank: "",
     type: AccountType.ACCOUNT_CHEQUING,
-    alias: "",
+    friendlyName: "",
     anchorBalance: "",
   });
 
@@ -43,7 +43,7 @@ export default function AccountForm({ account, onSubmit, onCancel, isLoading }: 
         name: account.name,
         bank: account.bank,
         type: account.type,
-        alias: account.alias || "",
+        friendlyName: account.friendlyName || "",
         anchorBalance: account.anchorBalance?.units ? String(account.anchorBalance.units) : "",
       });
     }
@@ -56,7 +56,7 @@ export default function AccountForm({ account, onSubmit, onCancel, isLoading }: 
       name: formData.name,
       bank: formData.bank,
       type: formData.type,
-      alias: formData.alias || undefined,
+      friendlyName: formData.friendlyName || undefined,
     };
 
     if (!account && formData.anchorBalance) {
@@ -125,11 +125,11 @@ export default function AccountForm({ account, onSubmit, onCancel, isLoading }: 
             </VStack>
 
             <VStack spacing="xs">
-              <Caption>alias (optional)</Caption>
+              <Caption>friendly name (optional)</Caption>
               <Input
-                id="alias"
-                value={formData.alias}
-                onChange={(e) => setFormData((prev) => ({ ...prev, alias: e.target.value }))}
+                id="friendlyName"
+                value={formData.friendlyName}
+                onChange={(e) => setFormData((prev) => ({ ...prev, friendlyName: e.target.value }))}
                 placeholder="short nickname"
                 disabled={isLoading}
               />

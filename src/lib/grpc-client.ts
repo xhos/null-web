@@ -4,7 +4,6 @@ import { AccountService } from "@/gen/null/v1/account_services_pb";
 import { TransactionService } from "@/gen/null/v1/transaction_services_pb";
 import { CategoryService } from "@/gen/null/v1/category_services_pb";
 import { RuleService } from "@/gen/null/v1/rule_services_pb";
-import { BackupService } from "@/gen/null/v1/backup_services_pb";
 import { DashboardService } from "@/gen/null/v1/dashboard_services_pb";
 import { ReceiptService } from "@/gen/null/v1/receipt_services_pb";
 
@@ -22,6 +21,5 @@ export const accountClient = createClient(AccountService, transport);
 export const transactionClient = createClient(TransactionService, transport);
 export const categoryClient = createClient(CategoryService, transport);
 export const ruleClient = createClient(RuleService, transport);
-export const backupClient = createClient(BackupService, transport);
 export const dashboardClient = createClient(DashboardService, transport);
 export const receiptClient = createClient(ReceiptService, transport);

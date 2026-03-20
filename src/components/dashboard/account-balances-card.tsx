@@ -74,7 +74,7 @@ export function AccountBalancesCard({ userId }: AccountBalancesCardProps) {
                 className={index > 0 ? "border-t pt-3" : ""}
               >
                 <VStack spacing="xs" align="start">
-                  <div className="text-sm font-medium">{account.alias || account.name}</div>
+                  <div className="text-sm font-medium">{account.friendlyName || account.name}</div>
                   <Caption className="text-muted-foreground">{getAccountTypeLabel(account.type)}</Caption>
                 </VStack>
                 <div className="text-sm font-semibold tabular-nums">

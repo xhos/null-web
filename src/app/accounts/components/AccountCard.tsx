@@ -49,7 +49,7 @@ export default function AccountCard({ account, getAccountTypeName, onClick, onEd
         <HStack spacing="md" justify="between" className="w-full">
           <VStack spacing="xs" align="start">
             <Caption>{account.bank}</Caption>
-            <Text size="sm">{account.alias || account.name}</Text>
+            <Text size="sm">{account.friendlyName || account.name}</Text>
           </VStack>
           <Muted size="xs">{getAccountTypeName(account.type)}</Muted>
         </HStack>

@@ -20,9 +20,11 @@ import {
 } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { HexColorPicker } from "react-colorful";
+import { X } from "lucide-react";
 import { VStack, HStack, ErrorMessage, Muted, Caption } from "@/components/lib";
 import type { Account } from "@/gen/null/v1/account_pb";
 import { AccountType } from "@/gen/null/v1/enums_pb";
+import { useAddAccountAlias, useRemoveAccountAlias } from "@/hooks/useAccounts";
 
 interface AccountDialogProps {
   open: boolean;
@@ -32,7 +34,7 @@ interface AccountDialogProps {
     name: string;
     bank: string;
     type: AccountType;
-    alias?: string;
+    friendlyName?: string;
     anchorBalance?: { currencyCode: string; units: string; nanos: number };
     mainCurrency?: string;
     colors?: string[];
@@ -48,37 +50,59 @@ export function AccountDialog({
   title,
 }: AccountDialogProps) {
   const [name, setName] = useState("");
-  const [alias, setAlias] = useState("");
+  const [friendlyName, setFriendlyName] = useState("");
   const [bank, setBank] = useState("");
   const [type, setType] = useState<AccountType>(AccountType.ACCOUNT_CHEQUING);
   const [mainCurrency, setMainCurrency] = useState("USD");
   const [colors, setColors] = useState(["#1f2937", "#3b82f6", "#10b981"]);
   const [initialBalance, setInitialBalance] = useState("0");
+  const [aliases, setAliases] = useState<string[]>([]);
+  const [newAlias, setNewAlias] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { addAliasAsync } = useAddAccountAlias();
+  const { removeAliasAsync } = useRemoveAccountAlias();
 
   useEffect(() => {
     if (open) {
       if (account) {
         setName(account.name);
-        setAlias(account.alias || "");
+        setFriendlyName(account.friendlyName || "");
         setBank(account.bank);
         setType(account.type);
         setMainCurrency(account.mainCurrency || "USD");
         setColors(account.colors.length > 0 ? account.colors : ["#1f2937", "#3b82f6", "#10b981"]);
         setInitialBalance("0");
+        setAliases(account.aliases);
       } else {
         setName("");
-        setAlias("");
+        setFriendlyName("");
         setBank("");
         setType(AccountType.ACCOUNT_CHEQUING);
         setMainCurrency("USD");
         setColors(["#1f2937", "#3b82f6", "#10b981"]);
         setInitialBalance("0");
+        setAliases([]);
       }
+      setNewAlias("");
       setError(null);
     }
   }, [account, open]);
+
+  const handleAddAlias = async () => {
+    if (!account || !newAlias.trim()) return;
+    if (aliases.includes(newAlias.trim())) return;
+    await addAliasAsync({ accountId: account.id, alias: newAlias.trim() });
+    setAliases((prev) => [...prev, newAlias.trim()]);
+    setNewAlias("");
+  };
+
+  const handleRemoveAlias = async (alias: string) => {
+    if (!account) return;
+    await removeAliasAsync({ accountId: account.id, alias });
+    setAliases((prev) => prev.filter((a) => a !== alias));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,7 +119,7 @@ export function AccountDialog({
         name,
         bank,
         type,
-        alias: alias || undefined,
+        friendlyName: friendlyName || undefined,
         mainCurrency,
         colors,
       };
@@ -138,15 +162,59 @@ export function AccountDialog({
             </VStack>
 
             <VStack spacing="xs">
-              <Label htmlFor="alias">alias</Label>
+              <Label htmlFor="friendlyName">friendly name</Label>
               <Input
-                id="alias"
-                value={alias}
-                onChange={(e) => setAlias(e.target.value)}
+                id="friendlyName"
+                value={friendlyName}
+                onChange={(e) => setFriendlyName(e.target.value)}
                 placeholder="Display name (optional)"
                 disabled={isLoading}
               />
             </VStack>
+
+            {account && (
+              <VStack spacing="xs">
+                <Label>aliases</Label>
+                <VStack spacing="xs">
+                  {aliases.length > 0 && (
+                    <div className="max-h-36 overflow-y-auto space-y-1">
+                      {aliases.map((alias) => (
+                        <HStack key={alias} spacing="sm" justify="between" align="center" className="rounded border px-3 py-1.5">
+                          <Muted size="sm" className="font-mono truncate">{alias}</Muted>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveAlias(alias)}
+                            disabled={isLoading}
+                            className="flex-shrink-0 text-muted-foreground hover:text-destructive transition-colors duration-150"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </HStack>
+                      ))}
+                    </div>
+                  )}
+                  <HStack spacing="sm">
+                    <Input
+                      value={newAlias}
+                      onChange={(e) => setNewAlias(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddAlias())}
+                      placeholder="add alias"
+                      disabled={isLoading}
+                      className="h-8 text-sm font-mono"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAddAlias}
+                      disabled={isLoading || !newAlias.trim()}
+                    >
+                      add
+                    </Button>
+                  </HStack>
+                </VStack>
+              </VStack>
+            )}
 
             <VStack spacing="xs">
               <Label htmlFor="bank">Bank *</Label>

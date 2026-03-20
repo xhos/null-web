@@ -17,7 +17,7 @@ interface AccountListProps {
   ) => void;
   onUpdateAccount: (
     accountId: bigint,
-    data: { name: string; bank: string; type: AccountType; alias?: string }
+    data: { name: string; bank: string; type: AccountType; friendlyName?: string }
   ) => void;
   getAccountTypeName: (type: AccountType) => string;
   isLoading: boolean;
@@ -116,7 +116,7 @@ export default function AccountList({
                 {editingAccount === account.id ? (
                   <VStack spacing="sm" className="w-full">
                     <Input
-                      defaultValue={account.alias || account.name}
+                      defaultValue={account.friendlyName || account.name}
                       placeholder="Account display name"
                       className="font-medium"
                     />
@@ -139,8 +139,8 @@ export default function AccountList({
                 ) : (
                   <VStack spacing="xs" align="start">
                     <HStack spacing="sm" align="center">
-                      <Text weight="medium" size="lg">{account.alias || account.name}</Text>
-                      {account.alias && <Muted size="sm">({account.name})</Muted>}
+                      <Text weight="medium" size="lg">{account.friendlyName || account.name}</Text>
+                      {account.friendlyName && <Muted size="sm">({account.name})</Muted>}
                     </HStack>
                     <Text size="sm" color="muted">
                       {account.bank} • {getAccountTypeName(account.type)}

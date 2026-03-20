@@ -81,10 +81,10 @@ export function DeleteAccountDialog({
                 <Text size="sm" weight="medium">account name:</Text>
                 <Mono size="sm">{account.name}</Mono>
               </HStack>
-              {account.alias && (
+              {account.friendlyName && (
                 <HStack spacing="md" justify="between">
-                  <Text size="sm" weight="medium">alias:</Text>
-                  <Mono size="sm">{account.alias}</Mono>
+                  <Text size="sm" weight="medium">friendly name:</Text>
+                  <Mono size="sm">{account.friendlyName}</Mono>
                 </HStack>
               )}
               <HStack spacing="md" justify="between">

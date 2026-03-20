@@ -5,6 +5,10 @@ import {
   CreateAccountRequestSchema,
   UpdateAccountRequestSchema,
   DeleteAccountRequestSchema,
+  AddAccountAliasRequestSchema,
+  RemoveAccountAliasRequestSchema,
+  SetAccountAliasesRequestSchema,
+  FindAccountByAliasRequestSchema,
 } from "@/gen/null/v1/account_services_pb";
 import { AccountType } from "@/gen/null/v1/enums_pb";
 
@@ -13,7 +17,7 @@ export interface CreateAccountInput {
   name: string;
   bank: string;
   type: AccountType;
-  alias?: string;
+  friendlyName?: string;
   anchorBalance?: {
     currencyCode: string;
     units: string;
@@ -29,7 +33,7 @@ export interface UpdateAccountInput {
   name: string;
   bank: string;
   accountType: AccountType;
-  alias?: string;
+  friendlyName?: string;
   mainCurrency?: string;
   colors?: string[];
 }
@@ -57,7 +61,7 @@ export const accountsApi = {
       name: data.name,
       bank: data.bank,
       type: data.type,
-      alias: data.alias,
+      friendlyName: data.friendlyName,
       anchorBalance: data.anchorBalance ? {
         currencyCode: data.anchorBalance.currencyCode,
         units: BigInt(data.anchorBalance.units),
@@ -74,11 +78,11 @@ export const accountsApi = {
     const request = create(UpdateAccountRequestSchema, {
       userId: data.userId,
       id: data.id,
-      updateMask: { paths: ["name", "bank", "account_type", "alias", "main_currency", "colors"] },
+      updateMask: { paths: ["name", "bank", "account_type", "friendly_name", "main_currency", "colors"] },
       name: data.name,
       bank: data.bank,
       accountType: data.accountType,
-      alias: data.alias,
+      friendlyName: data.friendlyName,
       mainCurrency: data.mainCurrency,
       colors: data.colors,
     });
@@ -91,6 +95,27 @@ export const accountsApi = {
       id,
     });
     await accountClient.deleteAccount(request);
+  },
+
+  async addAlias(accountId: bigint, alias: string) {
+    const request = create(AddAccountAliasRequestSchema, { accountId, alias });
+    await accountClient.addAccountAlias(request);
+  },
+
+  async removeAlias(accountId: bigint, alias: string) {
+    const request = create(RemoveAccountAliasRequestSchema, { accountId, alias });
+    await accountClient.removeAccountAlias(request);
+  },
+
+  async setAliases(accountId: bigint, aliases: string[]) {
+    const request = create(SetAccountAliasesRequestSchema, { accountId, aliases });
+    await accountClient.setAccountAliases(request);
+  },
+
+  async findByAlias(alias: string) {
+    const request = create(FindAccountByAliasRequestSchema, { alias });
+    const response = await accountClient.findAccountByAlias(request);
+    return response.account;
   },
 
   async setAnchorBalance(data: SetAnchorBalanceInput) {
