@@ -14,22 +14,31 @@ import { Upload, FileImage, X } from "lucide-react";
 import { useUser } from "@/hooks/useReceipts";
 import { receiptsApi } from "@/lib/api/receipts";
 import { toast } from "sonner";
+import { ConnectError, Code } from "@connectrpc/connect";
 
 interface UploadReceiptDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onUploadComplete: () => void;
+  onDuplicate?: (existingReceiptId: bigint) => void;
+}
+
+function parseDuplicateReceiptId(message: string): bigint | null {
+  const match = message.match(/\(id (\d+)\)/);
+  return match ? BigInt(match[1]) : null;
 }
 
 export function UploadReceiptDialog({
   open,
   onOpenChange,
   onUploadComplete,
+  onDuplicate,
 }: UploadReceiptDialogProps) {
   const { user } = useUser();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [duplicateReceiptId, setDuplicateReceiptId] = useState<bigint | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validateAndSetFile = (file: File) => {
@@ -67,6 +76,7 @@ export function UploadReceiptDialog({
   const clearFile = () => {
     setSelectedFile(null);
     setError(null);
+    setDuplicateReceiptId(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -91,9 +101,18 @@ export function UploadReceiptDialog({
       clearFile();
       onUploadComplete();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "failed to upload receipt";
-      setError(errorMessage);
-      toast.error("upload failed", { description: errorMessage });
+      const connectError = ConnectError.from(err);
+      const rawMessage = err instanceof Error ? err.message : "";
+      const isAlreadyExists =
+        connectError.code === Code.AlreadyExists || rawMessage.includes("AlreadyExists");
+
+      if (isAlreadyExists) {
+        setDuplicateReceiptId(parseDuplicateReceiptId(rawMessage));
+        setError(null);
+      } else {
+        setError("failed to upload receipt");
+        toast.error("upload failed", { description: "failed to upload receipt" });
+      }
     } finally {
       setIsUploading(false);
     }
@@ -152,6 +171,20 @@ export function UploadReceiptDialog({
               >
                 <X className="h-3.5 w-3.5" />
               </Button>
+            </div>
+          )}
+
+          {duplicateReceiptId !== null && (
+            <div className="bg-muted p-3 rounded-sm space-y-2">
+              <p className="text-sm">this receipt has already been uploaded.</p>
+              {onDuplicate && (
+                <button
+                  onClick={() => { onDuplicate(duplicateReceiptId); onOpenChange(false); }}
+                  className="text-sm underline underline-offset-4 hover:text-muted-foreground transition-colors duration-150"
+                >
+                  view existing receipt
+                </button>
+              )}
             </div>
           )}
 

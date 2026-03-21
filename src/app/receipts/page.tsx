@@ -8,10 +8,14 @@ import { VStack, HStack } from "@/components/lib";
 import { Search, RefreshCw, Upload } from "lucide-react";
 import { ReceiptList } from "./components/ReceiptList";
 import { UploadReceiptDialog } from "./components/UploadReceiptDialog";
+import { ReceiptDetailDialog } from "./components/ReceiptDetailDialog";
+import { useReceipt } from "@/hooks/useReceipts";
 
 export default function ReceiptsPage() {
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [duplicateReceiptId, setDuplicateReceiptId] = useState<bigint | null>(null);
+  const { data: duplicateReceiptData, isLoading: isDuplicateLoading } = useReceipt(duplicateReceiptId);
 
   const handleRefresh = () => {
     setRefreshTrigger((prev) => prev + 1);
@@ -84,6 +88,15 @@ export default function ReceiptsPage() {
           open={isUploadDialogOpen}
           onOpenChange={setIsUploadDialogOpen}
           onUploadComplete={handleUploadComplete}
+          onDuplicate={setDuplicateReceiptId}
+        />
+
+        <ReceiptDetailDialog
+          receipt={duplicateReceiptData?.receipt ?? null}
+          linkCandidates={duplicateReceiptData?.linkCandidates}
+          open={duplicateReceiptId !== null}
+          onOpenChange={(open) => { if (!open) setDuplicateReceiptId(null); }}
+          isLoading={isDuplicateLoading}
         />
       </PageContent>
     </PageContainer>

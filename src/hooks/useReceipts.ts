@@ -69,3 +69,19 @@ export function useReceipt(receiptId: bigint | null) {
     staleTime: 60 * 1000,
   });
 }
+
+export function useLinkReceipt() {
+  const queryClient = useQueryClient();
+  const userId = useUserId();
+
+  return useMutation({
+    mutationFn: async ({ receiptId, transactionId }: { receiptId: bigint; transactionId: bigint }) => {
+      if (!userId) throw new Error("User not authenticated");
+      return receiptsApi.linkToTransaction(userId, receiptId, transactionId);
+    },
+    onSuccess: (_, { receiptId }) => {
+      queryClient.invalidateQueries({ queryKey: ["receipts"] });
+      queryClient.invalidateQueries({ queryKey: ["receipt", userId, receiptId.toString()] });
+    },
+  });
+}

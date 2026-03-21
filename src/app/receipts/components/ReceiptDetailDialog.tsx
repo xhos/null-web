@@ -1,6 +1,7 @@
 "use client";
 
-import type { Receipt } from "@/gen/null/v1/receipt_pb";
+import type { Receipt, ReceiptLinkCandidate } from "@/gen/null/v1/receipt_pb";
+import { ReceiptStatus } from "@/gen/null/v1/receipt_pb";
 import {
   Dialog,
   DialogContent,
@@ -9,9 +10,11 @@ import {
 import { formatAmount, formatCurrency } from "@/lib/utils/transaction";
 import { VStack, HStack, Caption, Muted } from "@/components/lib";
 import { Link as LinkIcon } from "lucide-react";
+import { useLinkReceipt } from "@/hooks/useReceipts";
 
 interface ReceiptDetailDialogProps {
   receipt: Receipt | null;
+  linkCandidates?: ReceiptLinkCandidate[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
   isLoading?: boolean;
@@ -24,7 +27,18 @@ function formatReceiptDate(date?: { year: number; month?: number; day?: number }
   return `${day}.${month}.${date.year}`;
 }
 
-export function ReceiptDetailDialog({ receipt, open, onOpenChange, isLoading }: ReceiptDetailDialogProps) {
+function formatTimestamp(ts?: { seconds?: bigint }) {
+  if (!ts?.seconds) return null;
+  return new Date(Number(ts.seconds) * 1000).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).replace(/\//g, ".");
+}
+
+export function ReceiptDetailDialog({ receipt, linkCandidates, open, onOpenChange, isLoading }: ReceiptDetailDialogProps) {
+  const { mutate: linkReceipt, isPending: isLinking } = useLinkReceipt();
+
   if (!open) return null;
 
   const currency = receipt?.total?.currencyCode || receipt?.currency || "USD";
@@ -37,6 +51,16 @@ export function ReceiptDetailDialog({ receipt, open, onOpenChange, isLoading }: 
 
   const items = receipt?.items || [];
   const confidence = receipt?.confidence ? Math.round(receipt.confidence * 100) : null;
+  const isParsedAndUnlinked = receipt?.status === ReceiptStatus.PARSED && !receipt?.transactionId;
+  const candidates = isParsedAndUnlinked ? (linkCandidates ?? []) : [];
+
+  const handleLink = (candidate: ReceiptLinkCandidate) => {
+    if (!receipt) return;
+    linkReceipt(
+      { receiptId: receipt.id, transactionId: candidate.transactionId },
+      { onSuccess: () => onOpenChange(false) },
+    );
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -111,11 +135,38 @@ export function ReceiptDetailDialog({ receipt, open, onOpenChange, isLoading }: 
               </HStack>
             </VStack>
 
-            {receipt.transactionId && (
+            {receipt.transactionId ? (
               <HStack spacing="xs" className="text-xs text-muted-foreground">
                 <LinkIcon className="h-3 w-3" />
                 <span>linked to transaction #{receipt.transactionId.toString()}</span>
               </HStack>
+            ) : candidates.length > 0 && (
+              <VStack spacing="sm" className="w-full">
+                <Caption>LINK TO TRANSACTION</Caption>
+                <VStack spacing="xs" className="w-full">
+                  {candidates.map((candidate) => (
+                    <button
+                      key={candidate.transactionId.toString()}
+                      onClick={() => handleLink(candidate)}
+                      disabled={isLinking}
+                      className="w-full text-left rounded-md border border-border px-3 py-2 hover:border-primary/50 hover:bg-accent transition-colors duration-150 disabled:opacity-50"
+                    >
+                      <HStack justify="between" align="start">
+                        <VStack spacing="xs" align="start" className="flex-1 min-w-0">
+                          <span className="text-sm font-medium truncate">{candidate.merchant}</span>
+                          <Muted size="xs">{candidate.accountName} · {formatTimestamp(candidate.txDate)}</Muted>
+                        </VStack>
+                        <VStack spacing="xs" align="end" className="shrink-0 ml-3">
+                          <span className="text-sm font-mono tabular-nums">{formatMoney(candidate.amount)}</span>
+                          {candidate.dateDiffDays !== 0 && (
+                            <Muted size="xs">{candidate.dateDiffDays > 0 ? "+" : ""}{candidate.dateDiffDays}d</Muted>
+                          )}
+                        </VStack>
+                      </HStack>
+                    </button>
+                  ))}
+                </VStack>
+              </VStack>
             )}
           </VStack>
         )}

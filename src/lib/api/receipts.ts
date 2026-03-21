@@ -4,6 +4,7 @@ import {
   ListReceiptsRequestSchema,
   UploadReceiptRequestSchema,
   GetReceiptRequestSchema,
+  UpdateReceiptRequestSchema,
   DeleteReceiptRequestSchema,
 } from "@/gen/null/v1/receipt_services_pb";
 import type { ReceiptStatus } from "@/gen/null/v1/receipt_pb";
@@ -73,7 +74,18 @@ export const receiptsApi = {
     return {
       receipt: response.receipt,
       linkCandidates: response.linkCandidates,
+      imageData: response.imageData,
     };
+  },
+
+  async linkToTransaction(userId: string, id: bigint, transactionId: bigint) {
+    const request = create(UpdateReceiptRequestSchema, {
+      userId,
+      id,
+      transactionId,
+    });
+    const response = await receiptClient.updateReceipt(request);
+    return response.receipt;
   },
 
   async delete(userId: string, id: bigint) {

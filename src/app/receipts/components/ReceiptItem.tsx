@@ -79,9 +79,7 @@ export function ReceiptItem({ receipt }: ReceiptItemProps) {
   const formattedDate = formatReceiptDate(receipt.receiptDate);
 
   const handleDelete = () => {
-    if (confirm("delete this receipt?")) {
-      deleteReceipt(receipt.id);
-    }
+    deleteReceipt(receipt.id);
   };
 
   const handleRetryComplete = () => {
@@ -104,7 +102,7 @@ export function ReceiptItem({ receipt }: ReceiptItemProps) {
                 </div>
                 <HStack spacing="xs" className="text-xs text-muted-foreground flex-wrap">
                   {formattedDate && <span>{formattedDate}</span>}
-                  {receipt.items && receipt.items.length > 0 && (
+                  {receipt.items && receipt.items.length > 0 && receipt.status === ReceiptStatus.PARSED && (
                     <>
                       {formattedDate && <span>·</span>}
                       <span>{receipt.items.length} item{receipt.items.length !== 1 ? "s" : ""}</span>
@@ -172,6 +170,7 @@ export function ReceiptItem({ receipt }: ReceiptItemProps) {
 
       <ReceiptDetailDialog
         receipt={receiptDetail?.receipt ?? null}
+        linkCandidates={receiptDetail?.linkCandidates}
         open={selectedReceiptId !== null}
         onOpenChange={(open) => { if (!open) setSelectedReceiptId(null); }}
         isLoading={isLoadingDetail}
