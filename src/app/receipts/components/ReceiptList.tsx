@@ -5,11 +5,7 @@ import { VStack, EmptyState, LoadingSkeleton } from "@/components/lib";
 import { ReceiptItem } from "./ReceiptItem";
 import { Receipt as ReceiptIcon } from "lucide-react";
 
-interface ReceiptListProps {
-  refreshTrigger?: number;
-}
-
-export function ReceiptList({}: ReceiptListProps) {
+export function ReceiptList() {
   const { receipts, isLoading, error } = useReceipts();
 
   if (isLoading) {

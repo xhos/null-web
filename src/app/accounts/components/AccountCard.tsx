@@ -9,7 +9,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { Pencil, Trash2, Anchor } from "lucide-react";
+import { Pencil, Trash2, Anchor, Merge } from "lucide-react";
 
 interface AccountCardProps {
   account: Account;
@@ -18,9 +18,10 @@ interface AccountCardProps {
   onEdit?: (account: Account) => void;
   onDelete?: (account: Account) => void;
   onSetAnchor?: (account: Account) => void;
+  onMerge?: (account: Account) => void;
 }
 
-export default function AccountCard({ account, getAccountTypeName, onClick, onEdit, onDelete, onSetAnchor }: AccountCardProps) {
+export default function AccountCard({ account, getAccountTypeName, onClick, onEdit, onDelete, onSetAnchor, onMerge }: AccountCardProps) {
   const formatBalance = (balance?: {
     currencyCode?: string;
     units?: string | bigint;
@@ -58,7 +59,7 @@ export default function AccountCard({ account, getAccountTypeName, onClick, onEd
     </Card>
   );
 
-  if (onEdit || onDelete || onSetAnchor) {
+  if (onEdit || onDelete || onSetAnchor || onMerge) {
     return (
       <ContextMenu>
         <ContextMenuTrigger asChild>
@@ -75,6 +76,12 @@ export default function AccountCard({ account, getAccountTypeName, onClick, onEd
             <ContextMenuItem onClick={() => onSetAnchor(account)}>
               <Anchor className="mr-2 h-4 w-4" />
               Set Anchor Balance
+            </ContextMenuItem>
+          )}
+          {onMerge && (
+            <ContextMenuItem onClick={() => onMerge(account)}>
+              <Merge className="mr-2 h-4 w-4" />
+              Merge into...
             </ContextMenuItem>
           )}
           {onDelete && (

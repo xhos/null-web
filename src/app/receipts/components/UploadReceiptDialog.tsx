@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -41,7 +41,7 @@ export function UploadReceiptDialog({
   const [duplicateReceiptId, setDuplicateReceiptId] = useState<bigint | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const validateAndSetFile = (file: File) => {
+  const validateAndSetFile = useCallback((file: File) => {
     const validTypes = ["image/jpeg", "image/png", "image/webp", "image/heic"];
     if (!validTypes.includes(file.type)) {
       setError("invalid file type. please upload JPEG, PNG, WebP, or HEIC images.");
@@ -56,7 +56,22 @@ export function UploadReceiptDialog({
 
     setError(null);
     setSelectedFile(file);
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const handlePaste = (event: ClipboardEvent) => {
+      const imageFile = Array.from(event.clipboardData?.files ?? []).find((f) =>
+        f.type.startsWith("image/")
+      );
+      if (imageFile) {
+        event.preventDefault();
+        validateAndSetFile(imageFile);
+      }
+    };
+    document.addEventListener("paste", handlePaste);
+    return () => document.removeEventListener("paste", handlePaste);
+  }, [open, validateAndSetFile]);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -142,7 +157,7 @@ export function UploadReceiptDialog({
             >
               <Upload className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
               <p className="text-sm text-muted-foreground mb-1">
-                drag and drop or click to select
+                drag and drop, paste, or click to select
               </p>
               <p className="text-xs text-muted-foreground">
                 JPEG, PNG, WebP, HEIC · max 20MB

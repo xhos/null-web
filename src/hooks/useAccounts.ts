@@ -141,11 +141,14 @@ export function useDeleteAccount() {
 }
 
 export function useAddAccountAlias() {
+  const userId = useUserId();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: ({ accountId, alias }: { accountId: bigint; alias: string }) =>
-      accountsApi.addAlias(accountId, alias),
+    mutationFn: ({ accountId, alias }: { accountId: bigint; alias: string }) => {
+      if (!userId) throw new Error("User not authenticated");
+      return accountsApi.addAlias(userId, accountId, alias);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
     },
@@ -160,11 +163,14 @@ export function useAddAccountAlias() {
 }
 
 export function useRemoveAccountAlias() {
+  const userId = useUserId();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: ({ accountId, alias }: { accountId: bigint; alias: string }) =>
-      accountsApi.removeAlias(accountId, alias),
+    mutationFn: ({ accountId, alias }: { accountId: bigint; alias: string }) => {
+      if (!userId) throw new Error("User not authenticated");
+      return accountsApi.removeAlias(userId, accountId, alias);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
     },
@@ -179,11 +185,14 @@ export function useRemoveAccountAlias() {
 }
 
 export function useSetAccountAliases() {
+  const userId = useUserId();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: ({ accountId, aliases }: { accountId: bigint; aliases: string[] }) =>
-      accountsApi.setAliases(accountId, aliases),
+    mutationFn: ({ accountId, aliases }: { accountId: bigint; aliases: string[] }) => {
+      if (!userId) throw new Error("User not authenticated");
+      return accountsApi.setAliases(userId, accountId, aliases);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
     },
@@ -202,6 +211,30 @@ export function useFindAccountByAlias() {
     (alias: string) => accountsApi.findByAlias(alias),
     []
   );
+}
+
+export function useMergeAccounts() {
+  const userId = useUserId();
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: async ({ primaryAccountId, secondaryAccountId }: { primaryAccountId: bigint; secondaryAccountId: bigint }) => {
+      if (!userId) throw new Error("User not authenticated");
+      return accountsApi.mergeAccounts(userId, primaryAccountId, secondaryAccountId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["accountBalance"] });
+    },
+  });
+
+  return {
+    mergeAccounts: mutation.mutate,
+    mergeAccountsAsync: mutation.mutateAsync,
+    isPending: mutation.isPending,
+    error: mutation.error,
+  };
 }
 
 export function useSetAnchorBalance() {

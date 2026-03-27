@@ -74,7 +74,7 @@ export function AccountDialog({
         setMainCurrency(account.mainCurrency || "USD");
         setColors(account.colors.length > 0 ? account.colors : ["#1f2937", "#3b82f6", "#10b981"]);
         setInitialBalance("0");
-        setAliases(account.aliases);
+        setAliases(account.aliases.filter((a) => a !== account.name));
       } else {
         setName("");
         setFriendlyName("");

@@ -77,8 +77,14 @@ export function ReceiptDetailDialog({ receipt, linkCandidates, open, onOpenChang
               <div className="text-lg font-semibold">
                 {receipt.merchant || "unknown merchant"}
               </div>
-              {receipt.receiptDate && (
-                <Muted size="sm">{formatReceiptDate(receipt.receiptDate)}</Muted>
+              {(receipt.bestDate ?? receipt.receiptDate) && (
+                <Muted size="sm">{formatReceiptDate(receipt.bestDate ?? receipt.receiptDate)}</Muted>
+              )}
+              {receipt.bestDate && receipt.receiptDate && (
+                <Muted size="xs">OCR date: {formatReceiptDate(receipt.receiptDate)}</Muted>
+              )}
+              {receipt.imageTakenAt && (
+                <Muted size="xs">photo taken: {formatTimestamp(receipt.imageTakenAt)}</Muted>
               )}
             </VStack>
 

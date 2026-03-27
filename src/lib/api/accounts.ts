@@ -9,6 +9,7 @@ import {
   RemoveAccountAliasRequestSchema,
   SetAccountAliasesRequestSchema,
   FindAccountByAliasRequestSchema,
+  MergeAccountsRequestSchema,
 } from "@/gen/null/v1/account_services_pb";
 import { AccountType } from "@/gen/null/v1/enums_pb";
 
@@ -97,18 +98,18 @@ export const accountsApi = {
     await accountClient.deleteAccount(request);
   },
 
-  async addAlias(accountId: bigint, alias: string) {
-    const request = create(AddAccountAliasRequestSchema, { accountId, alias });
+  async addAlias(userId: string, accountId: bigint, alias: string) {
+    const request = create(AddAccountAliasRequestSchema, { userId, accountId, alias });
     await accountClient.addAccountAlias(request);
   },
 
-  async removeAlias(accountId: bigint, alias: string) {
-    const request = create(RemoveAccountAliasRequestSchema, { accountId, alias });
+  async removeAlias(userId: string, accountId: bigint, alias: string) {
+    const request = create(RemoveAccountAliasRequestSchema, { userId, accountId, alias });
     await accountClient.removeAccountAlias(request);
   },
 
-  async setAliases(accountId: bigint, aliases: string[]) {
-    const request = create(SetAccountAliasesRequestSchema, { accountId, aliases });
+  async setAliases(userId: string, accountId: bigint, aliases: string[]) {
+    const request = create(SetAccountAliasesRequestSchema, { userId, accountId, aliases });
     await accountClient.setAccountAliases(request);
   },
 
@@ -116,6 +117,16 @@ export const accountsApi = {
     const request = create(FindAccountByAliasRequestSchema, { alias });
     const response = await accountClient.findAccountByAlias(request);
     return response.account;
+  },
+
+  async mergeAccounts(userId: string, primaryAccountId: bigint, secondaryAccountId: bigint) {
+    const request = create(MergeAccountsRequestSchema, {
+      userId,
+      primaryAccountId,
+      secondaryAccountId,
+    });
+    const response = await accountClient.mergeAccounts(request);
+    return response;
   },
 
   async setAnchorBalance(data: SetAnchorBalanceInput) {

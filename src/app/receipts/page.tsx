@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { PageContainer, PageContent, PageHeaderWithTitle } from "@/components/ui/layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,13 +13,13 @@ import { ReceiptDetailDialog } from "./components/ReceiptDetailDialog";
 import { useReceipt } from "@/hooks/useReceipts";
 
 export default function ReceiptsPage() {
+  const queryClient = useQueryClient();
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [duplicateReceiptId, setDuplicateReceiptId] = useState<bigint | null>(null);
   const { data: duplicateReceiptData, isLoading: isDuplicateLoading } = useReceipt(duplicateReceiptId);
 
   const handleRefresh = () => {
-    setRefreshTrigger((prev) => prev + 1);
+    queryClient.invalidateQueries({ queryKey: ["receipts"] });
   };
 
   const handleUploadComplete = () => {
@@ -57,7 +58,7 @@ export default function ReceiptsPage() {
 
           {/* Main content */}
           <div className="flex-1 min-w-0 xl:order-2">
-            <ReceiptList refreshTrigger={refreshTrigger} />
+            <ReceiptList />
           </div>
 
           {/* Desktop sidebar */}

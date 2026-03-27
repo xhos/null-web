@@ -10,6 +10,7 @@ import { Trash2, Link as LinkIcon, Loader2, CheckCircle2, XCircle, Clock, Refres
 import { useReceipts, useReceipt } from "@/hooks/useReceipts";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatAmount } from "@/lib/utils/transaction";
+import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -40,7 +41,7 @@ const statusConfig = {
   [ReceiptStatus.LINKED]: {
     label: "linked",
     className: "bg-green-500/10 text-green-600 border-green-500/30",
-    icon: CheckCircle2,
+    icon: LinkIcon,
     animate: false,
   },
   [ReceiptStatus.FAILED]: {
@@ -64,6 +65,14 @@ function formatReceiptDate(date?: { year: number; month?: number; day?: number }
   return `${day}.${month}.${date.year}`;
 }
 
+function formatShortTimestamp(ts?: Timestamp) {
+  if (!ts?.seconds) return null;
+  return new globalThis.Date(Number(ts.seconds) * 1000).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+  });
+}
+
 export function ReceiptItem({ receipt }: ReceiptItemProps) {
   const [selectedReceiptId, setSelectedReceiptId] = useState<bigint | null>(null);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
@@ -76,7 +85,7 @@ export function ReceiptItem({ receipt }: ReceiptItemProps) {
   const StatusIcon = status.icon;
   const isFailed = receipt.status === ReceiptStatus.FAILED;
   const isViewable = receipt.status === ReceiptStatus.PARSED || receipt.status === ReceiptStatus.LINKED;
-  const formattedDate = formatReceiptDate(receipt.receiptDate);
+  const formattedDate = formatReceiptDate(receipt.bestDate ?? receipt.receiptDate);
 
   const handleDelete = () => {
     deleteReceipt(receipt.id);
@@ -98,14 +107,24 @@ export function ReceiptItem({ receipt }: ReceiptItemProps) {
             <HStack spacing="md" justify="between" align="start">
               <VStack spacing="xs" className="flex-1 min-w-0">
                 <div className="text-sm font-semibold truncate">
-                  {receipt.merchant || "unknown merchant"}
+                  {receipt.merchant || (
+                    <span className="bg-gradient-to-r from-muted-foreground/40 via-muted-foreground to-muted-foreground/40 bg-[length:200%_100%] bg-clip-text text-transparent animate-[shimmer_2s_linear_infinite] font-normal">
+                      figuring it out...
+                    </span>
+                  )}
                 </div>
                 <HStack spacing="xs" className="text-xs text-muted-foreground flex-wrap">
                   {formattedDate && <span>{formattedDate}</span>}
-                  {receipt.items && receipt.items.length > 0 && receipt.status === ReceiptStatus.PARSED && (
+                  {receipt.items && receipt.items.length > 0 && (receipt.status === ReceiptStatus.PARSED || receipt.status === ReceiptStatus.LINKED) && (
                     <>
                       {formattedDate && <span>·</span>}
                       <span>{receipt.items.length} item{receipt.items.length !== 1 ? "s" : ""}</span>
+                    </>
+                  )}
+                  {receipt.imageTakenAt && (
+                    <>
+                      <span>·</span>
+                      <span>photo {formatShortTimestamp(receipt.imageTakenAt)}</span>
                     </>
                   )}
                   {receipt.confidence && receipt.status === ReceiptStatus.PARSED && (
@@ -114,7 +133,6 @@ export function ReceiptItem({ receipt }: ReceiptItemProps) {
                       <span className="font-mono tabular-nums">{Math.round(receipt.confidence * 100)}% confidence</span>
                     </>
                   )}
-                  {receipt.transactionId && <LinkIcon className="h-3 w-3" />}
                 </HStack>
               </VStack>
 

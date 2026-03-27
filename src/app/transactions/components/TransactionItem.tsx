@@ -27,7 +27,10 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { FileText, Edit, Trash2, Copy } from "lucide-react";
+import { FileText, Edit, Trash2, Copy, ReceiptText } from "lucide-react";
+import { useState } from "react";
+import { ReceiptDetailDialog } from "@/app/receipts/components/ReceiptDetailDialog";
+import { useReceipt } from "@/hooks/useReceipts";
 
 interface TransactionItemProps {
   transaction: Transaction;
@@ -56,6 +59,11 @@ export function TransactionItem({
       onSelect(transaction.id, globalIndex, event);
     }
   };
+
+  const [receiptDialogOpen, setReceiptDialogOpen] = useState(false);
+  const { data: receiptData, isLoading: isReceiptLoading } = useReceipt(
+    receiptDialogOpen && transaction.receiptId ? transaction.receiptId : null
+  );
 
   const handleCopyMerchant = () => {
     const merchantName = transaction.merchant || transaction.description || "";
@@ -143,7 +151,26 @@ export function TransactionItem({
                       {getAccountDisplayName(transaction.accountId, transaction.accountName)}
                     </Muted>
                   )}
-                  <Muted size="xs">{formatTime(transaction.txDate)}</Muted>
+                  <HStack spacing="sm" align="center">
+                    {transaction.receiptId && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setReceiptDialogOpen(true); }}
+                              className="text-emerald-500 hover:text-emerald-400 transition-colors duration-150"
+                            >
+                              <ReceiptText className="h-3.5 w-3.5" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>receipt verified</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                    <Muted size="xs">{formatTime(transaction.txDate)}</Muted>
+                  </HStack>
                 </VStack>
               </VStack>
             </HStack>
@@ -163,6 +190,12 @@ export function TransactionItem({
               Edit
             </ContextMenuItem>
           )}
+          {transaction.receiptId && (
+            <ContextMenuItem onClick={() => setReceiptDialogOpen(true)}>
+              <ReceiptText className="mr-2 h-4 w-4" />
+              View Receipt
+            </ContextMenuItem>
+          )}
           <ContextMenuItem onClick={handleCopyMerchant}>
             <Copy className="mr-2 h-4 w-4" />
             Copy Name
@@ -175,6 +208,16 @@ export function TransactionItem({
           )}
         </ContextMenuContent>
       </ContextMenu>
+
+      {transaction.receiptId && (
+        <ReceiptDetailDialog
+          receipt={receiptData?.receipt ?? null}
+          linkCandidates={receiptData?.linkCandidates}
+          open={receiptDialogOpen}
+          onOpenChange={setReceiptDialogOpen}
+          isLoading={isReceiptLoading}
+        />
+      )}
     </div>
   );
 }
