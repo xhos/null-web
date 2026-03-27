@@ -26,6 +26,7 @@ const accountTypeOptions = [
   { value: AccountType.ACCOUNT_CREDIT_CARD, label: "credit card" },
   { value: AccountType.ACCOUNT_INVESTMENT, label: "investment" },
   { value: AccountType.ACCOUNT_OTHER, label: "other" },
+  { value: AccountType.ACCOUNT_FRIEND, label: "friend" },
 ];
 
 export default function AccountForm({ account, onSubmit, onCancel, isLoading }: AccountFormProps) {

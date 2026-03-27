@@ -6,7 +6,23 @@ import {
   type UpdateAccountInput,
   type SetAnchorBalanceInput,
 } from "@/lib/api/accounts";
+import { transactionsApi } from "@/lib/api/transactions";
 import { useUserId } from "./useSession";
+
+export function useAccountHasTransactions(accountId: bigint | null | undefined) {
+  const userId = useUserId();
+
+  return useQuery({
+    queryKey: ["accountHasTransactions", accountId?.toString()],
+    queryFn: async () => {
+      if (!userId || !accountId) return false;
+      const result = await transactionsApi.list({ userId, accountId, limit: 1 });
+      return result.transactions.length > 0;
+    },
+    enabled: !!userId && !!accountId,
+    staleTime: 60 * 1000,
+  });
+}
 
 export function useAccounts() {
   const userId = useUserId();

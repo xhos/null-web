@@ -40,7 +40,7 @@ export default function AccountCard({ account, getAccountTypeName, onClick, onEd
 
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: balance.currencyCode || account.mainCurrency || "USD",
+      currency: account.mainCurrency || balance.currencyCode,
     }).format(totalAmount);
   };
 

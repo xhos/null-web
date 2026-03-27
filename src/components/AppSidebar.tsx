@@ -13,6 +13,7 @@ import {
   Moon,
   Sun,
   ChevronsUpDown,
+  Users,
 } from "lucide-react";
 import {
   Sidebar,
@@ -42,6 +43,7 @@ const navigationItems = [
   { title: "transactions", url: "/transactions", icon: ArrowLeftRight },
   { title: "receipts", url: "/receipts", icon: Receipt },
   { title: "accounts", url: "/accounts", icon: Landmark },
+  { title: "friends", url: "/friends", icon: Users },
   { title: "categories", url: "/categories", icon: Tag },
   { title: "rules", url: "/rules", icon: Zap },
 ];

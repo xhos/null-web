@@ -20,6 +20,7 @@ interface TransactionListProps {
   onEditTransaction?: (transaction: Transaction) => void;
   onDeleteTransaction?: (transaction: Transaction) => void;
   onViewDetails?: (transaction: Transaction) => void;
+  onSplitTransaction?: (transaction: Transaction) => void;
 }
 
 function throttle(func: (...args: unknown[]) => void, limit: number) {
@@ -33,7 +34,7 @@ function throttle(func: (...args: unknown[]) => void, limit: number) {
   };
 }
 
-export function TransactionList({ accountId, searchQuery, filters, onSelectionChange, onEditTransaction, onDeleteTransaction, onViewDetails }: TransactionListProps) {
+export function TransactionList({ accountId, searchQuery, filters, onSelectionChange, onEditTransaction, onDeleteTransaction, onViewDetails, onSplitTransaction }: TransactionListProps) {
   const {
     transactions,
     isLoading,
@@ -48,8 +49,29 @@ export function TransactionList({ accountId, searchQuery, filters, onSelectionCh
   const observerRef = useRef<IntersectionObserver | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
+  // Group splits under their source transaction when both are in the list.
+  // This hides split rows from the top level and renders them inline.
+  const { splitMap, topLevelTransactions } = useMemo(() => {
+    const sourceIdsInList = new Set(transactions.map((t) => t.id.toString()));
+    const map = new Map<string, Transaction[]>();
+
+    for (const tx of transactions) {
+      if (tx.splitFromId && sourceIdsInList.has(tx.splitFromId.toString())) {
+        const key = tx.splitFromId.toString();
+        if (!map.has(key)) map.set(key, []);
+        map.get(key)!.push(tx);
+      }
+    }
+
+    const topLevel = transactions.filter(
+      (tx) => !tx.splitFromId || !sourceIdsInList.has(tx.splitFromId.toString())
+    );
+
+    return { splitMap: map, topLevelTransactions: topLevel };
+  }, [transactions]);
+
   const { isSelected, toggleSelection, hasSelection, toggleItems } = useMultiSelect({
-    items: transactions,
+    items: topLevelTransactions,
     getId: (transaction) => transaction.id,
   });
 
@@ -98,8 +120,8 @@ export function TransactionList({ accountId, searchQuery, filters, onSelectionCh
   );
 
   const selectedTransactions = useMemo(
-    () => transactions.filter((transaction) => isSelected(transaction.id)),
-    [transactions, isSelected]
+    () => topLevelTransactions.filter((transaction) => isSelected(transaction.id)),
+    [topLevelTransactions, isSelected]
   );
 
   useEffect(() => {
@@ -166,7 +188,7 @@ export function TransactionList({ accountId, searchQuery, filters, onSelectionCh
     );
   }
 
-  const groupedTransactions = groupTransactionsByDay(transactions);
+  const groupedTransactions = groupTransactionsByDay(topLevelTransactions);
 
     if (groupedTransactions.length === 0) {
       return (
@@ -240,6 +262,8 @@ export function TransactionList({ accountId, searchQuery, filters, onSelectionCh
                       onEdit={onEditTransaction}
                       onDelete={onDeleteTransaction}
                       onViewDetails={onViewDetails}
+                      onSplit={onSplitTransaction}
+                      inlineSplits={splitMap.get(transaction.id.toString())}
                     />
                   );
                 })}

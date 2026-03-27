@@ -27,7 +27,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { FileText, Edit, Trash2, Copy, ReceiptText } from "lucide-react";
+import { FileText, Edit, Trash2, Copy, ReceiptText, Split } from "lucide-react";
 import { useState } from "react";
 import { ReceiptDetailDialog } from "@/app/receipts/components/ReceiptDetailDialog";
 import { useReceipt } from "@/hooks/useReceipts";
@@ -41,6 +41,8 @@ interface TransactionItemProps {
   onEdit?: (transaction: Transaction) => void;
   onDelete?: (transaction: Transaction) => void;
   onViewDetails?: (transaction: Transaction) => void;
+  onSplit?: (transaction: Transaction) => void;
+  inlineSplits?: Transaction[];
 }
 
 export function TransactionItem({
@@ -52,6 +54,8 @@ export function TransactionItem({
   onEdit,
   onDelete,
   onViewDetails,
+  onSplit,
+  inlineSplits,
 }: TransactionItemProps) {
   const handleClick = (event: React.MouseEvent) => {
     if (event.ctrlKey || event.metaKey || event.shiftKey) {
@@ -75,6 +79,8 @@ export function TransactionItem({
   const merchantInfo = getMerchantStatus(transaction);
   const amount = formatAmount(transaction.txAmount);
   const formattedAmount = formatCurrency(amount, transaction.txAmount?.currencyCode);
+
+  const hasSplits = inlineSplits && inlineSplits.length > 0;
 
   return (
     <div className="relative">
@@ -139,11 +145,35 @@ export function TransactionItem({
 
               {/* Right: Amount & Account/Time */}
               <VStack spacing="sm" align="end" className="shrink-0">
-                <Amount
-                  value={parseFloat(formattedAmount.replace(/[^0-9.-]/g, ''))}
-                  variant={directionInfo.label === "in" ? "positive" : "negative"}
-                  className="text-lg"
-                />
+                {transaction.foreignAmount ? (
+                  <VStack spacing="xs" align="end">
+                    <Amount
+                      value={formatAmount(transaction.foreignAmount)}
+                      currency={transaction.foreignAmount.currencyCode}
+                      variant={directionInfo.label === "in" ? "positive" : "negative"}
+                      className="text-lg"
+                    />
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Muted size="xs" className="font-mono cursor-help">
+                            {formatCurrency(amount, transaction.txAmount?.currencyCode)}
+                          </Muted>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>rate: {transaction.exchangeRate}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </VStack>
+                ) : (
+                  <Amount
+                    value={amount}
+                    currency={transaction.txAmount?.currencyCode}
+                    variant={directionInfo.label === "in" ? "positive" : "negative"}
+                    className="text-lg"
+                  />
+                )}
 
                 <VStack spacing="xs" align="end">
                   {transaction.accountId && (
@@ -174,6 +204,36 @@ export function TransactionItem({
                 </VStack>
               </VStack>
             </HStack>
+
+            {/* Inline splits */}
+            {hasSplits && (
+              <div className="mt-3 pt-2.5 border-t border-border/60 space-y-1.5">
+                {inlineSplits.map((split) => {
+                  const splitAmount = formatCurrency(
+                    formatAmount(split.txAmount),
+                    split.txAmount?.currencyCode
+                  );
+                  return (
+                    <HStack key={split.id.toString()} justify="between" align="center">
+                      <Muted size="xs">
+                        {getAccountDisplayName(split.accountId, split.accountName)}
+                      </Muted>
+                      <HStack spacing="sm" align="center">
+                        {split.forgiven && (
+                          <span className="text-[10px] text-muted-foreground/50 italic">forgiven</span>
+                        )}
+                        <Muted
+                          size="xs"
+                          className={cn("font-mono", split.forgiven && "line-through opacity-40")}
+                        >
+                          {splitAmount}
+                        </Muted>
+                      </HStack>
+                    </HStack>
+                  );
+                })}
+              </div>
+            )}
           </Card>
         </ContextMenuTrigger>
 
@@ -188,6 +248,12 @@ export function TransactionItem({
             <ContextMenuItem onClick={() => onEdit(transaction)}>
               <Edit className="mr-2 h-4 w-4" />
               Edit
+            </ContextMenuItem>
+          )}
+          {onSplit && (
+            <ContextMenuItem onClick={() => onSplit(transaction)}>
+              <Split className="mr-2 h-4 w-4" />
+              {hasSplits ? "Re-split" : "Split"}
             </ContextMenuItem>
           )}
           {transaction.receiptId && (

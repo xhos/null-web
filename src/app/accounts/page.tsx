@@ -43,6 +43,8 @@ const getAccountTypeName = (accountType: AccountType): string => {
       return "investment";
     case AccountType.ACCOUNT_OTHER:
       return "other";
+    case AccountType.ACCOUNT_FRIEND:
+      return "friend";
     default:
       return "unknown";
   }

@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { useTransactionsQuery } from "@/hooks/useTransactionsQuery";
 import { TransactionDetailsDialog } from "./components/TransactionDetailsDialog";
 import { TransactionFiltersPanel, type TransactionFilters } from "./components/TransactionFiltersPanel";
+import { SplitTransactionDialog } from "./components/SplitTransactionDialog";
 
 export default function TransactionsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -28,6 +29,8 @@ export default function TransactionsPage() {
   const [selectedTransactions, setSelectedTransactions] = useState<Transaction[]>([]);
   const [detailsTransaction, setDetailsTransaction] = useState<Transaction | null>(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
+  const [splitTransaction, setSplitTransaction] = useState<Transaction | null>(null);
+  const [isSplitDialogOpen, setIsSplitDialogOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
@@ -117,6 +120,11 @@ export default function TransactionsPage() {
     setIsDetailsDialogOpen(true);
   };
 
+  const handleSplitTransaction = (transaction: Transaction) => {
+    setSplitTransaction(transaction);
+    setIsSplitDialogOpen(true);
+  };
+
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (filters.startDate || filters.endDate) count++;
@@ -189,6 +197,7 @@ export default function TransactionsPage() {
               onEditTransaction={handleEditTransaction}
               onDeleteTransaction={handleDeleteTransaction}
               onViewDetails={handleViewDetails}
+              onSplitTransaction={handleSplitTransaction}
             />
           </div>
 
@@ -262,6 +271,15 @@ export default function TransactionsPage() {
             {detailsTransaction && <TransactionDetailsDialog transaction={detailsTransaction} />}
           </DialogContent>
         </Dialog>
+
+        <SplitTransactionDialog
+          transaction={splitTransaction}
+          open={isSplitDialogOpen}
+          onOpenChange={(open) => {
+            setIsSplitDialogOpen(open);
+            if (!open) setSplitTransaction(null);
+          }}
+        />
       </PageContent>
     </PageContainer>
   );

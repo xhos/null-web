@@ -24,7 +24,8 @@ import { X } from "lucide-react";
 import { VStack, HStack, ErrorMessage, Muted, Caption } from "@/components/lib";
 import type { Account } from "@/gen/null/v1/account_pb";
 import { AccountType } from "@/gen/null/v1/enums_pb";
-import { useAddAccountAlias, useRemoveAccountAlias } from "@/hooks/useAccounts";
+import { useAddAccountAlias, useRemoveAccountAlias, useAccountHasTransactions } from "@/hooks/useAccounts";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface AccountDialogProps {
   open: boolean;
@@ -63,6 +64,7 @@ export function AccountDialog({
 
   const { addAliasAsync } = useAddAccountAlias();
   const { removeAliasAsync } = useRemoveAccountAlias();
+  const { data: hasTransactions } = useAccountHasTransactions(account?.id ?? null);
 
   useEffect(() => {
     if (open) {
@@ -244,28 +246,42 @@ export function AccountDialog({
                   <SelectItem value={AccountType.ACCOUNT_CREDIT_CARD.toString()}>credit card</SelectItem>
                   <SelectItem value={AccountType.ACCOUNT_INVESTMENT.toString()}>investment</SelectItem>
                   <SelectItem value={AccountType.ACCOUNT_OTHER.toString()}>other</SelectItem>
+                  <SelectItem value={AccountType.ACCOUNT_FRIEND.toString()}>friend</SelectItem>
                 </SelectContent>
               </Select>
             </VStack>
 
             <VStack spacing="xs">
               <Label htmlFor="currency">currency</Label>
-              <Select
-                value={mainCurrency}
-                onValueChange={setMainCurrency}
-                disabled={isLoading}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="USD">USD</SelectItem>
-                  <SelectItem value="CAD">CAD</SelectItem>
-                  <SelectItem value="EUR">EUR</SelectItem>
-                  <SelectItem value="GBP">GBP</SelectItem>
-                  <SelectItem value="JPY">JPY</SelectItem>
-                </SelectContent>
-              </Select>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div>
+                      <Select
+                        value={mainCurrency}
+                        onValueChange={setMainCurrency}
+                        disabled={isLoading || !!hasTransactions}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="USD">USD</SelectItem>
+                          <SelectItem value="CAD">CAD</SelectItem>
+                          <SelectItem value="EUR">EUR</SelectItem>
+                          <SelectItem value="GBP">GBP</SelectItem>
+                          <SelectItem value="JPY">JPY</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </TooltipTrigger>
+                  {hasTransactions && (
+                    <TooltipContent>
+                      <p>cannot change currency on accounts with transactions</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
             </VStack>
 
             <VStack spacing="xs">

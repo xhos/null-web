@@ -8,7 +8,8 @@ import { VStack, Caption, Muted, Text, HStack } from "@/components/lib";
 
 import type { Account } from "@/gen/null/v1/account_pb";
 import { AccountType } from "@/gen/null/v1/enums_pb";
-import { useAddAccountAlias, useRemoveAccountAlias } from "@/hooks/useAccounts";
+import { useAddAccountAlias, useRemoveAccountAlias, useAccountHasTransactions } from "@/hooks/useAccounts";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface EditAccountSidebarProps {
   account: Account | null;
@@ -46,6 +47,7 @@ export default function EditAccountSidebar({
   const [newAlias, setNewAlias] = useState("");
   const { addAliasAsync } = useAddAccountAlias();
   const { removeAliasAsync } = useRemoveAccountAlias();
+  const { data: hasTransactions } = useAccountHasTransactions(account?.id);
 
   const [editForm, setEditForm] = useState({
     name: "",
@@ -284,22 +286,35 @@ export default function EditAccountSidebar({
                 <option value={AccountType.ACCOUNT_CREDIT_CARD}>credit card</option>
                 <option value={AccountType.ACCOUNT_INVESTMENT}>investment</option>
                 <option value={AccountType.ACCOUNT_OTHER}>other</option>
+                <option value={AccountType.ACCOUNT_FRIEND}>friend</option>
               </select>
             </VStack>
 
             <VStack spacing="xs">
               <Caption>currency</Caption>
-              <select
-                value={editForm.mainCurrency}
-                onChange={(e) => setEditForm({ ...editForm, mainCurrency: e.target.value })}
-                className="rounded-sm border border-border bg-background text-sm h-8 px-3"
-              >
-                <option value="USD">USD</option>
-                <option value="CAD">CAD</option>
-                <option value="EUR">EUR</option>
-                <option value="GBP">GBP</option>
-                <option value="JPY">JPY</option>
-              </select>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <select
+                      value={editForm.mainCurrency}
+                      onChange={(e) => setEditForm({ ...editForm, mainCurrency: e.target.value })}
+                      disabled={!!hasTransactions}
+                      className="rounded-sm border border-border bg-background text-sm h-8 px-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <option value="USD">USD</option>
+                      <option value="CAD">CAD</option>
+                      <option value="EUR">EUR</option>
+                      <option value="GBP">GBP</option>
+                      <option value="JPY">JPY</option>
+                    </select>
+                  </TooltipTrigger>
+                  {hasTransactions && (
+                    <TooltipContent>
+                      <p>cannot change currency on accounts with transactions</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
             </VStack>
 
             <VStack spacing="xs">

@@ -150,6 +150,7 @@ export default function CreateAccountSidebar({
                 <option value={AccountType.ACCOUNT_CREDIT_CARD}>credit card</option>
                 <option value={AccountType.ACCOUNT_INVESTMENT}>investment</option>
                 <option value={AccountType.ACCOUNT_OTHER}>other</option>
+                <option value={AccountType.ACCOUNT_FRIEND}>friend</option>
               </select>
             </VStack>
 
