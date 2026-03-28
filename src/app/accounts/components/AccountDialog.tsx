@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { HexColorPicker } from "react-colorful";
-import { X } from "lucide-react";
+import { X, Check } from "lucide-react";
 import { VStack, HStack, ErrorMessage, Muted, Caption } from "@/components/lib";
 import type { Account } from "@/gen/null/v1/account_pb";
 import { AccountType } from "@/gen/null/v1/enums_pb";
@@ -61,6 +61,9 @@ export function AccountDialog({
   const [initialBalance, setInitialBalance] = useState("0");
   const [aliases, setAliases] = useState<string[]>([]);
   const [newAlias, setNewAlias] = useState("");
+  const [isAddingAlias, setIsAddingAlias] = useState(false);
+  const [justAddedAlias, setJustAddedAlias] = useState<string | null>(null);
+  const aliasInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -90,16 +93,26 @@ export function AccountDialog({
         setAliases([]);
       }
       setNewAlias("");
+      setIsAddingAlias(false);
+      setJustAddedAlias(null);
       setError(null);
     }
   }, [account, open]);
 
+  useEffect(() => {
+    if (isAddingAlias) aliasInputRef.current?.focus();
+  }, [isAddingAlias]);
+
   const handleAddAlias = async () => {
     if (!account || !newAlias.trim()) return;
     if (aliases.includes(newAlias.trim())) return;
-    await addAliasAsync({ accountId: account.id, alias: newAlias.trim() });
-    setAliases((prev) => [...prev, newAlias.trim()]);
+    const aliasToAdd = newAlias.trim();
     setNewAlias("");
+    setIsAddingAlias(false);
+    setJustAddedAlias(aliasToAdd);
+    await addAliasAsync({ accountId: account.id, alias: aliasToAdd });
+    setAliases((prev) => [...prev, aliasToAdd]);
+    setTimeout(() => setJustAddedAlias(null), 300);
   };
 
   const handleRemoveAlias = async (alias: string) => {
@@ -124,7 +137,7 @@ export function AccountDialog({
         bank,
         type,
         friendlyName: friendlyName || undefined,
-        mainCurrency,
+        mainCurrency: account && mainCurrency === account.mainCurrency ? undefined : mainCurrency,
         colors,
       };
 
@@ -147,154 +160,112 @@ export function AccountDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[540px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
           </DialogHeader>
           <VStack spacing="md" className="py-4">
-            <VStack spacing="xs">
-              <Label htmlFor="name">Name *</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="my checking account"
-                disabled={isLoading}
-                required
-              />
-            </VStack>
-
-            <VStack spacing="xs">
-              <Label htmlFor="friendlyName">friendly name</Label>
-              <Input
-                id="friendlyName"
-                value={friendlyName}
-                onChange={(e) => setFriendlyName(e.target.value)}
-                placeholder="Display name (optional)"
-                disabled={isLoading}
-              />
-            </VStack>
-
-            {account && (
+            <div className="grid grid-cols-2 gap-3">
               <VStack spacing="xs">
-                <Label>aliases</Label>
-                <VStack spacing="xs">
-                  {aliases.length > 0 && (
-                    <div className="max-h-36 overflow-y-auto space-y-1">
-                      {aliases.map((alias) => (
-                        <HStack key={alias} spacing="sm" justify="between" align="center" className="rounded border px-3 py-1.5">
-                          <Muted size="sm" className="font-mono truncate">{alias}</Muted>
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveAlias(alias)}
-                            disabled={isLoading}
-                            className="flex-shrink-0 text-muted-foreground hover:text-destructive transition-colors duration-150"
-                          >
-                            <X className="h-3.5 w-3.5" />
-                          </button>
-                        </HStack>
-                      ))}
-                    </div>
-                  )}
-                  <HStack spacing="sm">
-                    <Input
-                      value={newAlias}
-                      onChange={(e) => setNewAlias(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddAlias())}
-                      placeholder="add alias"
-                      disabled={isLoading}
-                      className="h-8 text-sm font-mono"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={handleAddAlias}
-                      disabled={isLoading || !newAlias.trim()}
-                    >
-                      add
-                    </Button>
-                  </HStack>
-                </VStack>
+                <Label htmlFor="name">name *</Label>
+                <Input
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="my checking account"
+                  disabled={isLoading}
+                  required
+                />
               </VStack>
-            )}
+              <VStack spacing="xs">
+                <Label htmlFor="bank">bank *</Label>
+                <Input
+                  id="bank"
+                  value={bank}
+                  onChange={(e) => setBank(e.target.value)}
+                  placeholder="chase"
+                  disabled={isLoading}
+                  required
+                />
+              </VStack>
+            </div>
 
-            <VStack spacing="xs">
-              <Label htmlFor="bank">Bank *</Label>
-              <Input
-                id="bank"
-                value={bank}
-                onChange={(e) => setBank(e.target.value)}
-                placeholder="chase"
-                disabled={isLoading}
-                required
-              />
-            </VStack>
+            <div className="grid grid-cols-2 gap-3">
+              <VStack spacing="xs">
+                <Label htmlFor="type">type</Label>
+                <Select
+                  value={type.toString()}
+                  onValueChange={(value) => setType(parseInt(value) as AccountType)}
+                  disabled={isLoading}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={AccountType.ACCOUNT_CHEQUING.toString()}>chequing</SelectItem>
+                    <SelectItem value={AccountType.ACCOUNT_SAVINGS.toString()}>savings</SelectItem>
+                    <SelectItem value={AccountType.ACCOUNT_CREDIT_CARD.toString()}>credit card</SelectItem>
+                    <SelectItem value={AccountType.ACCOUNT_INVESTMENT.toString()}>investment</SelectItem>
+                    <SelectItem value={AccountType.ACCOUNT_OTHER.toString()}>other</SelectItem>
+                    <SelectItem value={AccountType.ACCOUNT_FRIEND.toString()}>friend</SelectItem>
+                  </SelectContent>
+                </Select>
+              </VStack>
+              <VStack spacing="xs">
+                <Label htmlFor="currency">currency</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Select
+                          value={mainCurrency}
+                          onValueChange={setMainCurrency}
+                          disabled={isLoading || !!hasTransactions}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {currencies.map(({ code }) => (
+                              <SelectItem key={code} value={code}>{code}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </TooltipTrigger>
+                    {hasTransactions && (
+                      <TooltipContent>
+                        <p>cannot change currency on accounts with transactions</p>
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                </TooltipProvider>
+              </VStack>
+            </div>
 
-            <VStack spacing="xs">
-              <Label htmlFor="type">type</Label>
-              <Select
-                value={type.toString()}
-                onValueChange={(value) => setType(parseInt(value) as AccountType)}
-                disabled={isLoading}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={AccountType.ACCOUNT_CHEQUING.toString()}>chequing</SelectItem>
-                  <SelectItem value={AccountType.ACCOUNT_SAVINGS.toString()}>savings</SelectItem>
-                  <SelectItem value={AccountType.ACCOUNT_CREDIT_CARD.toString()}>credit card</SelectItem>
-                  <SelectItem value={AccountType.ACCOUNT_INVESTMENT.toString()}>investment</SelectItem>
-                  <SelectItem value={AccountType.ACCOUNT_OTHER.toString()}>other</SelectItem>
-                  <SelectItem value={AccountType.ACCOUNT_FRIEND.toString()}>friend</SelectItem>
-                </SelectContent>
-              </Select>
-            </VStack>
-
-            <VStack spacing="xs">
-              <Label htmlFor="currency">currency</Label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div>
-                      <Select
-                        value={mainCurrency}
-                        onValueChange={setMainCurrency}
-                        disabled={isLoading || !!hasTransactions}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {currencies.map(({ code }) => (
-                            <SelectItem key={code} value={code}>{code}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </TooltipTrigger>
-                  {hasTransactions && (
-                    <TooltipContent>
-                      <p>cannot change currency on accounts with transactions</p>
-                    </TooltipContent>
-                  )}
-                </Tooltip>
-              </TooltipProvider>
-            </VStack>
-
-            <VStack spacing="xs">
-              <Label>colors</Label>
-              <HStack spacing="sm">
-                {colors.map((color, index) => (
-                  <VStack key={index} spacing="xs" align="center">
-                    <Popover>
+            <div className="flex gap-3 items-end">
+              <VStack spacing="xs" className="flex-1">
+                <Label htmlFor="friendlyName">friendly name</Label>
+                <Input
+                  id="friendlyName"
+                  value={friendlyName}
+                  onChange={(e) => setFriendlyName(e.target.value)}
+                  placeholder="display name (optional)"
+                  disabled={isLoading}
+                />
+              </VStack>
+              <VStack spacing="xs">
+                <Label>colors</Label>
+                <HStack spacing="xs" className="h-9 items-center">
+                  {colors.map((color, index) => (
+                    <Popover key={index}>
                       <PopoverTrigger asChild>
                         <button
                           type="button"
                           disabled={isLoading}
-                          className="h-12 w-12 cursor-pointer rounded border flex-shrink-0"
+                          title={index === 0 ? "primary" : index === 1 ? "secondary" : "tertiary"}
+                          className="h-9 w-9 cursor-pointer rounded border flex-shrink-0"
                           style={{ backgroundColor: color }}
                         />
                       </PopoverTrigger>
@@ -309,17 +280,14 @@ export function AccountDialog({
                         />
                       </PopoverContent>
                     </Popover>
-                    <Caption size="xs">
-                      {index === 0 ? "primary" : index === 1 ? "secondary" : "tertiary"}
-                    </Caption>
-                  </VStack>
-                ))}
-              </HStack>
-            </VStack>
+                  ))}
+                </HStack>
+              </VStack>
+            </div>
 
             {!account && (
               <VStack spacing="xs">
-                <Label htmlFor="initialBalance">initial balance *</Label>
+                <Label htmlFor="initialBalance">initial balance</Label>
                 <Input
                   id="initialBalance"
                   type="number"
@@ -330,6 +298,78 @@ export function AccountDialog({
                   disabled={isLoading}
                   required
                 />
+              </VStack>
+            )}
+
+            {account && (
+              <VStack spacing="xs" className="min-w-0">
+                <Label>aliases</Label>
+                <div className="flex flex-wrap gap-1.5">
+                  {aliases.map((alias) => (
+                    <div
+                      key={alias}
+                      className={`flex items-center gap-1 rounded border px-2 py-1 shrink-0 ${justAddedAlias === alias ? "animate-in fade-in duration-200" : ""}`}
+                      onAuxClick={(e) => e.button === 1 && handleRemoveAlias(alias)}
+                    >
+                      <span className="text-sm font-mono">{alias}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveAlias(alias)}
+                        disabled={isLoading}
+                        className="text-muted-foreground hover:text-destructive transition-colors duration-150"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                  <div
+                    className={`relative flex items-center overflow-hidden rounded transition-all duration-200 ease-in-out ${
+                      isAddingAlias ? "border gap-1 px-2 py-1 w-36" : "w-6 h-6"
+                    }`}
+                  >
+                    <span
+                      className={`absolute inset-0 flex items-center justify-center transition-opacity duration-150 ${
+                        isAddingAlias ? "opacity-0 pointer-events-none" : "opacity-100"
+                      }`}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setIsAddingAlias(true)}
+                        disabled={isLoading}
+                        className="text-muted-foreground hover:text-foreground transition-colors duration-150"
+                      >
+                        <span className="text-base leading-none">+</span>
+                      </button>
+                    </span>
+                    <span
+                      className={`flex items-center gap-1 transition-opacity duration-150 ${
+                        isAddingAlias ? "opacity-100" : "opacity-0 pointer-events-none"
+                      }`}
+                    >
+                      <input
+                        ref={aliasInputRef}
+                        value={newAlias}
+                        onChange={(e) => setNewAlias(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") { e.preventDefault(); handleAddAlias(); }
+                          if (e.key === "Escape") { setIsAddingAlias(false); setNewAlias(""); }
+                        }}
+                        onBlur={() => { if (!newAlias.trim()) { setIsAddingAlias(false); } }}
+                        placeholder="alias"
+                        disabled={isLoading}
+                        className="text-sm font-mono bg-transparent outline-none w-full placeholder:text-muted-foreground"
+                      />
+                      <button
+                        type="button"
+                        onMouseDown={(e) => { e.preventDefault(); handleAddAlias(); }}
+                        disabled={isLoading || !newAlias.trim()}
+                        className="text-muted-foreground hover:text-foreground transition-colors duration-150 disabled:opacity-30 shrink-0"
+                      >
+                        <Check className="h-3 w-3" />
+                      </button>
+                    </span>
+                  </div>
+                </div>
               </VStack>
             )}
 
