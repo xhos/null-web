@@ -48,9 +48,9 @@ export function UploadReceiptDialog({
       return;
     }
 
-    const maxSizeBytes = 20 * 1024 * 1024;
+    const maxSizeBytes = 16 * 1024 * 1024;
     if (file.size > maxSizeBytes) {
-      setError("file too large. maximum size is 20MB.");
+      setError("file too large. maximum size is 16MB.");
       return;
     }
 
@@ -160,7 +160,7 @@ export function UploadReceiptDialog({
                 drag and drop, paste, or click to select
               </p>
               <p className="text-xs text-muted-foreground">
-                JPEG, PNG, WebP, HEIC · max 20MB
+                JPEG, PNG, WebP, HEIC · max 16MB
               </p>
               <input
                 ref={fileInputRef}

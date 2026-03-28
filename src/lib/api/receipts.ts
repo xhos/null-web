@@ -6,6 +6,7 @@ import {
   GetReceiptRequestSchema,
   UpdateReceiptRequestSchema,
   DeleteReceiptRequestSchema,
+  RetryParseReceiptRequestSchema,
 } from "@/gen/null/v1/receipt_services_pb";
 import type { ReceiptStatus } from "@/gen/null/v1/receipt_pb";
 
@@ -97,10 +98,13 @@ export const receiptsApi = {
   },
 
   async delete(userId: string, id: bigint) {
-    const request = create(DeleteReceiptRequestSchema, {
-      userId,
-      id,
-    });
+    const request = create(DeleteReceiptRequestSchema, { userId, id });
     await receiptClient.deleteReceipt(request);
+  },
+
+  async retryParse(userId: string, id: bigint) {
+    const request = create(RetryParseReceiptRequestSchema, { userId, id });
+    const response = await receiptClient.retryParseReceipt(request);
+    return response.receipt;
   },
 };

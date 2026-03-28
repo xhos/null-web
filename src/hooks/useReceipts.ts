@@ -48,6 +48,16 @@ export function useReceipts({ enabled = true, query, minTotalCents, maxTotalCent
     },
   });
 
+  const retryParseMutation = useMutation({
+    mutationFn: async (receiptId: bigint) => {
+      if (!userId) throw new Error("User not authenticated");
+      return receiptsApi.retryParse(userId, receiptId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["receipts"] });
+    },
+  });
+
   return {
     receipts: receiptsQuery.data?.receipts ?? [],
     totalCount: receiptsQuery.data?.totalCount ?? BigInt(0),
@@ -57,6 +67,8 @@ export function useReceipts({ enabled = true, query, minTotalCents, maxTotalCent
     deleteReceipt: deleteReceiptMutation.mutate,
     isDeleting: deleteReceiptMutation.isPending,
     deleteError: deleteReceiptMutation.error,
+    retryParse: retryParseMutation.mutate,
+    isRetrying: retryParseMutation.isPending,
   };
 }
 

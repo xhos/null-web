@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { HStack, VStack, Amount } from "@/components/lib";
 import { Trash2, Link as LinkIcon, Loader2, CheckCircle2, XCircle, Clock, RefreshCw, Image as ImageIcon, FileText } from "lucide-react";
 import { useReceipts, useReceipt } from "@/hooks/useReceipts";
-import { useQueryClient } from "@tanstack/react-query";
 import { formatAmount, formatCurrency } from "@/lib/utils/transaction";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import {
@@ -19,7 +18,6 @@ import {
 } from "@/components/ui/context-menu";
 import { ReceiptDetailDialog } from "./ReceiptDetailDialog";
 import { ReceiptImageDialog } from "./ReceiptImageDialog";
-import { UploadReceiptDialog } from "./UploadReceiptDialog";
 
 interface ReceiptItemProps {
   receipt: Receipt;
@@ -76,9 +74,7 @@ function formatMoney(amount?: { units?: string | bigint; nanos?: number; currenc
 export function ReceiptItem({ receipt }: ReceiptItemProps) {
   const [selectedReceiptId, setSelectedReceiptId] = useState<bigint | null>(null);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
-  const [isRetryDialogOpen, setIsRetryDialogOpen] = useState(false);
-  const { deleteReceipt, isDeleting } = useReceipts();
-  const queryClient = useQueryClient();
+  const { deleteReceipt, isDeleting, retryParse, isRetrying } = useReceipts();
   const { data: receiptDetail, isLoading: isLoadingDetail } = useReceipt(selectedReceiptId);
 
   const status = statusConfig[receipt.status];
@@ -94,10 +90,6 @@ export function ReceiptItem({ receipt }: ReceiptItemProps) {
     deleteReceipt(receipt.id);
   };
 
-  const handleRetryComplete = () => {
-    setIsRetryDialogOpen(false);
-    queryClient.invalidateQueries({ queryKey: ["receipts"] });
-  };
 
   return (
     <>
@@ -112,9 +104,9 @@ export function ReceiptItem({ receipt }: ReceiptItemProps) {
               <HStack justify="between" align="start" className="w-full">
                 <div className="text-sm font-semibold leading-snug flex-1 min-w-0 mr-2">
                   {receipt.merchant || (
-                    <span className="bg-gradient-to-r from-muted-foreground/40 via-muted-foreground to-muted-foreground/40 bg-[length:200%_100%] bg-clip-text text-transparent animate-[shimmer_2s_linear_infinite] font-normal">
-                      figuring it out...
-                    </span>
+                    isFailed
+                      ? <span className="text-muted-foreground font-normal">unknown</span>
+                      : <span className="bg-gradient-to-r from-muted-foreground/40 via-muted-foreground to-muted-foreground/40 bg-[length:200%_100%] bg-clip-text text-transparent animate-[shimmer_2s_linear_infinite] font-normal">figuring it out...</span>
                   )}
                 </div>
                 {formattedDate && (
@@ -191,7 +183,7 @@ export function ReceiptItem({ receipt }: ReceiptItemProps) {
             </ContextMenuItem>
           )}
           {isFailed && (
-            <ContextMenuItem onClick={() => setIsRetryDialogOpen(true)}>
+            <ContextMenuItem onClick={() => retryParse(receipt.id)} disabled={isRetrying}>
               <RefreshCw className="mr-2 h-4 w-4" />
               retry parsing
             </ContextMenuItem>
@@ -223,13 +215,6 @@ export function ReceiptItem({ receipt }: ReceiptItemProps) {
         />
       )}
 
-      {isFailed && (
-        <UploadReceiptDialog
-          open={isRetryDialogOpen}
-          onOpenChange={setIsRetryDialogOpen}
-          onUploadComplete={handleRetryComplete}
-        />
-      )}
     </>
   );
 }
