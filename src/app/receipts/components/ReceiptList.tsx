@@ -1,12 +1,16 @@
 "use client";
 
-import { useReceipts } from "@/hooks/useReceipts";
-import { VStack, EmptyState, LoadingSkeleton } from "@/components/lib";
+import { useReceipts, type ReceiptFilters } from "@/hooks/useReceipts";
+import { EmptyState, LoadingSkeleton } from "@/components/lib";
 import { ReceiptItem } from "./ReceiptItem";
 import { Receipt as ReceiptIcon } from "lucide-react";
 
-export function ReceiptList() {
-  const { receipts, isLoading, error } = useReceipts();
+interface ReceiptListProps {
+  filters?: ReceiptFilters;
+}
+
+export function ReceiptList({ filters }: ReceiptListProps) {
+  const { receipts, isLoading, error } = useReceipts(filters);
 
   if (isLoading) {
     return <LoadingSkeleton lines={5} />;
@@ -31,10 +35,12 @@ export function ReceiptList() {
   }
 
   return (
-    <VStack spacing="sm">
+    <div className="columns-[280px] gap-4">
       {receipts.map((receipt) => (
-        <ReceiptItem key={receipt.id.toString()} receipt={receipt} />
+        <div key={receipt.id.toString()} className="break-inside-avoid mb-4">
+          <ReceiptItem receipt={receipt} />
+        </div>
       ))}
-    </VStack>
+    </div>
   );
 }

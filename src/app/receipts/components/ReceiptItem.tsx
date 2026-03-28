@@ -9,7 +9,7 @@ import { HStack, VStack, Amount } from "@/components/lib";
 import { Trash2, Link as LinkIcon, Loader2, CheckCircle2, XCircle, Clock, RefreshCw, Image as ImageIcon, FileText } from "lucide-react";
 import { useReceipts, useReceipt } from "@/hooks/useReceipts";
 import { useQueryClient } from "@tanstack/react-query";
-import { formatAmount } from "@/lib/utils/transaction";
+import { formatAmount, formatCurrency } from "@/lib/utils/transaction";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import {
   ContextMenu,
@@ -58,19 +58,19 @@ const statusConfig = {
   },
 };
 
-function formatReceiptDate(date?: { year: number; month?: number; day?: number }) {
-  if (!date) return null;
-  const month = String(date.month || 1).padStart(2, "0");
-  const day = String(date.day || 1).padStart(2, "0");
-  return `${day}.${month}.${date.year}`;
-}
-
-function formatShortTimestamp(ts?: Timestamp) {
+function formatTimestampShort(ts?: Timestamp) {
   if (!ts?.seconds) return null;
   return new globalThis.Date(Number(ts.seconds) * 1000).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-  });
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).replace(/\//g, ".");
+}
+
+function formatMoney(amount?: { units?: string | bigint; nanos?: number; currencyCode?: string }, fallbackCurrency?: string) {
+  if (!amount) return null;
+  const value = formatAmount(amount);
+  return formatCurrency(value, amount.currencyCode || fallbackCurrency || "USD");
 }
 
 export function ReceiptItem({ receipt }: ReceiptItemProps) {
@@ -85,7 +85,10 @@ export function ReceiptItem({ receipt }: ReceiptItemProps) {
   const StatusIcon = status.icon;
   const isFailed = receipt.status === ReceiptStatus.FAILED;
   const isViewable = receipt.status === ReceiptStatus.PARSED || receipt.status === ReceiptStatus.LINKED;
-  const formattedDate = formatReceiptDate(receipt.bestDate ?? receipt.receiptDate);
+  const formattedDate = formatTimestampShort(receipt.createdAt);
+  const currency = receipt.total?.currencyCode || receipt.currency;
+  const hasItems = receipt.items && receipt.items.length > 0 && isViewable;
+  const visibleItems = hasItems ? receipt.items : [];
 
   const handleDelete = () => {
     deleteReceipt(receipt.id);
@@ -101,49 +104,62 @@ export function ReceiptItem({ receipt }: ReceiptItemProps) {
       <ContextMenu>
         <ContextMenuTrigger asChild>
           <Card
-            className={`p-3 hover:border-primary/50 transition-colors duration-150 ${isViewable ? "cursor-pointer" : ""}`}
+            className={`p-4 hover:border-primary/50 transition-colors duration-150 ${isViewable ? "cursor-pointer" : ""}`}
             onClick={() => { if (isViewable) setSelectedReceiptId(receipt.id); }}
           >
-            <HStack spacing="md" justify="between" align="start">
-              <VStack spacing="xs" className="flex-1 min-w-0">
-                <div className="text-sm font-semibold truncate">
+            <VStack spacing="sm" className="w-full">
+              {/* Header: merchant + date */}
+              <HStack justify="between" align="start" className="w-full">
+                <div className="text-sm font-semibold leading-snug flex-1 min-w-0 mr-2">
                   {receipt.merchant || (
                     <span className="bg-gradient-to-r from-muted-foreground/40 via-muted-foreground to-muted-foreground/40 bg-[length:200%_100%] bg-clip-text text-transparent animate-[shimmer_2s_linear_infinite] font-normal">
                       figuring it out...
                     </span>
                   )}
                 </div>
-                <HStack spacing="xs" className="text-xs text-muted-foreground flex-wrap">
-                  {formattedDate && <span>{formattedDate}</span>}
-                  {receipt.items && receipt.items.length > 0 && (receipt.status === ReceiptStatus.PARSED || receipt.status === ReceiptStatus.LINKED) && (
-                    <>
-                      {formattedDate && <span>·</span>}
-                      <span>{receipt.items.length} item{receipt.items.length !== 1 ? "s" : ""}</span>
-                    </>
-                  )}
-                  {receipt.imageTakenAt && (
-                    <>
-                      <span>·</span>
-                      <span>photo {formatShortTimestamp(receipt.imageTakenAt)}</span>
-                    </>
-                  )}
-                  {receipt.confidence && receipt.status === ReceiptStatus.PARSED && (
-                    <>
-                      <span>·</span>
-                      <span className="font-mono tabular-nums">{Math.round(receipt.confidence * 100)}% confidence</span>
-                    </>
-                  )}
-                </HStack>
-              </VStack>
-
-              <VStack spacing="xs" align="end" className="shrink-0">
-                {receipt.total && (
-                  <Amount
-                    value={formatAmount(receipt.total)}
-                    currency={receipt.total.currencyCode}
-                    className="text-sm font-semibold"
-                  />
+                {formattedDate && (
+                  <span className="text-xs text-muted-foreground shrink-0 tabular-nums">
+                    {formattedDate}
+                  </span>
                 )}
+              </HStack>
+
+              {/* Items list */}
+              {hasItems && (
+                <VStack spacing="xs" className="w-full pt-1">
+                  {visibleItems.map((item) => (
+                    <HStack key={item.id} justify="between" className="w-full">
+                      <span className="text-xs text-muted-foreground truncate mr-3 flex-1">
+                        {item.quantity !== 1 && (
+                          <span>{item.quantity}× </span>
+                        )}
+                        {item.name || item.rawName}
+                      </span>
+                      <span className="text-xs font-mono tabular-nums text-muted-foreground shrink-0">
+                        {formatMoney(item.unitPrice, currency) ?? "—"}
+                      </span>
+                    </HStack>
+                  ))}
+
+                </VStack>
+              )}
+
+              {/* Divider + total */}
+              {receipt.total && (
+                <div className="w-full border-t border-border pt-2 mt-1">
+                  <HStack justify="between" className="w-full">
+                    <span className="text-xs text-muted-foreground">total</span>
+                    <Amount
+                      value={formatAmount(receipt.total)}
+                      currency={receipt.total.currencyCode}
+                      className="text-sm font-semibold"
+                    />
+                  </HStack>
+                </div>
+              )}
+
+              {/* Footer: status badge + confidence */}
+              <HStack justify="between" align="center" className="w-full">
                 <Badge
                   variant="outline"
                   className={`${status.className} flex items-center gap-1 text-xs px-1.5 py-0`}
@@ -151,8 +167,13 @@ export function ReceiptItem({ receipt }: ReceiptItemProps) {
                   <StatusIcon className={`h-3 w-3 ${status.animate ? "animate-spin" : ""}`} />
                   {status.label}
                 </Badge>
-              </VStack>
-            </HStack>
+                {receipt.confidence && receipt.status === ReceiptStatus.PARSED && (
+                  <span className="text-xs font-mono tabular-nums text-muted-foreground">
+                    {Math.round(receipt.confidence * 100)}%
+                  </span>
+                )}
+              </HStack>
+            </VStack>
           </Card>
         </ContextMenuTrigger>
 

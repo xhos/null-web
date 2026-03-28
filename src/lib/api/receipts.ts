@@ -17,6 +17,10 @@ export interface ListReceiptsInput {
   unlinkedOnly?: boolean;
   startDate?: Date;
   endDate?: Date;
+  query?: string;
+  minTotalCents?: bigint;
+  maxTotalCents?: bigint;
+  currency?: string;
 }
 
 export interface UploadReceiptInput {
@@ -47,6 +51,10 @@ export const receiptsApi = {
             day: data.endDate.getDate(),
           }
         : undefined,
+      query: data.query || undefined,
+      minTotalCents: data.minTotalCents,
+      maxTotalCents: data.maxTotalCents,
+      currency: data.currency || undefined,
     });
     const response = await receiptClient.listReceipts(request);
     return {

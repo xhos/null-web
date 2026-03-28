@@ -3,19 +3,28 @@ import { receiptsApi, type ListReceiptsInput } from "@/lib/api/receipts";
 import { useUserId } from "./useSession";
 import { ReceiptStatus } from "@/gen/null/v1/receipt_pb";
 
-interface UseReceiptsOptions {
+export interface ReceiptFilters {
+  query?: string;
+  minTotalCents?: bigint;
+  maxTotalCents?: bigint;
+  status?: ReceiptStatus;
+  unlinkedOnly?: boolean;
+  currency?: string;
+}
+
+interface UseReceiptsOptions extends ReceiptFilters {
   enabled?: boolean;
 }
 
-export function useReceipts({ enabled = true }: UseReceiptsOptions = {}) {
+export function useReceipts({ enabled = true, query, minTotalCents, maxTotalCents, status, unlinkedOnly, currency }: UseReceiptsOptions = {}) {
   const queryClient = useQueryClient();
   const userId = useUserId();
 
   const receiptsQuery = useQuery({
-    queryKey: ["receipts", userId],
+    queryKey: ["receipts", userId, query, minTotalCents?.toString(), maxTotalCents?.toString(), status, unlinkedOnly, currency],
     queryFn: async () => {
       if (!userId) throw new Error("User not authenticated");
-      return receiptsApi.list({ userId });
+      return receiptsApi.list({ userId, query, minTotalCents, maxTotalCents, status, unlinkedOnly, currency });
     },
     enabled: enabled && !!userId,
     staleTime: 5 * 60 * 1000,
