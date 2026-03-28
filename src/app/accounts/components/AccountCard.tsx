@@ -44,18 +44,35 @@ export default function AccountCard({ account, getAccountTypeName, onClick, onEd
     }).format(totalAmount);
   };
 
+  const [c1, c2, c3] = account.colors.length === 3 ? account.colors : [null, null, null];
+  const blobGradient = c1 && c2 && c3 ? {
+    background: `
+      radial-gradient(circle at 90% 60%, ${c3} 0%, transparent 50%),
+      radial-gradient(circle at 70% 5%,  ${c2} 0%, transparent 45%),
+      radial-gradient(circle at 20% 75%, ${c1} 0%, transparent 50%)
+    `,
+  } : undefined;
+
+  const hasGradient = !!blobGradient;
+
   const cardContent = (
-    <Card variant="default" padding="md" interactive onClick={onClick}>
-      <VStack spacing="md" align="start">
-        <HStack spacing="md" justify="between" className="w-full">
-          <VStack spacing="xs" align="start">
-            <Caption>{account.bank}</Caption>
-            <Text size="sm">{account.friendlyName || account.name}</Text>
-          </VStack>
-          <Muted size="xs">{getAccountTypeName(account.type)}</Muted>
+    <Card variant="default" padding="sm" interactive onClick={onClick} className="group relative overflow-hidden aspect-[85.6/54] !rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+      {hasGradient && (
+        <div
+          className="absolute -inset-4 blur-2xl pointer-events-none grayscale scale-110 opacity-30 dark:opacity-20 group-hover:grayscale-0 group-hover:scale-100 group-hover:opacity-100 dark:group-hover:opacity-60 transition-all duration-700 ease-out"
+          style={blobGradient}
+        />
+      )}
+      <div className={`flex flex-col justify-between h-full relative ${hasGradient ? "dark:group-hover:text-white" : ""}`}>
+        <HStack justify="between" align="start">
+          <Caption className={hasGradient ? "dark:group-hover:text-white/60" : ""}>{account.bank}</Caption>
+          <Muted size="xs" className={hasGradient ? "dark:group-hover:text-white/50" : ""}>{getAccountTypeName(account.type)}</Muted>
         </HStack>
-        <Text weight="semibold" size="lg">{formatBalance(account.balance)}</Text>
-      </VStack>
+        <VStack spacing="xs" align="start">
+          <Text weight="semibold" size="lg" className={hasGradient ? "dark:group-hover:text-white" : ""}>{formatBalance(account.balance)}</Text>
+          <Text size="sm" className={hasGradient ? "dark:group-hover:text-white/70" : ""}>{account.friendlyName || account.name}</Text>
+        </VStack>
+      </div>
     </Card>
   );
 
