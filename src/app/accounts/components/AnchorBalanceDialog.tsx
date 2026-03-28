@@ -111,28 +111,21 @@ export function AnchorBalanceDialog({
             )}
 
             <VStack spacing="xs">
-              <Label htmlFor="amount">Amount *</Label>
-              <Input
-                id="amount"
-                type="number"
-                step="0.01"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="0.00"
-                disabled={isLoading}
-                required
-                min={undefined}
-              />
-            </VStack>
-
-            <VStack spacing="xs">
-              <Label>Currency</Label>
-              <div className="flex h-9 w-full items-center rounded-sm border border-input bg-muted px-3 py-2 text-sm">
-                {account.mainCurrency || "USD"}
+              <Label htmlFor="amount">amount *</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="amount"
+                  type="number"
+                  step="0.01"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="0.00"
+                  disabled={isLoading}
+                  required
+                  min={undefined}
+                />
+                <span className="text-sm text-muted-foreground shrink-0">{account.mainCurrency || "USD"}</span>
               </div>
-              <Muted size="xs">
-                Currency is locked to the account&apos;s main currency
-              </Muted>
             </VStack>
 
             {error && <ErrorMessage>{error}</ErrorMessage>}
