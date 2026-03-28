@@ -20,7 +20,6 @@ import AccountGrid from "./components/AccountGrid";
 import FilterChips from "./components/FilterChips";
 import { AccountDialog } from "./components/AccountDialog";
 import { DeleteAccountDialog } from "./components/DeleteAccountDialog";
-import { AnchorBalanceDialog } from "./components/AnchorBalanceDialog";
 import { MergeAccountDialog } from "./components/MergeAccountDialog";
 
 const getAccountTypeName = (accountType: AccountType): string => {
@@ -58,7 +57,6 @@ export default function AccountsPage() {
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
   const [deletingAccount, setDeletingAccount] = useState<Account | null>(null);
-  const [anchorAccount, setAnchorAccount] = useState<Account | null>(null);
   const [mergingAccount, setMergingAccount] = useState<Account | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
@@ -85,12 +83,13 @@ export default function AccountsPage() {
     return { transactionsMoved: result.transactionsMoved };
   };
 
-  const handleSetAnchorBalance = async (
-    balance: { currencyCode: string; units: string; nanos: number }
+  const handleSaveAnchor = async (
+    account: Account,
+    balance: { units: string; nanos: number }
   ) => {
-    if (!anchorAccount || !userId) return;
+    if (!userId) return;
     try {
-      await setAnchorBalanceAsync({ userId, id: anchorAccount.id, balance });
+      await setAnchorBalanceAsync({ userId, id: account.id, balance });
       setError("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to set anchor balance");
@@ -220,7 +219,7 @@ export default function AccountsPage() {
             onAccountClick={setEditingAccount}
             onEdit={setEditingAccount}
             onDelete={setDeletingAccount}
-            onSetAnchor={setAnchorAccount}
+            onSaveAnchor={handleSaveAnchor}
             onMerge={accounts.length > 1 ? setMergingAccount : undefined}
           />
         )}
@@ -248,12 +247,6 @@ export default function AccountsPage() {
           onConfirm={handleDeleteAccount}
         />
 
-        <AnchorBalanceDialog
-          open={!!anchorAccount}
-          onOpenChange={(open) => !open && setAnchorAccount(null)}
-          account={anchorAccount}
-          onConfirm={handleSetAnchorBalance}
-        />
 
         <MergeAccountDialog
           open={!!mergingAccount}

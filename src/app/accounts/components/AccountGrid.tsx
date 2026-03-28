@@ -13,7 +13,7 @@ interface AccountGridProps {
   onAccountClick: (account: Account) => void;
   onEdit?: (account: Account) => void;
   onDelete?: (account: Account) => void;
-  onSetAnchor?: (account: Account) => void;
+  onSaveAnchor?: (account: Account, balance: { units: string; nanos: number }) => Promise<void>;
   onMerge?: (account: Account) => void;
 }
 
@@ -28,7 +28,7 @@ export default function AccountGrid({
   onAccountClick,
   onEdit,
   onDelete,
-  onSetAnchor,
+  onSaveAnchor,
   onMerge,
 }: AccountGridProps) {
   const groupedAccounts = useMemo(() => {
@@ -94,7 +94,7 @@ export default function AccountGrid({
                 onClick={() => onAccountClick(account)}
                 onEdit={onEdit}
                 onDelete={onDelete}
-                onSetAnchor={onSetAnchor}
+                onSaveAnchor={onSaveAnchor}
                 onMerge={onMerge}
               />
             ))}

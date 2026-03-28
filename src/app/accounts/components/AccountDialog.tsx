@@ -57,7 +57,7 @@ export function AccountDialog({
   const [bank, setBank] = useState("");
   const [type, setType] = useState<AccountType>(AccountType.ACCOUNT_CHEQUING);
   const { currencies } = useCurrencies();
-  const [mainCurrency, setMainCurrency] = useState("USD");
+  const [mainCurrency, setMainCurrency] = useState("");
   const [colors, setColors] = useState(["#1f2937", "#3b82f6", "#10b981"]);
   const [initialBalance, setInitialBalance] = useState("0");
   const [aliases, setAliases] = useState<string[]>([]);
@@ -82,7 +82,7 @@ export function AccountDialog({
         setFriendlyName(account.friendlyName || "");
         setBank(account.bank);
         setType(account.type);
-        setMainCurrency(account.mainCurrency || "USD");
+        setMainCurrency(account.mainCurrency ?? "");
         setColors(account.colors.length > 0 ? account.colors : ["#1f2937", "#3b82f6", "#10b981"]);
         setInitialBalance("0");
         setAliases(account.aliases.filter((a) => a !== account.name));
@@ -147,7 +147,7 @@ export function AccountDialog({
         bank,
         type,
         friendlyName: friendlyName || undefined,
-        mainCurrency: account && mainCurrency === account.mainCurrency ? undefined : mainCurrency,
+        mainCurrency: account && mainCurrency === (account.mainCurrency ?? "") ? undefined : mainCurrency,
         colors,
       };
 

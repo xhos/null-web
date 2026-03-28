@@ -43,7 +43,6 @@ export interface SetAnchorBalanceInput {
   userId: string;
   id: bigint;
   balance: {
-    currencyCode: string;
     units: string;
     nanos: number;
   };
@@ -76,10 +75,12 @@ export const accountsApi = {
   },
 
   async update(data: UpdateAccountInput) {
+    const maskPaths = ["name", "bank", "account_type", "friendly_name", "colors"];
+    if (data.mainCurrency !== undefined) maskPaths.push("main_currency");
     const request = create(UpdateAccountRequestSchema, {
       userId: data.userId,
       id: data.id,
-      updateMask: { paths: ["name", "bank", "account_type", "friendly_name", "main_currency", "colors"] },
+      updateMask: { paths: maskPaths },
       name: data.name,
       bank: data.bank,
       accountType: data.accountType,
@@ -134,11 +135,10 @@ export const accountsApi = {
       userId: data.userId,
       id: data.id,
       updateMask: { paths: ["anchor_balance", "anchor_date"] },
-      anchorBalance: data.balance ? {
-        currencyCode: data.balance.currencyCode,
+      anchorBalance: {
         units: BigInt(data.balance.units),
         nanos: data.balance.nanos,
-      } : undefined,
+      },
       anchorDate: { seconds: BigInt(Math.floor(Date.now() / 1000)) },
     });
     await accountClient.updateAccount(request);

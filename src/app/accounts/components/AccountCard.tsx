@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import type { Account } from "@/gen/null/v1/account_pb";
 import { AccountType } from "@/gen/null/v1/enums_pb";
 import { Card, VStack, HStack, Muted, Caption, Text } from "@/components/lib";
@@ -17,31 +18,61 @@ interface AccountCardProps {
   onClick: () => void;
   onEdit?: (account: Account) => void;
   onDelete?: (account: Account) => void;
-  onSetAnchor?: (account: Account) => void;
+  onSaveAnchor?: (account: Account, balance: { units: string; nanos: number }) => Promise<void>;
   onMerge?: (account: Account) => void;
 }
 
-export default function AccountCard({ account, getAccountTypeName, onClick, onEdit, onDelete, onSetAnchor, onMerge }: AccountCardProps) {
+export default function AccountCard({ account, getAccountTypeName, onClick, onEdit, onDelete, onSaveAnchor, onMerge }: AccountCardProps) {
   const formatBalance = (balance?: {
     currencyCode?: string;
     units?: string | bigint;
     nanos?: number;
   }) => {
-    if (!balance) {
-      return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: account.mainCurrency || "USD",
-      }).format(0);
+    const currency = account.mainCurrency || balance?.currencyCode;
+    const totalAmount = balance
+      ? parseFloat(balance.units?.toString() || "0") + (balance.nanos || 0) / 1e9
+      : 0;
+    if (!currency) return totalAmount.toFixed(2);
+    return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(totalAmount);
+  };
+
+  const [isEditingAnchor, setIsEditingAnchor] = useState(false);
+  const [anchorInput, setAnchorInput] = useState("");
+  const [isSavingAnchor, setIsSavingAnchor] = useState(false);
+  const anchorInputRef = useRef<HTMLInputElement>(null);
+  const anchorCancelledRef = useRef(false);
+
+  useEffect(() => {
+    if (isEditingAnchor) anchorInputRef.current?.focus();
+  }, [isEditingAnchor]);
+
+  const handleStartAnchorEdit = () => {
+    const current = account.balance
+      ? parseFloat(account.balance.units?.toString() || "0") + (account.balance.nanos || 0) / 1e9
+      : 0;
+    anchorCancelledRef.current = false;
+    setAnchorInput(current.toFixed(2));
+    setIsEditingAnchor(true);
+  };
+
+  const handleCancelAnchorEdit = () => {
+    anchorCancelledRef.current = true;
+    setIsEditingAnchor(false);
+  };
+
+  const handleSaveAnchor = async () => {
+    if (!onSaveAnchor || anchorCancelledRef.current) return;
+    const numAmount = parseFloat(anchorInput || "0");
+    setIsSavingAnchor(true);
+    try {
+      await onSaveAnchor(account, {
+        units: Math.trunc(numAmount).toString(),
+        nanos: Math.round((numAmount - Math.trunc(numAmount)) * 1e9),
+      });
+    } finally {
+      setIsSavingAnchor(false);
+      setIsEditingAnchor(false);
     }
-
-    const unitsAmount = parseFloat(balance.units?.toString() || "0");
-    const nanosAmount = (balance.nanos || 0) / 1e9;
-    const totalAmount = unitsAmount + nanosAmount;
-
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: account.mainCurrency || balance.currencyCode,
-    }).format(totalAmount);
   };
 
   const [c1, c2, c3] = account.colors.length === 3 ? account.colors : [null, null, null];
@@ -69,14 +100,36 @@ export default function AccountCard({ account, getAccountTypeName, onClick, onEd
           <Muted size="xs" className={hasGradient ? "dark:group-hover:text-white/50" : ""}>{getAccountTypeName(account.type)}</Muted>
         </HStack>
         <VStack spacing="xs" align="start">
-          <Text weight="semibold" size="lg" className={hasGradient ? "dark:group-hover:text-white" : ""}>{formatBalance(account.balance)}</Text>
+          {isEditingAnchor ? (
+            <div className="flex items-baseline" onClick={(e) => e.stopPropagation()}>
+              <span className="text-lg font-bold">
+                {account.mainCurrency && new Intl.NumberFormat("en-US", { style: "currency", currency: account.mainCurrency }).formatToParts(0).find(p => p.type === "currency")?.value}
+              </span>
+              <input
+                ref={anchorInputRef}
+                type="text"
+                inputMode="decimal"
+                value={anchorInput}
+                onChange={(e) => setAnchorInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") { e.preventDefault(); handleSaveAnchor(); }
+                  if (e.key === "Escape") handleCancelAnchorEdit();
+                }}
+                onBlur={() => { if (!anchorCancelledRef.current) handleSaveAnchor(); }}
+                disabled={isSavingAnchor}
+                className="text-lg font-bold bg-transparent outline-none border-b border-current w-24 dark:group-hover:text-white"
+              />
+            </div>
+          ) : (
+            <Text weight="semibold" size="lg" className={hasGradient ? "dark:group-hover:text-white" : ""}>{formatBalance(account.balance)}</Text>
+          )}
           <Text size="sm" className={hasGradient ? "dark:group-hover:text-white/70" : ""}>{account.friendlyName || account.name}</Text>
         </VStack>
       </div>
     </Card>
   );
 
-  if (onEdit || onDelete || onSetAnchor || onMerge) {
+  if (onEdit || onDelete || onSaveAnchor || onMerge) {
     return (
       <ContextMenu>
         <ContextMenuTrigger asChild>
@@ -89,8 +142,8 @@ export default function AccountCard({ account, getAccountTypeName, onClick, onEd
               Edit
             </ContextMenuItem>
           )}
-          {onSetAnchor && (
-            <ContextMenuItem onClick={() => onSetAnchor(account)}>
+          {onSaveAnchor && (
+            <ContextMenuItem onClick={handleStartAnchorEdit}>
               <Anchor className="mr-2 h-4 w-4" />
               Set Anchor Balance
             </ContextMenuItem>
