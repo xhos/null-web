@@ -14,6 +14,7 @@ import { FormField, Select } from "@/components/ui/forms";
 import { TransactionDirection } from "@/gen/null/v1/enums_pb";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useCategories } from "@/hooks/useCategories";
+import { useCurrencies } from "@/hooks/useCurrencies";
 import type { Transaction } from "@/gen/null/v1/transaction_pb";
 
 interface TransactionDialogProps {
@@ -38,13 +39,6 @@ const directionOptions = [
   { value: TransactionDirection.DIRECTION_INCOMING, label: "income" },
 ];
 
-const currencyOptions = [
-  { value: "USD", label: "USD" },
-  { value: "CAD", label: "CAD" },
-  { value: "EUR", label: "EUR" },
-  { value: "GBP", label: "GBP" },
-  { value: "JPY", label: "JPY" },
-];
 
 export function TransactionDialog({
   open,
@@ -55,6 +49,7 @@ export function TransactionDialog({
 }: TransactionDialogProps) {
   const { accounts } = useAccounts();
   const { categories } = useCategories();
+  const { currencies } = useCurrencies();
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -226,10 +221,8 @@ export function TransactionDialog({
                   onChange={(e) => setFormData((prev) => ({ ...prev, currency: e.target.value }))}
                   disabled={isLoading}
                 >
-                  {currencyOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
+                  {currencies.map(({ code }) => (
+                    <option key={code} value={code}>{code}</option>
                   ))}
                 </Select>
               </FormField>

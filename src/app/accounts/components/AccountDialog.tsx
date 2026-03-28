@@ -25,6 +25,7 @@ import { VStack, HStack, ErrorMessage, Muted, Caption } from "@/components/lib";
 import type { Account } from "@/gen/null/v1/account_pb";
 import { AccountType } from "@/gen/null/v1/enums_pb";
 import { useAddAccountAlias, useRemoveAccountAlias, useAccountHasTransactions } from "@/hooks/useAccounts";
+import { useCurrencies } from "@/hooks/useCurrencies";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface AccountDialogProps {
@@ -54,6 +55,7 @@ export function AccountDialog({
   const [friendlyName, setFriendlyName] = useState("");
   const [bank, setBank] = useState("");
   const [type, setType] = useState<AccountType>(AccountType.ACCOUNT_CHEQUING);
+  const { currencies } = useCurrencies();
   const [mainCurrency, setMainCurrency] = useState("USD");
   const [colors, setColors] = useState(["#1f2937", "#3b82f6", "#10b981"]);
   const [initialBalance, setInitialBalance] = useState("0");
@@ -266,11 +268,9 @@ export function AccountDialog({
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="USD">USD</SelectItem>
-                          <SelectItem value="CAD">CAD</SelectItem>
-                          <SelectItem value="EUR">EUR</SelectItem>
-                          <SelectItem value="GBP">GBP</SelectItem>
-                          <SelectItem value="JPY">JPY</SelectItem>
+                          {currencies.map(({ code }) => (
+                            <SelectItem key={code} value={code}>{code}</SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>

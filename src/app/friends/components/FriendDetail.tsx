@@ -5,9 +5,9 @@ import { useState } from "react";
 import { ArrowDownLeft } from "lucide-react";
 import type { FriendBalance } from "@/gen/null/v1/transaction_services_pb";
 import { TransactionDirection } from "@/gen/null/v1/enums_pb";
-import { VStack, HStack, Muted } from "@/components/lib";
+import { VStack, HStack, Muted, Card, Amount, Text } from "@/components/lib";
 import { Button } from "@/components/ui/button";
-import { formatAmount, formatCurrency } from "@/lib/utils/transaction";
+import { formatAmount, formatCurrency, formatTime } from "@/lib/utils/transaction";
 import { transactionsApi } from "@/lib/api/transactions";
 import { useUserId } from "@/hooks/useSession";
 import { useForgiveTransaction } from "@/hooks/useSplits";
@@ -24,7 +24,7 @@ export function FriendDetail({ balance }: FriendDetailProps) {
   const { mutate: forgive, isPending: isForgiving } = useForgiveTransaction();
 
   const rawAmount = Number(balance.balance?.units ?? BigInt(0)) + (balance.balance?.nanos ?? 0) / 1e9;
-  const currencyCode = balance.balance?.currencyCode ?? "USD";
+  const currencyCode = balance.balance?.currencyCode;
   const defaultPaymentAmount = Math.max(rawAmount, 0).toFixed(2);
 
   const { data: transactions = [], isLoading } = useQuery({
@@ -53,25 +53,24 @@ export function FriendDetail({ balance }: FriendDetailProps) {
   return (
     <>
       <VStack spacing="xl">
-        {/* Balance header */}
         <HStack spacing="md" justify="between" align="start">
           <VStack spacing="xs" align="start">
             {rawAmount > 0.001 ? (
               <>
                 <Muted size="xs">owes you</Muted>
-                <div className="text-3xl font-semibold font-mono text-emerald-600 dark:text-emerald-400">
+                <Text size="lg" weight="semibold" className="font-mono text-emerald-600 dark:text-emerald-400">
                   {formatCurrency(rawAmount, currencyCode)}
-                </div>
+                </Text>
               </>
             ) : rawAmount < -0.001 ? (
               <>
                 <Muted size="xs">you owe</Muted>
-                <div className="text-3xl font-semibold font-mono text-destructive">
+                <Text size="lg" weight="semibold" className="font-mono text-destructive">
                   {formatCurrency(Math.abs(rawAmount), currencyCode)}
-                </div>
+                </Text>
               </>
             ) : (
-              <div className="text-2xl font-semibold text-muted-foreground">settled up</div>
+              <Text size="lg" weight="semibold" className="text-muted-foreground">settled up</Text>
             )}
           </VStack>
 
@@ -89,135 +88,109 @@ export function FriendDetail({ balance }: FriendDetailProps) {
           <Muted size="sm">no transactions yet</Muted>
         ) : (
           <VStack spacing="lg">
-            {/* Outstanding */}
             {outstandingSplits.length > 0 && (
               <VStack spacing="sm">
                 <span className="text-[11px] uppercase tracking-widest text-muted-foreground/60 font-medium">
                   outstanding
                 </span>
-                <div className="border border-border rounded divide-y divide-border/60">
+                <VStack spacing="xs">
                   {outstandingSplits.map((tx) => (
-                    <HStack
-                      key={tx.id.toString()}
-                      justify="between"
-                      align="center"
-                      className="px-3 py-2.5 group"
-                    >
-                      <VStack spacing="xs" align="start" className="min-w-0">
-                        <div className="text-sm font-medium truncate">
-                          {tx.description || tx.merchant || "split"}
-                        </div>
-                        <Muted size="xs">
-                          {tx.txDate?.seconds
-                            ? new Date(Number(tx.txDate.seconds) * 1000).toLocaleDateString(
-                                undefined,
-                                { month: "short", day: "numeric", year: "numeric" }
-                              )
-                            : ""}
-                        </Muted>
-                      </VStack>
-                      <HStack spacing="md" align="center" className="shrink-0">
-                        <button
-                          onClick={() => forgive({ transactionId: tx.id, forgiven: true })}
-                          disabled={isForgiving}
-                          className={cn(
-                            "text-xs text-muted-foreground/40 hover:text-muted-foreground",
-                            "transition-colors duration-150 opacity-0 group-hover:opacity-100"
-                          )}
-                        >
-                          forgive
-                        </button>
-                        <span className="text-sm font-mono font-medium">
-                          {formatCurrency(formatAmount(tx.txAmount), tx.txAmount?.currencyCode)}
-                        </span>
+                    <Card key={tx.id.toString()} variant="default" padding="sm">
+                      <HStack spacing="xl" justify="between" className="group">
+                        <VStack spacing="xs" align="start" className="flex-1 min-w-0">
+                          <div className="text-sm font-semibold truncate">
+                            {tx.description || tx.merchant || "split"}
+                          </div>
+                          <Muted size="xs">{formatTime(tx.txDate)}</Muted>
+                        </VStack>
+                        <HStack spacing="md" align="center" className="shrink-0">
+                          <button
+                            onClick={() => forgive({ transactionId: tx.id, forgiven: true })}
+                            disabled={isForgiving}
+                            className={cn(
+                              "text-xs text-muted-foreground/40 hover:text-muted-foreground",
+                              "transition-colors duration-150 opacity-0 group-hover:opacity-100"
+                            )}
+                          >
+                            forgive
+                          </button>
+                          <Amount
+                            value={formatAmount(tx.txAmount)}
+                            currency={tx.txAmount?.currencyCode}
+                            variant="negative"
+                          />
+                        </HStack>
                       </HStack>
-                    </HStack>
+                    </Card>
                   ))}
-                </div>
+                </VStack>
               </VStack>
             )}
 
-            {/* Payments */}
             {payments.length > 0 && (
               <VStack spacing="sm">
                 <span className="text-[11px] uppercase tracking-widest text-muted-foreground/60 font-medium">
                   payments
                 </span>
-                <div className="border border-border rounded divide-y divide-border/60">
+                <VStack spacing="xs">
                   {payments.map((tx) => (
-                    <HStack
-                      key={tx.id.toString()}
-                      justify="between"
-                      align="center"
-                      className="px-3 py-2.5"
-                    >
-                      <VStack spacing="xs" align="start" className="min-w-0">
-                        <div className="text-sm font-medium truncate">
-                          {tx.description || "payment"}
-                        </div>
-                        <Muted size="xs">
-                          {tx.txDate?.seconds
-                            ? new Date(Number(tx.txDate.seconds) * 1000).toLocaleDateString(
-                                undefined,
-                                { month: "short", day: "numeric", year: "numeric" }
-                              )
-                            : ""}
-                        </Muted>
-                      </VStack>
-                      <span className="text-sm font-mono font-medium text-emerald-600 dark:text-emerald-400">
-                        −{formatCurrency(formatAmount(tx.txAmount), tx.txAmount?.currencyCode)}
-                      </span>
-                    </HStack>
+                    <Card key={tx.id.toString()} variant="default" padding="sm">
+                      <HStack spacing="xl" justify="between">
+                        <VStack spacing="xs" align="start" className="flex-1 min-w-0">
+                          <div className="text-sm font-semibold truncate">
+                            {tx.description || "payment"}
+                          </div>
+                          <Muted size="xs">{formatTime(tx.txDate)}</Muted>
+                        </VStack>
+                        <Amount
+                          value={formatAmount(tx.txAmount)}
+                          currency={tx.txAmount?.currencyCode}
+                          variant="positive"
+                        />
+                      </HStack>
+                    </Card>
                   ))}
-                </div>
+                </VStack>
               </VStack>
             )}
 
-            {/* Forgiven */}
             {forgivenSplits.length > 0 && (
               <VStack spacing="sm">
                 <span className="text-[11px] uppercase tracking-widest text-muted-foreground/60 font-medium">
                   forgiven
                 </span>
-                <div className="border border-border/50 rounded divide-y divide-border/40 opacity-50">
+                <VStack spacing="xs" className="opacity-50">
                   {forgivenSplits.map((tx) => (
-                    <HStack
-                      key={tx.id.toString()}
-                      justify="between"
-                      align="center"
-                      className="px-3 py-2.5 group"
-                    >
-                      <VStack spacing="xs" align="start" className="min-w-0">
-                        <div className="text-sm font-medium truncate line-through">
-                          {tx.description || tx.merchant || "split"}
-                        </div>
-                        <Muted size="xs">
-                          {tx.txDate?.seconds
-                            ? new Date(Number(tx.txDate.seconds) * 1000).toLocaleDateString(
-                                undefined,
-                                { month: "short", day: "numeric", year: "numeric" }
-                              )
-                            : ""}
-                        </Muted>
-                      </VStack>
-                      <HStack spacing="md" align="center" className="shrink-0">
-                        <button
-                          onClick={() => forgive({ transactionId: tx.id, forgiven: false })}
-                          disabled={isForgiving}
-                          className={cn(
-                            "text-xs text-muted-foreground/40 hover:text-muted-foreground",
-                            "transition-colors duration-150 opacity-0 group-hover:opacity-100"
-                          )}
-                        >
-                          un-forgive
-                        </button>
-                        <span className="text-sm font-mono line-through">
-                          {formatCurrency(formatAmount(tx.txAmount), tx.txAmount?.currencyCode)}
-                        </span>
+                    <Card key={tx.id.toString()} variant="default" padding="sm">
+                      <HStack spacing="xl" justify="between" className="group">
+                        <VStack spacing="xs" align="start" className="flex-1 min-w-0">
+                          <div className="text-sm font-semibold truncate line-through">
+                            {tx.description || tx.merchant || "split"}
+                          </div>
+                          <Muted size="xs">{formatTime(tx.txDate)}</Muted>
+                        </VStack>
+                        <HStack spacing="md" align="center" className="shrink-0">
+                          <button
+                            onClick={() => forgive({ transactionId: tx.id, forgiven: false })}
+                            disabled={isForgiving}
+                            className={cn(
+                              "text-xs text-muted-foreground/40 hover:text-muted-foreground",
+                              "transition-colors duration-150 opacity-0 group-hover:opacity-100"
+                            )}
+                          >
+                            un-forgive
+                          </button>
+                          <Amount
+                            value={formatAmount(tx.txAmount)}
+                            currency={tx.txAmount?.currencyCode}
+                            variant="negative"
+                            className="line-through"
+                          />
+                        </HStack>
                       </HStack>
-                    </HStack>
+                    </Card>
                   ))}
-                </div>
+                </VStack>
               </VStack>
             )}
           </VStack>
@@ -230,7 +203,7 @@ export function FriendDetail({ balance }: FriendDetailProps) {
         friendAccountId={balance.accountId}
         friendName={balance.friendName}
         defaultAmount={defaultPaymentAmount}
-        defaultCurrency={currencyCode}
+        defaultCurrency={currencyCode ?? ""}
       />
     </>
   );

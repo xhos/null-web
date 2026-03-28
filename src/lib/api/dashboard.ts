@@ -9,6 +9,7 @@ import {
   type GetFinancialSummaryResponse,
   GetDashboardSummaryRequestSchema,
   type GetDashboardSummaryResponse,
+  GetCurrenciesRequestSchema,
 } from "@/gen/null/v1/dashboard_services_pb";
 import { PeriodType, Granularity } from "@/gen/null/v1/enums_pb";
 import type { Date as ProtoDate } from "@/gen/google/type/date_pb";
@@ -72,5 +73,11 @@ export const dashboardApi = {
       endDate: params.endDate,
     });
     return await dashboardClient.getDashboardSummary(request);
+  },
+
+  async getCurrencies() {
+    const request = create(GetCurrenciesRequestSchema, {});
+    const response = await dashboardClient.getCurrencies(request);
+    return response.currencies;
   },
 };

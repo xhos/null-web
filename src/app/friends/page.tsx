@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Users, Plus, ArrowRight } from "lucide-react";
+import { Users, Plus } from "lucide-react";
 import { PageContainer, PageContent, PageHeaderWithTitle } from "@/components/ui/layout";
-import { VStack, HStack, Muted } from "@/components/lib";
+import { VStack, HStack, Muted, Card, Text } from "@/components/lib";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFriendBalances } from "@/hooks/useSplits";
@@ -12,7 +12,6 @@ import { useAccounts } from "@/hooks/useAccounts";
 import { AccountType } from "@/gen/null/v1/enums_pb";
 import { FriendDetail } from "./components/FriendDetail";
 import { formatCurrency } from "@/lib/utils/transaction";
-import { cn } from "@/lib/utils";
 import type { FriendBalance } from "@/gen/null/v1/transaction_services_pb";
 
 function OverviewTab({
@@ -40,34 +39,16 @@ function OverviewTab({
   });
 
   return (
-    <VStack spacing="xl">
-      {/* Summary stats */}
+    <VStack spacing="lg">
       {totalOwed > 0.001 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <div className="rounded border border-border p-4 col-span-2 sm:col-span-1">
-            <VStack spacing="xs" align="start">
-              <Muted size="xs">total owed to you</Muted>
-              <div className="text-2xl font-semibold font-mono text-emerald-600 dark:text-emerald-400">
-                {formatCurrency(totalOwed, totalOwedCurrency)}
-              </div>
-            </VStack>
-          </div>
-          <div className="rounded border border-border p-4">
-            <VStack spacing="xs" align="start">
-              <Muted size="xs">owing you</Muted>
-              <div className="text-2xl font-semibold">{friendsOwingYou.length}</div>
-            </VStack>
-          </div>
-          <div className="rounded border border-border p-4">
-            <VStack spacing="xs" align="start">
-              <Muted size="xs">settled up</Muted>
-              <div className="text-2xl font-semibold text-muted-foreground">{settled.length}</div>
-            </VStack>
-          </div>
-        </div>
+        <HStack spacing="xs" align="baseline">
+          <Text size="sm" weight="medium">
+            {formatCurrency(totalOwed, totalOwedCurrency)}
+          </Text>
+          <Muted size="xs">owed to you</Muted>
+        </HStack>
       )}
 
-      {/* Friend grid */}
       {balances.length === 0 ? (
         <Muted size="sm">no outstanding balances</Muted>
       ) : (
@@ -75,44 +56,42 @@ function OverviewTab({
           {[...friendsOwingYou, ...friendsYouOwe, ...settled].map((balance) => {
             const rawAmount =
               Number(balance.balance?.units ?? BigInt(0)) + (balance.balance?.nanos ?? 0) / 1e9;
-            const currencyCode = balance.balance?.currencyCode ?? "USD";
+            const currencyCode = balance.balance?.currencyCode;
             const isOwing = rawAmount > 0.001;
             const isOwe = rawAmount < -0.001;
 
             return (
-              <button
+              <Card
                 key={balance.accountId.toString()}
+                variant="default"
+                padding="md"
+                interactive
                 onClick={() => onSelectFriend(balance.accountId.toString())}
-                className={cn(
-                  "rounded border border-border p-4 text-left group",
-                  "hover:border-foreground/20 transition-colors duration-150",
-                  "flex flex-col gap-3"
-                )}
               >
-                <HStack justify="between" align="start">
-                  <div className="text-sm font-semibold">{balance.friendName}</div>
-                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/30 group-hover:text-muted-foreground/60 transition-colors duration-150" />
-                </HStack>
-
-                <div
-                  className={cn(
-                    "text-xl font-semibold font-mono",
-                    isOwing && "text-emerald-600 dark:text-emerald-400",
-                    isOwe && "text-destructive",
-                    !isOwing && !isOwe && "text-muted-foreground"
-                  )}
-                >
-                  {isOwing
-                    ? formatCurrency(rawAmount, currencyCode)
-                    : isOwe
-                      ? formatCurrency(Math.abs(rawAmount), currencyCode)
-                      : "settled"}
-                </div>
-
-                <Muted size="xs">
-                  {isOwing ? "owes you" : isOwe ? "you owe" : "all square"}
-                </Muted>
-              </button>
+                <VStack spacing="md" align="start">
+                  <HStack spacing="md" justify="between" className="w-full">
+                    <Text size="sm">{balance.friendName}</Text>
+                    <Muted size="xs">{isOwing ? "owes you" : isOwe ? "you owe" : "settled"}</Muted>
+                  </HStack>
+                  <Text
+                    size="lg"
+                    weight="semibold"
+                    className={
+                      isOwing
+                        ? "font-mono text-emerald-600 dark:text-emerald-400"
+                        : isOwe
+                          ? "font-mono text-destructive"
+                          : "text-muted-foreground"
+                    }
+                  >
+                    {isOwing
+                      ? formatCurrency(rawAmount, currencyCode)
+                      : isOwe
+                        ? formatCurrency(Math.abs(rawAmount), currencyCode)
+                        : "settled"}
+                  </Text>
+                </VStack>
+              </Card>
             );
           })}
         </div>
