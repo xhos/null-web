@@ -19,8 +19,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { HexColorPicker } from "react-colorful";
-import { X, Check } from "lucide-react";
+import { X, Check, Hash } from "lucide-react";
 import { VStack, HStack, ErrorMessage, Muted, Caption } from "@/components/lib";
 import type { Account } from "@/gen/null/v1/account_pb";
 import { AccountType } from "@/gen/null/v1/enums_pb";
@@ -64,6 +65,9 @@ export function AccountDialog({
   const [isAddingAlias, setIsAddingAlias] = useState(false);
   const [justAddedAlias, setJustAddedAlias] = useState<string | null>(null);
   const aliasInputRef = useRef<HTMLInputElement>(null);
+  const [hexInputIndex, setHexInputIndex] = useState<number | null>(null);
+  const [hexInputValue, setHexInputValue] = useState("");
+  const hexInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -95,6 +99,8 @@ export function AccountDialog({
       setNewAlias("");
       setIsAddingAlias(false);
       setJustAddedAlias(null);
+      setHexInputIndex(null);
+      setHexInputValue("");
       setError(null);
     }
   }, [account, open]);
@@ -102,6 +108,10 @@ export function AccountDialog({
   useEffect(() => {
     if (isAddingAlias) aliasInputRef.current?.focus();
   }, [isAddingAlias]);
+
+  useEffect(() => {
+    if (hexInputIndex !== null) hexInputRef.current?.focus();
+  }, [hexInputIndex]);
 
   const handleAddAlias = async () => {
     if (!account || !newAlias.trim()) return;
@@ -259,27 +269,73 @@ export function AccountDialog({
                 <Label>colors</Label>
                 <HStack spacing="xs" className="h-9 items-center">
                   {colors.map((color, index) => (
-                    <Popover key={index}>
-                      <PopoverTrigger asChild>
-                        <button
-                          type="button"
-                          disabled={isLoading}
-                          title={index === 0 ? "primary" : index === 1 ? "secondary" : "tertiary"}
-                          className="h-9 w-9 cursor-pointer rounded border flex-shrink-0"
-                          style={{ backgroundColor: color }}
-                        />
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-3">
-                        <HexColorPicker
-                          color={color}
-                          onChange={(newColor) => {
-                            const newColors = [...colors];
-                            newColors[index] = newColor;
-                            setColors(newColors);
-                          }}
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <ContextMenu key={index}>
+                      <ContextMenuTrigger asChild>
+                        <div className={`relative overflow-hidden rounded border flex-shrink-0 transition-all duration-200 ease-in-out ${hexInputIndex === index ? "w-28 h-9" : "w-9 h-9"}`}>
+                          <span className={`absolute inset-0 transition-opacity duration-150 ${hexInputIndex === index ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <button
+                                  type="button"
+                                  disabled={isLoading}
+                                  title={index === 0 ? "primary" : index === 1 ? "secondary" : "tertiary"}
+                                  className="h-full w-full cursor-pointer"
+                                  style={{ backgroundColor: color }}
+                                />
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-3">
+                                <HexColorPicker
+                                  color={color}
+                                  onChange={(newColor) => {
+                                    const newColors = [...colors];
+                                    newColors[index] = newColor;
+                                    setColors(newColors);
+                                  }}
+                                />
+                              </PopoverContent>
+                            </Popover>
+                          </span>
+                          <span className={`absolute inset-0 flex items-center px-2 gap-1 transition-opacity duration-150 ${hexInputIndex === index ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+                            <input
+                              ref={hexInputIndex === index ? hexInputRef : undefined}
+                              value={hexInputValue}
+                              onChange={(e) => setHexInputValue(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  const normalized = hexInputValue.startsWith("#") ? hexInputValue : `#${hexInputValue}`;
+                                  if (/^#[0-9a-fA-F]{6}$/.test(normalized)) {
+                                    const newColors = [...colors];
+                                    newColors[index] = normalized;
+                                    setColors(newColors);
+                                  }
+                                  setHexInputIndex(null);
+                                }
+                                if (e.key === "Escape") setHexInputIndex(null);
+                              }}
+                              onBlur={() => {
+                                const normalized = hexInputValue.startsWith("#") ? hexInputValue : `#${hexInputValue}`;
+                                if (/^#[0-9a-fA-F]{6}$/.test(normalized)) {
+                                  const newColors = [...colors];
+                                  newColors[index] = normalized;
+                                  setColors(newColors);
+                                }
+                                setHexInputIndex(null);
+                              }}
+                              placeholder="#000000"
+                              maxLength={7}
+                              className="text-xs font-mono bg-transparent outline-none w-full placeholder:text-muted-foreground"
+                            />
+                          </span>
+                        </div>
+                      </ContextMenuTrigger>
+                      <ContextMenuContent>
+                        <ContextMenuItem onSelect={() => { setHexInputIndex(index); setHexInputValue(color); }}>
+                          <Hash className="h-3.5 w-3.5" />
+                          enter hex code
+                        </ContextMenuItem>
+                      </ContextMenuContent>
+                    </ContextMenu>
                   ))}
                 </HStack>
               </VStack>
