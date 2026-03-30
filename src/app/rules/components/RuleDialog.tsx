@@ -28,6 +28,11 @@ import { Step1, Step2, Step3, Step4 } from "./RuleSteps";
 import type { UICondition } from "./ConditionBuilder";
 import { STEP_LABELS } from "./rule-dialog-constants";
 
+interface RuleDialogPrefill {
+  ruleName: string;
+  condition: UICondition;
+}
+
 interface RuleDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -42,6 +47,7 @@ interface RuleDialogProps {
   }) => void;
   categories: Category[];
   rule?: Rule | null;
+  prefill?: RuleDialogPrefill | null;
   title: string;
   submitText: string;
   isLoading: boolean;
@@ -61,6 +67,7 @@ export function RuleDialog({
   onSubmit,
   categories,
   rule,
+  prefill,
   title,
   submitText,
   isLoading,
@@ -122,6 +129,14 @@ export function RuleDialog({
         setLogic("AND");
         setUIConditions([DEFAULT_CONDITION]);
       }
+    } else if (prefill) {
+      setRuleName(prefill.ruleName);
+      setSelectedCategoryId("");
+      setMerchantValue("");
+      setLogic("AND");
+      setUIConditions([prefill.condition]);
+      setPriorityOrder(1);
+      setApplyToExisting(true);
     } else {
       setRuleName("");
       setSelectedCategoryId("");
@@ -132,7 +147,7 @@ export function RuleDialog({
       setApplyToExisting(false);
     }
     setStep(1);
-  }, [isOpen, rule]);
+  }, [isOpen, rule, prefill]);
 
   const addCondition = () => setUIConditions((prev) => [...prev, { ...DEFAULT_CONDITION }]);
   const removeCondition = (index: number) => setUIConditions((prev) => prev.filter((_, i) => i !== index));

@@ -21,6 +21,7 @@ interface TransactionListProps {
   onDeleteTransaction?: (transaction: Transaction) => void;
   onViewDetails?: (transaction: Transaction) => void;
   onSplitTransaction?: (transaction: Transaction) => void;
+  onCreateRule?: (transaction: Transaction) => void;
 }
 
 function throttle(func: (...args: unknown[]) => void, limit: number) {
@@ -34,7 +35,7 @@ function throttle(func: (...args: unknown[]) => void, limit: number) {
   };
 }
 
-export function TransactionList({ accountId, searchQuery, filters, onSelectionChange, onEditTransaction, onDeleteTransaction, onViewDetails, onSplitTransaction }: TransactionListProps) {
+export function TransactionList({ accountId, searchQuery, filters, onSelectionChange, onEditTransaction, onDeleteTransaction, onViewDetails, onSplitTransaction, onCreateRule }: TransactionListProps) {
   const {
     transactions,
     isLoading,
@@ -263,6 +264,7 @@ export function TransactionList({ accountId, searchQuery, filters, onSelectionCh
                       onDelete={onDeleteTransaction}
                       onViewDetails={onViewDetails}
                       onSplit={onSplitTransaction}
+                      onCreateRule={onCreateRule}
                       inlineSplits={splitMap.get(transaction.id.toString())}
                     />
                   );

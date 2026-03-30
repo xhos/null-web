@@ -27,7 +27,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { FileText, Edit, Trash2, Copy, ReceiptText, Split } from "lucide-react";
+import { FileText, Edit, Trash2, Copy, ReceiptText, Split, BookmarkPlus } from "lucide-react";
 import { useState } from "react";
 import { ReceiptDetailDialog } from "@/app/receipts/components/ReceiptDetailDialog";
 import { useReceipt } from "@/hooks/useReceipts";
@@ -42,6 +42,7 @@ interface TransactionItemProps {
   onDelete?: (transaction: Transaction) => void;
   onViewDetails?: (transaction: Transaction) => void;
   onSplit?: (transaction: Transaction) => void;
+  onCreateRule?: (transaction: Transaction) => void;
   inlineSplits?: Transaction[];
 }
 
@@ -55,6 +56,7 @@ export function TransactionItem({
   onDelete,
   onViewDetails,
   onSplit,
+  onCreateRule,
   inlineSplits,
 }: TransactionItemProps) {
   const handleClick = (event: React.MouseEvent) => {
@@ -266,6 +268,12 @@ export function TransactionItem({
             <Copy className="mr-2 h-4 w-4" />
             Copy Name
           </ContextMenuItem>
+          {onCreateRule && (
+            <ContextMenuItem onClick={() => onCreateRule(transaction)}>
+              <BookmarkPlus className="mr-2 h-4 w-4" />
+              Create Rule
+            </ContextMenuItem>
+          )}
           {onDelete && (
             <ContextMenuItem onClick={() => onDelete(transaction)} className="text-destructive">
               <Trash2 className="mr-2 h-4 w-4" />

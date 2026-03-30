@@ -22,6 +22,10 @@ import { useTransactionsQuery } from "@/hooks/useTransactionsQuery";
 import { TransactionDetailsDialog } from "./components/TransactionDetailsDialog";
 import { TransactionFiltersPanel, type TransactionFilters } from "./components/TransactionFiltersPanel";
 import { SplitTransactionDialog } from "./components/SplitTransactionDialog";
+import { RuleDialog } from "@/app/rules/components/RuleDialog";
+import { useCreateRule } from "@/hooks/useRules";
+import { useCategories } from "@/hooks/useCategories";
+import type { UICondition } from "@/app/rules/components/ConditionBuilder";
 
 export default function TransactionsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -35,6 +39,8 @@ export default function TransactionsPage() {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [filters, setFilters] = useState<TransactionFilters>({});
+  const [ruleDialogOpen, setRuleDialogOpen] = useState(false);
+  const [rulePrefill, setRulePrefill] = useState<{ ruleName: string; condition: UICondition } | null>(null);
 
   // Debounce search input
   useEffect(() => {
@@ -44,6 +50,9 @@ export default function TransactionsPage() {
 
     return () => clearTimeout(timer);
   }, [searchInput]);
+
+  const { categories } = useCategories();
+  const { createRule, isPending: isCreatingRule, error: createRuleError, reset: resetCreateRule } = useCreateRule();
 
   // Use hook for mutations only (TransactionList handles its own query with search)
   const {
@@ -125,6 +134,19 @@ export default function TransactionsPage() {
     setIsSplitDialogOpen(true);
   };
 
+  const handleCreateRuleFromTransaction = (transaction: Transaction) => {
+    const description = transaction.description || "";
+    const condition: UICondition = {
+      field: "tx_desc",
+      operator: "contains",
+      currentInput: description,
+      case_sensitive: false,
+    };
+
+    setRulePrefill({ ruleName: description, condition });
+    setRuleDialogOpen(true);
+  };
+
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (filters.startDate || filters.endDate) count++;
@@ -198,6 +220,7 @@ export default function TransactionsPage() {
               onDeleteTransaction={handleDeleteTransaction}
               onViewDetails={handleViewDetails}
               onSplitTransaction={handleSplitTransaction}
+              onCreateRule={handleCreateRuleFromTransaction}
             />
           </div>
 
@@ -279,6 +302,29 @@ export default function TransactionsPage() {
             setIsSplitDialogOpen(open);
             if (!open) setSplitTransaction(null);
           }}
+        />
+
+        <RuleDialog
+          isOpen={ruleDialogOpen}
+          onClose={() => {
+            setRuleDialogOpen(false);
+            setRulePrefill(null);
+            resetCreateRule();
+          }}
+          onSubmit={(ruleData) => {
+            createRule(ruleData, {
+              onSuccess: () => {
+                setRuleDialogOpen(false);
+                setRulePrefill(null);
+              },
+            });
+          }}
+          categories={categories}
+          prefill={rulePrefill}
+          title="create rule"
+          submitText="create rule"
+          isLoading={isCreatingRule}
+          error={createRuleError?.message}
         />
       </PageContent>
     </PageContainer>
