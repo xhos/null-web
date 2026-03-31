@@ -149,6 +149,7 @@ interface Step3Props {
   categories: Category[];
   onCategoryChange: (categoryId: string) => void;
   onMerchantChange: (merchant: string) => void;
+  onOpenCreateCategory: () => void;
 }
 
 export function Step3({
@@ -157,12 +158,22 @@ export function Step3({
   categories,
   onCategoryChange,
   onMerchantChange,
+  onOpenCreateCategory,
 }: Step3Props) {
   return (
     <Card variant="subtle" padding="md">
       <HStack spacing="sm" align="center" className="flex-wrap">
         <Text size="sm">Apply category</Text>
-        <Select value={selectedCategoryId} onValueChange={onCategoryChange}>
+        <Select
+          value={selectedCategoryId}
+          onValueChange={(value) => {
+            if (value === "_create_new") {
+              onOpenCreateCategory();
+              return;
+            }
+            onCategoryChange(value);
+          }}
+        >
           <SelectTrigger className="w-48">
             <SelectValue placeholder="select" />
           </SelectTrigger>
@@ -172,6 +183,9 @@ export function Step3({
                 {category.slug}
               </SelectItem>
             ))}
+            <SelectItem value="_create_new" className="text-muted-foreground">
+              + new category
+            </SelectItem>
           </SelectContent>
         </Select>
 

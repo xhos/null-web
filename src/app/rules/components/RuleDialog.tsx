@@ -27,6 +27,8 @@ import { StepIndicator } from "./StepIndicator";
 import { Step1, Step2, Step3, Step4 } from "./RuleSteps";
 import type { UICondition } from "./ConditionBuilder";
 import { STEP_LABELS } from "./rule-dialog-constants";
+import { useCreateCategory } from "@/hooks/useCategories";
+import { CategoryDialog } from "@/app/categories/category-dialog";
 
 interface RuleDialogPrefill {
   ruleName: string;
@@ -73,6 +75,7 @@ export function RuleDialog({
   isLoading,
   error: externalError,
 }: RuleDialogProps) {
+  const { createCategoryAsync } = useCreateCategory();
   const [step, setStep] = useState(1);
   const [ruleName, setRuleName] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
@@ -82,6 +85,17 @@ export function RuleDialog({
   const [priorityOrder, setPriorityOrder] = useState(1);
   const [applyToExisting, setApplyToExisting] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [createCategoryOpen, setCreateCategoryOpen] = useState(false);
+  const [pendingCategorySlug, setPendingCategorySlug] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!pendingCategorySlug) return;
+    const match = categories.find((c) => c.slug === pendingCategorySlug);
+    if (match) {
+      setSelectedCategoryId(match.id.toString());
+      setPendingCategorySlug(null);
+    }
+  }, [categories, pendingCategorySlug]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -242,6 +256,16 @@ export function RuleDialog({
   const canProceed = stepValidation[step as keyof typeof stepValidation] ?? true;
 
   return (
+    <>
+    <CategoryDialog
+      open={createCategoryOpen}
+      onOpenChange={setCreateCategoryOpen}
+      title="new category"
+      onSave={async (slug, color) => {
+        await createCategoryAsync({ slug, color });
+        setPendingCategorySlug(slug);
+      }}
+    />
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col p-0">
         <div className="px-6 pt-6">
@@ -281,6 +305,7 @@ export function RuleDialog({
               categories={categories}
               onCategoryChange={setSelectedCategoryId}
               onMerchantChange={setMerchantValue}
+              onOpenCreateCategory={() => setCreateCategoryOpen(true)}
             />
           )}
           {step === 4 && (
@@ -334,5 +359,6 @@ export function RuleDialog({
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 }
