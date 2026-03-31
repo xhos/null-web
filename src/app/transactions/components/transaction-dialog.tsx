@@ -10,12 +10,22 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { FormField, Select } from "@/components/ui/forms";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { VStack, ErrorMessage } from "@/components/lib";
 import { TransactionDirection } from "@/gen/null/v1/enums_pb";
 import { useAccounts } from "@/hooks/useAccounts";
-import { useCategories } from "@/hooks/useCategories";
+import { useCategories, useCreateCategory } from "@/hooks/useCategories";
 import { useCurrencies } from "@/hooks/useCurrencies";
 import type { Transaction } from "@/gen/null/v1/transaction_pb";
+import { CategoryDialog } from "@/app/categories/category-dialog";
 
 interface TransactionDialogProps {
   open: boolean;
@@ -34,12 +44,6 @@ interface TransactionDialogProps {
   title: string;
 }
 
-const directionOptions = [
-  { value: TransactionDirection.DIRECTION_OUTGOING, label: "expense" },
-  { value: TransactionDirection.DIRECTION_INCOMING, label: "income" },
-];
-
-
 export function TransactionDialog({
   open,
   onOpenChange,
@@ -50,8 +54,20 @@ export function TransactionDialog({
   const { accounts } = useAccounts();
   const { categories } = useCategories();
   const { currencies } = useCurrencies();
+  const { createCategoryAsync } = useCreateCategory();
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [createCategoryOpen, setCreateCategoryOpen] = React.useState(false);
+  const [pendingCategorySlug, setPendingCategorySlug] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (!pendingCategorySlug) return;
+    const match = categories.find((c) => c.slug === pendingCategorySlug);
+    if (match) {
+      setFormData((prev) => ({ ...prev, categoryId: match.id.toString() }));
+      setPendingCategorySlug(null);
+    }
+  }, [categories, pendingCategorySlug]);
 
   const [formData, setFormData] = React.useState({
     accountId: "",
@@ -60,16 +76,15 @@ export function TransactionDialog({
     direction: TransactionDirection.DIRECTION_OUTGOING,
     date: new Date().toISOString().split("T")[0],
     time: new Date().toTimeString().slice(0, 5),
-    description: "",
     merchant: "",
-    userNotes: "",
     categoryId: "",
+    description: "",
+    userNotes: "",
   });
 
   React.useEffect(() => {
     if (open) {
       if (transaction) {
-        // Parse existing transaction for editing
         const txDate = transaction.txDate?.seconds
           ? new Date(Number(transaction.txDate.seconds) * 1000)
           : new Date();
@@ -85,56 +100,56 @@ export function TransactionDialog({
           direction: transaction.direction || TransactionDirection.DIRECTION_OUTGOING,
           date: txDate.toISOString().split("T")[0],
           time: txDate.toTimeString().slice(0, 5),
-          description: transaction.description || "",
           merchant: transaction.merchant || "",
-          userNotes: transaction.userNotes || "",
           categoryId: transaction.categoryId?.toString() || "",
+          description: transaction.description || "",
+          userNotes: transaction.userNotes || "",
         });
       } else {
-        // Reset for new transaction
+        const lastUsedAccountId = localStorage.getItem("lastUsedAccountId") ?? "";
+        const lastUsedAccount = accounts.find((a) => a.id.toString() === lastUsedAccountId);
         setFormData({
-          accountId: "",
+          accountId: lastUsedAccountId,
           amount: "",
-          currency: "USD",
+          currency: lastUsedAccount?.mainCurrency || "USD",
           direction: TransactionDirection.DIRECTION_OUTGOING,
           date: new Date().toISOString().split("T")[0],
           time: new Date().toTimeString().slice(0, 5),
-          description: "",
           merchant: "",
-          userNotes: "",
           categoryId: "",
+          description: "",
+          userNotes: "",
         });
       }
       setError(null);
     }
-  }, [transaction, open]);
+  }, [transaction, open, accounts]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
     if (!formData.accountId) {
-      setError("Please select an account");
+      setError("please select an account");
       return;
     }
 
     if (!formData.amount || parseFloat(formData.amount) <= 0) {
-      setError("Please enter a valid amount");
+      setError("please enter a valid amount");
       return;
     }
 
     if (!formData.description.trim()) {
-      setError("Please enter a description");
+      setError("please enter a description");
       return;
     }
 
     setIsLoading(true);
     try {
-      const dateTime = new Date(`${formData.date}T${formData.time}`);
-
+      localStorage.setItem("lastUsedAccountId", formData.accountId);
       await onSave({
         accountId: BigInt(formData.accountId),
-        txDate: dateTime,
+        txDate: new Date(`${formData.date}T${formData.time}`),
         txAmount: {
           currencyCode: formData.currency,
           units: Math.floor(parseFloat(formData.amount)).toString(),
@@ -155,150 +170,203 @@ export function TransactionDialog({
     }
   };
 
+  const set = <K extends keyof typeof formData>(key: K, value: (typeof formData)[K]) =>
+    setFormData((prev) => ({ ...prev, [key]: value }));
+
   return (
+    <>
+    <CategoryDialog
+      open={createCategoryOpen}
+      onOpenChange={setCreateCategoryOpen}
+      title="new category"
+      onSave={async (slug, color) => {
+        await createCategoryAsync({ slug, color });
+        setPendingCategorySlug(slug);
+      }}
+    />
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[520px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <FormField label="account" required>
+
+          <VStack spacing="md" className="py-4">
+            {/* core: account, type, amount, date */}
+            <div className="grid grid-cols-[1fr_auto] gap-3">
+              <VStack spacing="xs">
+                <Label>account *</Label>
                 <Select
                   value={formData.accountId}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, accountId: e.target.value }))}
-                  disabled={isLoading}
-                  required
-                >
-                  <option value="">Select account</option>
-                  {accounts.map((account) => (
-                    <option key={account.id.toString()} value={account.id.toString()}>
-                      {account.name} ({account.bank})
-                    </option>
-                  ))}
-                </Select>
-              </FormField>
-
-              <FormField label="type" required>
-                <Select
-                  value={formData.direction}
-                  onChange={(e) =>
+                  onValueChange={(value) => {
+                    const selectedAccount = accounts.find((a) => a.id.toString() === value);
                     setFormData((prev) => ({
                       ...prev,
-                      direction: parseInt(e.target.value) as TransactionDirection,
-                    }))
-                  }
+                      accountId: value,
+                      currency: selectedAccount?.mainCurrency || prev.currency,
+                    }));
+                  }}
                   disabled={isLoading}
                   required
                 >
-                  {directionOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
+                  <SelectTrigger>
+                    <SelectValue placeholder="select account" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {accounts.map((account) => (
+                      <SelectItem key={account.id.toString()} value={account.id.toString()}>
+                        {account.friendlyName || account.name} ({account.bank})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
-              </FormField>
+              </VStack>
+
+              <VStack spacing="xs">
+                <Label>type</Label>
+                <Select
+                  value={formData.direction.toString()}
+                  onValueChange={(value) =>
+                    set("direction", parseInt(value) as TransactionDirection)
+                  }
+                  disabled={isLoading}
+                >
+                  <SelectTrigger className="w-28">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={TransactionDirection.DIRECTION_OUTGOING.toString()}>
+                      expense
+                    </SelectItem>
+                    <SelectItem value={TransactionDirection.DIRECTION_INCOMING.toString()}>
+                      income
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </VStack>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField label="amount" required>
+            <VStack spacing="xs">
+              <Label>amount *</Label>
+              <div className="flex">
+                <Select
+                  value={formData.currency}
+                  onValueChange={(value) => set("currency", value)}
+                  disabled={isLoading}
+                >
+                  <SelectTrigger className="w-24 rounded-r-none border-r-0 focus:z-10">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {currencies.map(({ code }) => (
+                      <SelectItem key={code} value={code}>{code}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <Input
                   type="number"
                   step="0.01"
                   value={formData.amount}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, amount: e.target.value }))}
+                  onChange={(e) => set("amount", e.target.value)}
                   placeholder="0.00"
                   disabled={isLoading}
                   required
-                  className="font-mono"
+                  className="rounded-l-none font-mono"
                 />
-              </FormField>
+              </div>
+            </VStack>
 
-              <FormField label="currency">
-                <Select
-                  value={formData.currency}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, currency: e.target.value }))}
-                  disabled={isLoading}
-                >
-                  {currencies.map(({ code }) => (
-                    <option key={code} value={code}>{code}</option>
-                  ))}
-                </Select>
-              </FormField>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField label="date" required>
-                <Input
-                  type="date"
-                  value={formData.date}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, date: e.target.value }))}
-                  disabled={isLoading}
-                  required
-                />
-              </FormField>
-
-              <FormField label="time">
-                <Input
-                  type="time"
-                  value={formData.time}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, time: e.target.value }))}
-                  disabled={isLoading}
-                />
-              </FormField>
-            </div>
-
-            <FormField label="description" required>
+            <VStack spacing="xs">
+              <Label>description *</Label>
               <Input
                 value={formData.description}
-                onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-                placeholder="Transaction description"
+                onChange={(e) => set("description", e.target.value)}
+                placeholder="what was this for"
                 disabled={isLoading}
               />
-            </FormField>
+            </VStack>
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField label="merchant">
+            <div className="grid grid-cols-[1fr_auto] gap-3">
+              <VStack spacing="xs">
+                <Label>date *</Label>
                 <Input
-                  value={formData.merchant}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, merchant: e.target.value }))}
-                  placeholder="Merchant or payee"
+                  type="text"
+                  value={formData.date}
+                  onChange={(e) => set("date", e.target.value)}
+                  placeholder="YYYY-MM-DD"
                   disabled={isLoading}
+                  className="font-mono"
                 />
-              </FormField>
-
-              <FormField label="category">
-                <Select
-                  value={formData.categoryId}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, categoryId: e.target.value }))}
+              </VStack>
+              <VStack spacing="xs">
+                <Label>time</Label>
+                <Input
+                  type="text"
+                  value={formData.time}
+                  onChange={(e) => set("time", e.target.value)}
+                  placeholder="HH:MM"
                   disabled={isLoading}
-                >
-                  <option value="">No category</option>
-                  {categories.map((category: { id: bigint; slug: string }) => (
-                    <option key={category.id.toString()} value={category.id.toString()}>
-                      {category.slug}
-                    </option>
-                  ))}
-                </Select>
-              </FormField>
+                  className="w-24 font-mono"
+                />
+              </VStack>
             </div>
 
-            <FormField label="notes">
+            <Separator />
+
+            {/* metadata: merchant, category, notes */}
+            <VStack spacing="xs">
+              <Label>merchant</Label>
               <Input
-                value={formData.userNotes}
-                onChange={(e) => setFormData((prev) => ({ ...prev, userNotes: e.target.value }))}
-                placeholder="Personal notes"
+                value={formData.merchant}
+                onChange={(e) => set("merchant", e.target.value)}
+                placeholder="who was this with"
                 disabled={isLoading}
               />
-            </FormField>
+            </VStack>
 
-            {error !== null && (
-              <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded p-2">
-                {error}
-              </p>
-            )}
-          </div>
+            <VStack spacing="xs">
+              <Label>category</Label>
+              <Select
+                value={formData.categoryId || "_none"}
+                onValueChange={(value) => {
+                  if (value === "_create_new") {
+                    setCreateCategoryOpen(true);
+                    return;
+                  }
+                  set("categoryId", value === "_none" ? "" : value);
+                }}
+                disabled={isLoading}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="no category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="_none">no category</SelectItem>
+                  {categories.map((category: { id: bigint; slug: string }) => (
+                    <SelectItem key={category.id.toString()} value={category.id.toString()}>
+                      {category.slug}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="_create_new" className="text-muted-foreground">
+                    + new category
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </VStack>
+
+            <VStack spacing="xs">
+              <Label>notes</Label>
+              <Input
+                value={formData.userNotes}
+                onChange={(e) => set("userNotes", e.target.value)}
+                placeholder="personal notes"
+                disabled={isLoading}
+              />
+            </VStack>
+
+            {error && <ErrorMessage>{error}</ErrorMessage>}
+          </VStack>
+
           <DialogFooter>
             <Button
               type="button"
@@ -315,5 +383,6 @@ export function TransactionDialog({
         </form>
       </DialogContent>
     </Dialog>
+    </>
   );
 }
