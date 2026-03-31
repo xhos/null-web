@@ -63,3 +63,19 @@ export function getCategoryTextColor(category?: string): string {
   const bgColor = getCategoryColor(category);
   return getContrastText(bgColor);
 }
+
+export function generateRandomCategoryColor(): string {
+  const hue = Math.floor(Math.random() * 360);
+  const saturation = 55 + Math.floor(Math.random() * 20); // 55–75%
+  const lightness = 45 + Math.floor(Math.random() * 15);  // 45–60%
+
+  const s = saturation / 100;
+  const l = lightness / 100;
+  const a = s * Math.min(l, 1 - l);
+  const toChannel = (n: number) => {
+    const k = (n + hue / 30) % 12;
+    return Math.round((l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1))) * 255);
+  };
+
+  return rgbToHex(toChannel(0), toChannel(8), toChannel(4));
+}
