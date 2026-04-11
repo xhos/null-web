@@ -33,7 +33,7 @@ export function ReceiptImageDialog({ receipt, open, onOpenChange }: ReceiptImage
   useEffect(() => {
     if (!imageData || imageData.length === 0) return;
 
-    const blob = new Blob([imageData], { type: mimeTypeFromPath(receipt.imagePath) });
+    const blob = new Blob([imageData as BlobPart], { type: mimeTypeFromPath(receipt.imagePath) });
     const url = URL.createObjectURL(blob);
     setBlobUrl(url);
 
