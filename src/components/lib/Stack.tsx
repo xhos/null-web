@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 
 interface StackProps extends React.HTMLAttributes<HTMLDivElement> {
   spacing?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
-  align?: 'start' | 'center' | 'end' | 'stretch';
+  align?: 'start' | 'center' | 'end' | 'stretch' | 'baseline';
   justify?: 'start' | 'center' | 'between' | 'around' | 'end';
   divider?: boolean;
 }
@@ -30,6 +30,7 @@ const alignClasses = {
   center: 'items-center',
   end: 'items-end',
   stretch: 'items-stretch',
+  baseline: 'items-baseline',
 };
 
 const justifyClasses = {
