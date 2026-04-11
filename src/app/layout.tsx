@@ -1,22 +1,12 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Lora } from "next/font/google";
+import { geistMono } from "@/fonts/geist-mono";
+import { lora } from "@/fonts/lora";
 import { satoshi } from "@/fonts/satoshi";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import ConditionalLayout from "@/components/ConditionalLayout";
 import { QueryProvider } from "@/lib/query-client";
 import { Toaster } from "@/components/ui/sonner";
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const lora = Lora({
-  variable: "--font-lora",
-  subsets: ["latin"],
-  style: ["normal", "italic"],
-});
 
 export const metadata: Metadata = {
   title: "null // financial tracker",
