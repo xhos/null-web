@@ -31,6 +31,20 @@
         src = ./.;
         hooks = {
           alejandra.enable = true;
+          biome.enable = true;
+
+          typecheck = {
+            enable = true;
+            name = "typecheck";
+            entry = pkgs.lib.getExe (pkgs.writeShellApplication {
+              name = "tsc-check";
+              runtimeInputs = [pkgs.typescript];
+              text = "tsc --noEmit";
+            });
+            stages = ["pre-push"];
+            pass_filenames = false;
+            files = "\\.(ts|tsx)$";
+          };
 
           nix-build = {
             enable = true;
