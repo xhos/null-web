@@ -37,6 +37,7 @@ const sortAccountsByType = (accounts: Account[]) => {
     [AccountType.ACCOUNT_INVESTMENT]: 3,
     [AccountType.ACCOUNT_OTHER]: 4,
     [AccountType.ACCOUNT_CREDIT_CARD]: 5,
+    [AccountType.ACCOUNT_FRIEND]: 6,
   };
 
   return [...accounts].sort((a, b) => {
