@@ -89,7 +89,8 @@
           '')
 
           (writeShellScriptBin "run" ''
-            bun run dev
+            ${bun}/bin/bun install
+            exec ${bun}/bin/bun run dev
           '')
 
           (writeShellScriptBin "bump-protos" ''
