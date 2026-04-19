@@ -6,10 +6,34 @@
   0% { background-position: 100% 0; }
   100% { background-position: -100% 0; }
 }
+@keyframes particle-hit {
+  0%     { transform: translate(-60vw, 0) rotate(0deg); opacity: 0; animation-timing-function: linear; }
+  6%     { opacity: 1; animation-timing-function: linear; }
+  50%    { transform: translate(0, 0) rotate(0deg); opacity: 1; animation-timing-function: steps(1, end); }
+  50.01% { transform: translate(0, 0) rotate(var(--angle, 18deg)); opacity: 1; animation-timing-function: linear; }
+  100%   { transform: translate(var(--dx, 22vw), var(--dy, 14vh)) rotate(var(--angle, 18deg)); opacity: 0; }
+}
+@keyframes impact {
+  0%, 49.9% { transform: translate(0, 0); color: var(--foreground); }
+  50%       { transform: translate(3px, -1px); color: var(--color-accent-primary); }
+  51%       { transform: translate(-2px, 2px); color: var(--color-accent-primary); }
+  52%       { transform: translate(2px, 1px); color: var(--color-accent-primary); }
+  53%       { transform: translate(-3px, 0); color: var(--color-accent-primary); }
+  54%       { transform: translate(2px, -2px); color: var(--color-accent-primary); }
+  55%       { transform: translate(-1px, 1px); color: var(--color-accent-primary); }
+  56%, 100% { transform: translate(0, 0); color: var(--foreground); }
+}
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --animate-shimmer: shimmer 2s linear infinite;
+  --animate-particle-hit: particle-hit 1.3s linear infinite;
+  --animate-impact: impact 1.3s linear infinite;
+  --animate-overlay-in: overlay-in 260ms ease-out both;
   --radius-xs: 0px;
   --radius-sm: 1px;
   --radius-md: 2px;
