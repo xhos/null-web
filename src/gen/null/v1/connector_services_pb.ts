@@ -23,7 +23,7 @@ import { file_buf_validate_validate } from "../../buf/validate/validate_pb";
 export const file_null_v1_connector_services: GenFile =
 	/*@__PURE__*/
 	fileDesc(
-		"CiBudWxsL3YxL2Nvbm5lY3Rvcl9zZXJ2aWNlcy5wcm90bxIHbnVsbC52MSKJAQoHU3luY0pvYhIKCgJpZBgBIAEoAxIPCgd1c2VyX2lkGAIgASgJEhAKCHByb3ZpZGVyGAMgASgJEhMKC2NyZWRlbnRpYWxzGAQgASgMEi8KBmN1cnNvchgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAIgBAUIJCgdfY3Vyc29yIhUKE0xpc3RTeW5jSm9ic1JlcXVlc3QiNgoUTGlzdFN5bmNKb2JzUmVzcG9uc2USHgoEam9icxgBIAMoCzIQLm51bGwudjEuU3luY0pvYiKJAQoWQ29tcGxldGVTeW5jSm9iUmVxdWVzdBITCgJpZBgBIAEoA0IHukgEIgIgABIvCgZjdXJzb3IYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wSACIAQESEwoGc3RhdHVzGAMgASgJSAGIAQFCCQoHX2N1cnNvckIJCgdfc3RhdHVzIhkKF0NvbXBsZXRlU3luY0pvYlJlc3BvbnNlInMKHUNyZWF0ZUNvbm5lY3RlZEFjY291bnRSZXF1ZXN0EhkKB3VzZXJfaWQYASABKAlCCLpIBXIDsAEBEhkKCHByb3ZpZGVyGAIgASgJQge6SARyAhABEhwKC2NyZWRlbnRpYWxzGAMgASgJQge6SARyAhABIiwKHkNyZWF0ZUNvbm5lY3RlZEFjY291bnRSZXNwb25zZRIKCgJpZBgBIAEoAzKgAgoQQ29ubmVjdG9yU2VydmljZRJLCgxMaXN0U3luY0pvYnMSHC5udWxsLnYxLkxpc3RTeW5jSm9ic1JlcXVlc3QaHS5udWxsLnYxLkxpc3RTeW5jSm9ic1Jlc3BvbnNlElQKD0NvbXBsZXRlU3luY0pvYhIfLm51bGwudjEuQ29tcGxldGVTeW5jSm9iUmVxdWVzdBogLm51bGwudjEuQ29tcGxldGVTeW5jSm9iUmVzcG9uc2USaQoWQ3JlYXRlQ29ubmVjdGVkQWNjb3VudBImLm51bGwudjEuQ3JlYXRlQ29ubmVjdGVkQWNjb3VudFJlcXVlc3QaJy5udWxsLnYxLkNyZWF0ZUNvbm5lY3RlZEFjY291bnRSZXNwb25zZWIGcHJvdG8z",
+		"CiBudWxsL3YxL2Nvbm5lY3Rvcl9zZXJ2aWNlcy5wcm90bxIHbnVsbC52MSKJAQoHU3luY0pvYhIKCgJpZBgBIAEoAxIPCgd1c2VyX2lkGAIgASgJEhAKCHByb3ZpZGVyGAMgASgJEhMKC2NyZWRlbnRpYWxzGAQgASgMEi8KBmN1cnNvchgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAIgBAUIJCgdfY3Vyc29yIhUKE0xpc3RTeW5jSm9ic1JlcXVlc3QiNgoUTGlzdFN5bmNKb2JzUmVzcG9uc2USHgoEam9icxgBIAMoCzIQLm51bGwudjEuU3luY0pvYiKJAQoWQ29tcGxldGVTeW5jSm9iUmVxdWVzdBITCgJpZBgBIAEoA0IHukgEIgIgABIvCgZjdXJzb3IYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wSACIAQESEwoGc3RhdHVzGAMgASgJSAGIAQFCCQoHX2N1cnNvckIJCgdfc3RhdHVzIhkKF0NvbXBsZXRlU3luY0pvYlJlc3BvbnNlMrUBChBDb25uZWN0b3JTZXJ2aWNlEksKDExpc3RTeW5jSm9icxIcLm51bGwudjEuTGlzdFN5bmNKb2JzUmVxdWVzdBodLm51bGwudjEuTGlzdFN5bmNKb2JzUmVzcG9uc2USVAoPQ29tcGxldGVTeW5jSm9iEh8ubnVsbC52MS5Db21wbGV0ZVN5bmNKb2JSZXF1ZXN0GiAubnVsbC52MS5Db21wbGV0ZVN5bmNKb2JSZXNwb25zZWIGcHJvdG8z",
 		[file_buf_validate_validate, file_google_protobuf_timestamp],
 	);
 
@@ -144,56 +144,6 @@ export const CompleteSyncJobResponseSchema: GenMessage<CompleteSyncJobResponse> 
 	messageDesc(file_null_v1_connector_services, 4);
 
 /**
- * @generated from message null.v1.CreateConnectedAccountRequest
- */
-export type CreateConnectedAccountRequest =
-	Message<"null.v1.CreateConnectedAccountRequest"> & {
-		/**
-		 * @generated from field: string user_id = 1;
-		 */
-		userId: string;
-
-		/**
-		 * @generated from field: string provider = 2;
-		 */
-		provider: string;
-
-		/**
-		 * plaintext credentials JSON; server encrypts before storing
-		 *
-		 * @generated from field: string credentials = 3;
-		 */
-		credentials: string;
-	};
-
-/**
- * Describes the message null.v1.CreateConnectedAccountRequest.
- * Use `create(CreateConnectedAccountRequestSchema)` to create a new message.
- */
-export const CreateConnectedAccountRequestSchema: GenMessage<CreateConnectedAccountRequest> =
-	/*@__PURE__*/
-	messageDesc(file_null_v1_connector_services, 5);
-
-/**
- * @generated from message null.v1.CreateConnectedAccountResponse
- */
-export type CreateConnectedAccountResponse =
-	Message<"null.v1.CreateConnectedAccountResponse"> & {
-		/**
-		 * @generated from field: int64 id = 1;
-		 */
-		id: bigint;
-	};
-
-/**
- * Describes the message null.v1.CreateConnectedAccountResponse.
- * Use `create(CreateConnectedAccountResponseSchema)` to create a new message.
- */
-export const CreateConnectedAccountResponseSchema: GenMessage<CreateConnectedAccountResponse> =
-	/*@__PURE__*/
-	messageDesc(file_null_v1_connector_services, 6);
-
-/**
  * internal-only, consumed by null-connector
  *
  * @generated from service null.v1.ConnectorService
@@ -214,13 +164,5 @@ export const ConnectorService: GenService<{
 		methodKind: "unary";
 		input: typeof CompleteSyncJobRequestSchema;
 		output: typeof CompleteSyncJobResponseSchema;
-	};
-	/**
-	 * @generated from rpc null.v1.ConnectorService.CreateConnectedAccount
-	 */
-	createConnectedAccount: {
-		methodKind: "unary";
-		input: typeof CreateConnectedAccountRequestSchema;
-		output: typeof CreateConnectedAccountResponseSchema;
 	};
 }> = /*@__PURE__*/ serviceDesc(file_null_v1_connector_services, 0);
