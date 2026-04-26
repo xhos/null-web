@@ -58,3 +58,45 @@ export function useDeleteConnection() {
 		error: mutation.error,
 	};
 }
+
+export function useTriggerSync() {
+	const queryClient = useQueryClient();
+
+	const mutation = useMutation({
+		mutationFn: (id: bigint) => connectionsApi.triggerSync(id),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["connections"] });
+		},
+	});
+
+	return {
+		triggerSync: mutation.mutate,
+		triggerSyncAsync: mutation.mutateAsync,
+		isPending: mutation.isPending,
+		error: mutation.error,
+	};
+}
+
+export function useSetSyncInterval() {
+	const queryClient = useQueryClient();
+
+	const mutation = useMutation({
+		mutationFn: ({
+			id,
+			syncIntervalMinutes,
+		}: {
+			id: bigint;
+			syncIntervalMinutes: number | undefined;
+		}) => connectionsApi.setSyncInterval(id, syncIntervalMinutes),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["connections"] });
+		},
+	});
+
+	return {
+		setSyncInterval: mutation.mutate,
+		setSyncIntervalAsync: mutation.mutateAsync,
+		isPending: mutation.isPending,
+		error: mutation.error,
+	};
+}

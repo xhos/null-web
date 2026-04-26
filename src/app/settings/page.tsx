@@ -1,29 +1,10 @@
 "use client";
 
 import { formatDistanceToNow } from "date-fns";
+import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import { useMemo, useState } from "react";
-import {
-	Card,
-	EmptyState,
-	ErrorMessage,
-	FormField,
-	HStack,
-	Input,
-	LoadingSkeleton,
-	Muted,
-	SectionTitle,
-	VStack,
-} from "@/components/lib";
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { Card, HStack, LoadingSkeleton, Muted, VStack } from "@/components/lib";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,17 +12,20 @@ import {
 	PageContent,
 	PageHeaderWithTitle,
 } from "@/components/ui/layout";
-import type { Connection } from "@/gen/null/v1/connection_services_pb";
 import {
-	useConnections,
-	useCreateConnection,
-	useDeleteConnection,
-} from "@/hooks/useConnections";
-import { useUserId } from "@/hooks/useSession";
-
-const PROVIDER_LABEL: Record<string, string> = {
-	wise: "Wise",
-};
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import type { Connection } from "@/gen/null/v1/connection_services_pb";
+import { useConnections } from "@/hooks/useConnections";
+import { useSession, useUserId } from "@/hooks/useSession";
+import { authClient } from "@/lib/auth-client";
+import { ConnectProviderDialog } from "./components/ConnectProviderDialog";
+import { ManageConnectionDialog } from "./components/ManageConnectionDialog";
+import { intervalLabel, PROVIDERS, type Provider } from "./providers";
 
 const STATUS_VARIANT: Record<
 	string,
@@ -51,10 +35,6 @@ const STATUS_VARIANT: Record<
 	disabled: "secondary",
 	broken: "destructive",
 };
-
-function providerLabel(provider: string) {
-	return PROVIDER_LABEL[provider] ?? provider;
-}
 
 function timestampToDate(ts?: { seconds?: bigint; nanos?: number }) {
 	if (!ts?.seconds) return null;
@@ -67,157 +47,220 @@ export default function SettingsPage() {
 	const userId = useUserId();
 	const { connections, isLoading } = useConnections();
 
-	const hasWise = useMemo(
-		() => connections.some((c) => c.provider === "wise"),
-		[connections],
+	const [connectProvider, setConnectProvider] = useState<Provider | null>(null);
+	const [manageConnection, setManageConnection] = useState<Connection | null>(
+		null,
 	);
+
+	const connectionsByProvider = useMemo(() => {
+		const map = new Map<string, Connection>();
+		for (const c of connections) map.set(c.provider, c);
+		return map;
+	}, [connections]);
+
+	const manageProvider = manageConnection
+		? (PROVIDERS.find((p) => p.slug === manageConnection.provider) ?? {
+				slug: manageConnection.provider,
+				label: manageConnection.provider,
+				description: "",
+				fields: [],
+			})
+		: null;
 
 	return (
 		<PageContainer>
 			<PageContent>
-				<PageHeaderWithTitle
-					title="settings"
-					subtitle="Manage your account and data preferences"
+				<PageHeaderWithTitle title="settings" />
+
+				<div className="divide-y divide-border">
+					<Section title="profile" description="signed-in account and session.">
+						<ProfileSection />
+					</Section>
+
+					<Section title="appearance" description="theme used on this device.">
+						<AppearanceSection />
+					</Section>
+
+					<Section
+						title="connections"
+						description="pull transactions from outside accounts on a schedule."
+					>
+						{!userId || isLoading ? (
+							<LoadingSkeleton />
+						) : (
+							<VStack spacing="sm">
+								{PROVIDERS.map((provider) => (
+									<ProviderRow
+										key={provider.slug}
+										provider={provider}
+										connection={
+											connectionsByProvider.get(provider.slug) ?? null
+										}
+										onConnect={() => setConnectProvider(provider)}
+										onManage={(connection) => setManageConnection(connection)}
+									/>
+								))}
+							</VStack>
+						)}
+					</Section>
+				</div>
+
+				<ConnectProviderDialog
+					provider={connectProvider}
+					onOpenChange={(open) => !open && setConnectProvider(null)}
 				/>
 
-				<VStack spacing="lg">
-					<SectionTitle>connected accounts</SectionTitle>
-
-					{!userId || isLoading ? (
-						<LoadingSkeleton />
-					) : connections.length === 0 ? (
-						<EmptyState title="no connections yet" />
-					) : (
-						<VStack spacing="sm">
-							{connections.map((c) => (
-								<ConnectionRow key={c.id.toString()} connection={c} />
-							))}
-						</VStack>
-					)}
-
-					{!hasWise && <ConnectWiseCard />}
-				</VStack>
+				{manageProvider && (
+					<ManageConnectionDialog
+						provider={manageProvider}
+						connection={manageConnection}
+						onOpenChange={(open) => !open && setManageConnection(null)}
+					/>
+				)}
 			</PageContent>
 		</PageContainer>
 	);
 }
 
-function ConnectionRow({ connection }: { connection: Connection }) {
-	const [confirmOpen, setConfirmOpen] = useState(false);
-	const { deleteConnectionAsync, isPending, error } = useDeleteConnection();
+interface SectionProps {
+	title: string;
+	description?: string;
+	children: React.ReactNode;
+}
 
-	const lastSyncedDate = timestampToDate(connection.lastSynced);
-	const createdDate = timestampToDate(connection.createdAt);
-	const errorMessage = error instanceof Error ? error.message : null;
+function Section({ title, description, children }: SectionProps) {
+	return (
+		<div className="grid grid-cols-1 gap-6 py-8 md:grid-cols-[220px_1fr] md:gap-10 first:pt-0 last:pb-0">
+			<div>
+				<h2 className="font-serif text-lg font-semibold">{title}</h2>
+				{description && (
+					<Muted size="xs" className="mt-1 block">
+						{description}
+					</Muted>
+				)}
+			</div>
+			<div className="min-w-0">{children}</div>
+		</div>
+	);
+}
 
-	const onConfirm = async () => {
-		await deleteConnectionAsync(connection.id);
-		setConfirmOpen(false);
+function ProfileSection() {
+	const router = useRouter();
+	const { data: session } = useSession();
+	const [isSigningOut, setIsSigningOut] = useState(false);
+
+	const email = session?.data?.user?.email;
+
+	const onSignOut = async () => {
+		setIsSigningOut(true);
+		try {
+			await authClient.signOut();
+			router.push("/login");
+		} finally {
+			setIsSigningOut(false);
+		}
 	};
 
 	return (
 		<Card padding="md">
 			<HStack justify="between" align="center">
-				<VStack spacing="xs">
-					<HStack spacing="sm" align="center">
-						<span className="font-medium">
-							{providerLabel(connection.provider)}
-						</span>
-						<Badge variant={STATUS_VARIANT[connection.status] ?? "outline"}>
-							{connection.status}
-						</Badge>
-					</HStack>
-					<Muted size="xs">
-						{lastSyncedDate
-							? `synced ${formatDistanceToNow(lastSyncedDate, { addSuffix: true })}`
-							: createdDate
-								? `connected ${formatDistanceToNow(createdDate, { addSuffix: true })}`
-								: "never synced"}
-					</Muted>
+				<VStack spacing="xs" className="min-w-0">
+					<Muted size="xs">signed in as</Muted>
+					<span className="truncate font-mono text-sm">{email ?? "—"}</span>
 				</VStack>
 				<Button
 					variant="outline"
 					size="sm"
-					onClick={() => setConfirmOpen(true)}
-					disabled={isPending}
+					onClick={onSignOut}
+					disabled={isSigningOut}
 				>
-					Disconnect
+					{isSigningOut ? "signing out..." : "sign out"}
 				</Button>
 			</HStack>
-
-			{errorMessage && (
-				<div className="mt-3">
-					<ErrorMessage>{errorMessage}</ErrorMessage>
-				</div>
-			)}
-
-			<AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>
-							Disconnect {providerLabel(connection.provider)}?
-						</AlertDialogTitle>
-						<AlertDialogDescription>
-							Sync will stop and the stored credentials will be removed.
-							Existing transactions are kept.
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
-						<AlertDialogAction onClick={onConfirm} disabled={isPending}>
-							{isPending ? "disconnecting…" : "Disconnect"}
-						</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
 		</Card>
 	);
 }
 
-function ConnectWiseCard() {
-	const [token, setToken] = useState("");
-	const { createConnectionAsync, isPending, error, reset } =
-		useCreateConnection();
+function AppearanceSection() {
+	const { theme, setTheme } = useTheme();
+	return (
+		<Card padding="md">
+			<HStack justify="between" align="center">
+				<span className="text-sm">theme</span>
+				<Select value={theme ?? "system"} onValueChange={setTheme}>
+					<SelectTrigger className="w-[160px]">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="light">light</SelectItem>
+						<SelectItem value="dark">dark</SelectItem>
+						<SelectItem value="system">system</SelectItem>
+					</SelectContent>
+				</Select>
+			</HStack>
+		</Card>
+	);
+}
 
-	const errorMessage = error instanceof Error ? error.message : null;
+interface ProviderRowProps {
+	provider: Provider;
+	connection: Connection | null;
+	onConnect: () => void;
+	onManage: (connection: Connection) => void;
+}
 
-	const onSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		if (!token.trim()) return;
-		await createConnectionAsync({
-			provider: "wise",
-			credentials: JSON.stringify({ api_token: token }),
-		});
-		setToken("");
-	};
+function ProviderRow({
+	provider,
+	connection,
+	onConnect,
+	onManage,
+}: ProviderRowProps) {
+	const isConnected = !!connection;
+	const comingSoon = provider.comingSoon && !isConnected;
+
+	const lastSyncedDate = timestampToDate(connection?.lastSynced);
+	const statusLine = connection
+		? lastSyncedDate
+			? `synced ${formatDistanceToNow(lastSyncedDate, { addSuffix: true })} · ${intervalLabel(connection.syncIntervalMinutes)}`
+			: `never synced · ${intervalLabel(connection.syncIntervalMinutes)}`
+		: comingSoon
+			? "coming soon"
+			: provider.description;
 
 	return (
 		<Card
-			title="connect wise"
-			description="Paste your Wise API token to enable transaction sync."
+			padding="md"
+			interactive={isConnected}
+			onClick={connection ? () => onManage(connection) : undefined}
 		>
-			<form onSubmit={onSubmit} className="space-y-4">
-				<FormField label="API token" required>
-					<Input
-						type="password"
-						autoComplete="off"
-						value={token}
-						onChange={(e) => {
-							setToken(e.target.value);
-							if (error) reset();
-						}}
-						placeholder="wise api token"
-						disabled={isPending}
-						error={!!errorMessage}
-					/>
-				</FormField>
-				{errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-				<div className="flex justify-end">
-					<Button type="submit" disabled={isPending || !token.trim()}>
-						{isPending ? "connecting…" : "connect"}
+			<HStack justify="between" align="center">
+				<VStack spacing="xs" className="min-w-0 flex-1">
+					<HStack spacing="sm" align="center">
+						<span className="font-medium">{provider.label}</span>
+						{isConnected && (
+							<Badge variant={STATUS_VARIANT[connection.status] ?? "outline"}>
+								{connection.status}
+							</Badge>
+						)}
+					</HStack>
+					<Muted size="xs" className="truncate">
+						{statusLine}
+					</Muted>
+				</VStack>
+				{isConnected ? (
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={() => onManage(connection)}
+					>
+						manage
 					</Button>
-				</div>
-			</form>
+				) : (
+					<Button size="sm" onClick={onConnect} disabled={comingSoon}>
+						connect
+					</Button>
+				)}
+			</HStack>
 		</Card>
 	);
 }

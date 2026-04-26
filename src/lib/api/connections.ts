@@ -3,12 +3,15 @@ import {
 	CreateConnectionRequestSchema,
 	DeleteConnectionRequestSchema,
 	ListConnectionsRequestSchema,
+	SetSyncIntervalRequestSchema,
+	TriggerSyncRequestSchema,
 } from "@/gen/null/v1/connection_services_pb";
 import { connectionsClient } from "@/lib/grpc-client";
 
 export interface CreateConnectionInput {
 	provider: string;
 	credentials: string;
+	syncIntervalMinutes?: number;
 }
 
 export const connectionsApi = {
@@ -22,6 +25,7 @@ export const connectionsApi = {
 		const request = create(CreateConnectionRequestSchema, {
 			provider: data.provider,
 			credentials: data.credentials,
+			syncIntervalMinutes: data.syncIntervalMinutes,
 		});
 		const response = await connectionsClient.createConnection(request);
 		return response.id;
@@ -30,5 +34,18 @@ export const connectionsApi = {
 	async delete(id: bigint) {
 		const request = create(DeleteConnectionRequestSchema, { id });
 		await connectionsClient.deleteConnection(request);
+	},
+
+	async triggerSync(id: bigint) {
+		const request = create(TriggerSyncRequestSchema, { id });
+		await connectionsClient.triggerSync(request);
+	},
+
+	async setSyncInterval(id: bigint, syncIntervalMinutes: number | undefined) {
+		const request = create(SetSyncIntervalRequestSchema, {
+			id,
+			syncIntervalMinutes,
+		});
+		await connectionsClient.setSyncInterval(request);
 	},
 };

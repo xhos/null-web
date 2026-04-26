@@ -23,7 +23,7 @@ import { file_buf_validate_validate } from "../../buf/validate/validate_pb";
 export const file_null_v1_connection_services: GenFile =
 	/*@__PURE__*/
 	fileDesc(
-		"CiFudWxsL3YxL2Nvbm5lY3Rpb25fc2VydmljZXMucHJvdG8SB251bGwudjEisAEKCkNvbm5lY3Rpb24SCgoCaWQYASABKAMSEAoIcHJvdmlkZXIYAiABKAkSDgoGc3RhdHVzGAMgASgJEjQKC2xhc3Rfc3luY2VkGAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgAiAEBEi4KCmNyZWF0ZWRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQg4KDF9sYXN0X3N5bmNlZCIzChZMaXN0Q29ubmVjdGlvbnNSZXF1ZXN0EhkKB3VzZXJfaWQYASABKAlCCLpIBXIDsAEBIkMKF0xpc3RDb25uZWN0aW9uc1Jlc3BvbnNlEigKC2Nvbm5lY3Rpb25zGAEgAygLMhMubnVsbC52MS5Db25uZWN0aW9uIm0KF0NyZWF0ZUNvbm5lY3Rpb25SZXF1ZXN0EhkKB3VzZXJfaWQYASABKAlCCLpIBXIDsAEBEhkKCHByb3ZpZGVyGAIgASgJQge6SARyAhABEhwKC2NyZWRlbnRpYWxzGAMgASgJQge6SARyAhABIiYKGENyZWF0ZUNvbm5lY3Rpb25SZXNwb25zZRIKCgJpZBgBIAEoAyJJChdEZWxldGVDb25uZWN0aW9uUmVxdWVzdBIZCgd1c2VyX2lkGAEgASgJQgi6SAVyA7ABARITCgJpZBgCIAEoA0IHukgEIgIgACIaChhEZWxldGVDb25uZWN0aW9uUmVzcG9uc2UynAIKEkNvbm5lY3Rpb25zU2VydmljZRJUCg9MaXN0Q29ubmVjdGlvbnMSHy5udWxsLnYxLkxpc3RDb25uZWN0aW9uc1JlcXVlc3QaIC5udWxsLnYxLkxpc3RDb25uZWN0aW9uc1Jlc3BvbnNlElcKEENyZWF0ZUNvbm5lY3Rpb24SIC5udWxsLnYxLkNyZWF0ZUNvbm5lY3Rpb25SZXF1ZXN0GiEubnVsbC52MS5DcmVhdGVDb25uZWN0aW9uUmVzcG9uc2USVwoQRGVsZXRlQ29ubmVjdGlvbhIgLm51bGwudjEuRGVsZXRlQ29ubmVjdGlvblJlcXVlc3QaIS5udWxsLnYxLkRlbGV0ZUNvbm5lY3Rpb25SZXNwb25zZWIGcHJvdG8z",
+		"CiFudWxsL3YxL2Nvbm5lY3Rpb25fc2VydmljZXMucHJvdG8SB251bGwudjEitAIKCkNvbm5lY3Rpb24SCgoCaWQYASABKAMSEAoIcHJvdmlkZXIYAiABKAkSDgoGc3RhdHVzGAMgASgJEjQKC2xhc3Rfc3luY2VkGAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgAiAEBEi4KCmNyZWF0ZWRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEiIKFXN5bmNfaW50ZXJ2YWxfbWludXRlcxgGIAEoBUgBiAEBEjQKC25leHRfcnVuX2F0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgCiAEBQg4KDF9sYXN0X3N5bmNlZEIYChZfc3luY19pbnRlcnZhbF9taW51dGVzQg4KDF9uZXh0X3J1bl9hdCIzChZMaXN0Q29ubmVjdGlvbnNSZXF1ZXN0EhkKB3VzZXJfaWQYASABKAlCCLpIBXIDsAEBIkMKF0xpc3RDb25uZWN0aW9uc1Jlc3BvbnNlEigKC2Nvbm5lY3Rpb25zGAEgAygLMhMubnVsbC52MS5Db25uZWN0aW9uIrQBChdDcmVhdGVDb25uZWN0aW9uUmVxdWVzdBIZCgd1c2VyX2lkGAEgASgJQgi6SAVyA7ABARIZCghwcm92aWRlchgCIAEoCUIHukgEcgIQARIcCgtjcmVkZW50aWFscxgDIAEoCUIHukgEcgIQARIrChVzeW5jX2ludGVydmFsX21pbnV0ZXMYBCABKAVCB7pIBBoCIABIAIgBAUIYChZfc3luY19pbnRlcnZhbF9taW51dGVzIiYKGENyZWF0ZUNvbm5lY3Rpb25SZXNwb25zZRIKCgJpZBgBIAEoAyJJChdEZWxldGVDb25uZWN0aW9uUmVxdWVzdBIZCgd1c2VyX2lkGAEgASgJQgi6SAVyA7ABARITCgJpZBgCIAEoA0IHukgEIgIgACIaChhEZWxldGVDb25uZWN0aW9uUmVzcG9uc2UiRAoSVHJpZ2dlclN5bmNSZXF1ZXN0EhkKB3VzZXJfaWQYASABKAlCCLpIBXIDsAEBEhMKAmlkGAIgASgDQge6SAQiAiAAIhUKE1RyaWdnZXJTeW5jUmVzcG9uc2UijwEKFlNldFN5bmNJbnRlcnZhbFJlcXVlc3QSGQoHdXNlcl9pZBgBIAEoCUIIukgFcgOwAQESEwoCaWQYAiABKANCB7pIBCICIAASKwoVc3luY19pbnRlcnZhbF9taW51dGVzGAMgASgFQge6SAQaAiAASACIAQFCGAoWX3N5bmNfaW50ZXJ2YWxfbWludXRlcyIZChdTZXRTeW5jSW50ZXJ2YWxSZXNwb25zZTK8AwoSQ29ubmVjdGlvbnNTZXJ2aWNlElQKD0xpc3RDb25uZWN0aW9ucxIfLm51bGwudjEuTGlzdENvbm5lY3Rpb25zUmVxdWVzdBogLm51bGwudjEuTGlzdENvbm5lY3Rpb25zUmVzcG9uc2USVwoQQ3JlYXRlQ29ubmVjdGlvbhIgLm51bGwudjEuQ3JlYXRlQ29ubmVjdGlvblJlcXVlc3QaIS5udWxsLnYxLkNyZWF0ZUNvbm5lY3Rpb25SZXNwb25zZRJXChBEZWxldGVDb25uZWN0aW9uEiAubnVsbC52MS5EZWxldGVDb25uZWN0aW9uUmVxdWVzdBohLm51bGwudjEuRGVsZXRlQ29ubmVjdGlvblJlc3BvbnNlEkgKC1RyaWdnZXJTeW5jEhsubnVsbC52MS5UcmlnZ2VyU3luY1JlcXVlc3QaHC5udWxsLnYxLlRyaWdnZXJTeW5jUmVzcG9uc2USVAoPU2V0U3luY0ludGVydmFsEh8ubnVsbC52MS5TZXRTeW5jSW50ZXJ2YWxSZXF1ZXN0GiAubnVsbC52MS5TZXRTeW5jSW50ZXJ2YWxSZXNwb25zZWIGcHJvdG8z",
 		[file_buf_validate_validate, file_google_protobuf_timestamp],
 	);
 
@@ -57,6 +57,18 @@ export type Connection = Message<"null.v1.Connection"> & {
 	 * @generated from field: google.protobuf.Timestamp created_at = 5;
 	 */
 	createdAt?: Timestamp;
+
+	/**
+	 * null = manual-only (no scheduled sync)
+	 *
+	 * @generated from field: optional int32 sync_interval_minutes = 6;
+	 */
+	syncIntervalMinutes?: number;
+
+	/**
+	 * @generated from field: optional google.protobuf.Timestamp next_run_at = 7;
+	 */
+	nextRunAt?: Timestamp;
 };
 
 /**
@@ -124,6 +136,11 @@ export type CreateConnectionRequest =
 		 * @generated from field: string credentials = 3;
 		 */
 		credentials: string;
+
+		/**
+		 * @generated from field: optional int32 sync_interval_minutes = 4;
+		 */
+		syncIntervalMinutes?: number;
 	};
 
 /**
@@ -192,6 +209,87 @@ export const DeleteConnectionResponseSchema: GenMessage<DeleteConnectionResponse
 	messageDesc(file_null_v1_connection_services, 6);
 
 /**
+ * @generated from message null.v1.TriggerSyncRequest
+ */
+export type TriggerSyncRequest = Message<"null.v1.TriggerSyncRequest"> & {
+	/**
+	 * @generated from field: string user_id = 1;
+	 */
+	userId: string;
+
+	/**
+	 * @generated from field: int64 id = 2;
+	 */
+	id: bigint;
+};
+
+/**
+ * Describes the message null.v1.TriggerSyncRequest.
+ * Use `create(TriggerSyncRequestSchema)` to create a new message.
+ */
+export const TriggerSyncRequestSchema: GenMessage<TriggerSyncRequest> =
+	/*@__PURE__*/
+	messageDesc(file_null_v1_connection_services, 7);
+
+/**
+ * @generated from message null.v1.TriggerSyncResponse
+ */
+export type TriggerSyncResponse = Message<"null.v1.TriggerSyncResponse"> & {};
+
+/**
+ * Describes the message null.v1.TriggerSyncResponse.
+ * Use `create(TriggerSyncResponseSchema)` to create a new message.
+ */
+export const TriggerSyncResponseSchema: GenMessage<TriggerSyncResponse> =
+	/*@__PURE__*/
+	messageDesc(file_null_v1_connection_services, 8);
+
+/**
+ * @generated from message null.v1.SetSyncIntervalRequest
+ */
+export type SetSyncIntervalRequest =
+	Message<"null.v1.SetSyncIntervalRequest"> & {
+		/**
+		 * @generated from field: string user_id = 1;
+		 */
+		userId: string;
+
+		/**
+		 * @generated from field: int64 id = 2;
+		 */
+		id: bigint;
+
+		/**
+		 * omit to switch to manual-only (no scheduled sync)
+		 *
+		 * @generated from field: optional int32 sync_interval_minutes = 3;
+		 */
+		syncIntervalMinutes?: number;
+	};
+
+/**
+ * Describes the message null.v1.SetSyncIntervalRequest.
+ * Use `create(SetSyncIntervalRequestSchema)` to create a new message.
+ */
+export const SetSyncIntervalRequestSchema: GenMessage<SetSyncIntervalRequest> =
+	/*@__PURE__*/
+	messageDesc(file_null_v1_connection_services, 9);
+
+/**
+ * @generated from message null.v1.SetSyncIntervalResponse
+ */
+export type SetSyncIntervalResponse =
+	Message<"null.v1.SetSyncIntervalResponse"> & {};
+
+/**
+ * Describes the message null.v1.SetSyncIntervalResponse.
+ * Use `create(SetSyncIntervalResponseSchema)` to create a new message.
+ */
+export const SetSyncIntervalResponseSchema: GenMessage<SetSyncIntervalResponse> =
+	/*@__PURE__*/
+	messageDesc(file_null_v1_connection_services, 10);
+
+/**
  * @generated from service null.v1.ConnectionsService
  */
 export const ConnectionsService: GenService<{
@@ -218,5 +316,21 @@ export const ConnectionsService: GenService<{
 		methodKind: "unary";
 		input: typeof DeleteConnectionRequestSchema;
 		output: typeof DeleteConnectionResponseSchema;
+	};
+	/**
+	 * @generated from rpc null.v1.ConnectionsService.TriggerSync
+	 */
+	triggerSync: {
+		methodKind: "unary";
+		input: typeof TriggerSyncRequestSchema;
+		output: typeof TriggerSyncResponseSchema;
+	};
+	/**
+	 * @generated from rpc null.v1.ConnectionsService.SetSyncInterval
+	 */
+	setSyncInterval: {
+		methodKind: "unary";
+		input: typeof SetSyncIntervalRequestSchema;
+		output: typeof SetSyncIntervalResponseSchema;
 	};
 }> = /*@__PURE__*/ serviceDesc(file_null_v1_connection_services, 0);
