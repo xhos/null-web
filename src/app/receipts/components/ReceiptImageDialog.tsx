@@ -12,8 +12,8 @@ interface ReceiptImageDialogProps {
 	onOpenChange: (open: boolean) => void;
 }
 
-function mimeTypeFromPath(imagePath: string): string {
-	const extension = imagePath.split(".").pop()?.toLowerCase();
+function mimeTypeFromPath(imagePath: string | undefined): string {
+	const extension = imagePath?.split(".").pop()?.toLowerCase();
 	const mimeTypes: Record<string, string> = {
 		jpg: "image/jpeg",
 		jpeg: "image/jpeg",
